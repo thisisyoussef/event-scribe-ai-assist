@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import Navigation from "@/components/Navigation";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Zap, Plus, Trash2, Clock, Users, MapPin, Calendar } from "lucide-react";
+import { ChevronLeft, ChevronRight, Zap, Plus, Trash2, Clock, Users, MapPin, Calendar, TestTube } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const EventCreation = () => {
@@ -222,6 +221,30 @@ const EventCreation = () => {
     }
   };
 
+  const prefillTestData = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowString = tomorrow.toISOString().split('T')[0];
+
+    setEventData({
+      title: "Community Iftar 2025",
+      date: tomorrowString,
+      startTime: "18:00",
+      endTime: "21:00",
+      location: "Muslim Community Center - Main Hall",
+      description: "Join us for a community iftar dinner during Ramadan. We'll need volunteers to help with setup, registration, food service, and cleanup. The event will include a brief program after the meal. Setup should begin 2 hours before the event. We'll need brothers and sisters to help with various tasks including welcoming guests, managing the buffet line, and coordinating activities for children.",
+      smsEnabled: true,
+      dayBeforeTime: "09:00",
+      dayOfTime: "15:00",
+      status: "draft"
+    });
+
+    toast({
+      title: "Test data loaded!",
+      description: "Form has been filled with sample event data for testing.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -271,74 +294,84 @@ const EventCreation = () => {
             {/* Step 1: Basic Info */}
             {currentStep === 1 && (
               <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-semibold mb-4">Event Information</h2>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="title">Event Title</Label>
-                      <Input
-                        id="title"
-                        value={eventData.title}
-                        onChange={(e) => setEventData(prev => ({ ...prev, title: e.target.value }))}
-                        placeholder="Community Iftar 2025"
-                        required
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="date">Event Date</Label>
-                      <Input
-                        id="date"
-                        type="date"
-                        value={eventData.date}
-                        onChange={(e) => setEventData(prev => ({ ...prev, date: e.target.value }))}
-                        required
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="startTime">Start Time</Label>
-                      <Input
-                        id="startTime"
-                        type="time"
-                        value={eventData.startTime}
-                        onChange={(e) => setEventData(prev => ({ ...prev, startTime: e.target.value }))}
-                        required
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="endTime">End Time</Label>
-                      <Input
-                        id="endTime"
-                        type="time"
-                        value={eventData.endTime}
-                        onChange={(e) => setEventData(prev => ({ ...prev, endTime: e.target.value }))}
-                        required
-                      />
-                    </div>
-                    
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="location">Location</Label>
-                      <Input
-                        id="location"
-                        value={eventData.location}
-                        onChange={(e) => setEventData(prev => ({ ...prev, location: e.target.value }))}
-                        placeholder="Muslim Community Center"
-                        required
-                      />
-                    </div>
-                    
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="description">Event Description</Label>
-                      <Textarea
-                        id="description"
-                        value={eventData.description}
-                        onChange={(e) => setEventData(prev => ({ ...prev, description: e.target.value }))}
-                        placeholder="Describe your event, mention roles needed, timing requirements, and any specific instructions..."
-                        rows={4}
-                      />
-                    </div>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-semibold">Event Information</h2>
+                  {!eventId && (
+                    <Button 
+                      variant="outline" 
+                      onClick={prefillTestData}
+                      className="text-sm"
+                    >
+                      <TestTube className="w-4 h-4 mr-2" />
+                      Prefill with Test Data
+                    </Button>
+                  )}
+                </div>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Event Title</Label>
+                    <Input
+                      id="title"
+                      value={eventData.title}
+                      onChange={(e) => setEventData(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Community Iftar 2025"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="date">Event Date</Label>
+                    <Input
+                      id="date"
+                      type="date"
+                      value={eventData.date}
+                      onChange={(e) => setEventData(prev => ({ ...prev, date: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="startTime">Start Time</Label>
+                    <Input
+                      id="startTime"
+                      type="time"
+                      value={eventData.startTime}
+                      onChange={(e) => setEventData(prev => ({ ...prev, startTime: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="endTime">End Time</Label>
+                    <Input
+                      id="endTime"
+                      type="time"
+                      value={eventData.endTime}
+                      onChange={(e) => setEventData(prev => ({ ...prev, endTime: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="location">Location</Label>
+                    <Input
+                      id="location"
+                      value={eventData.location}
+                      onChange={(e) => setEventData(prev => ({ ...prev, location: e.target.value }))}
+                      placeholder="Muslim Community Center"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="description">Event Description</Label>
+                    <Textarea
+                      id="description"
+                      value={eventData.description}
+                      onChange={(e) => setEventData(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Describe your event, mention roles needed, timing requirements, and any specific instructions..."
+                      rows={4}
+                    />
                   </div>
                 </div>
               </div>
