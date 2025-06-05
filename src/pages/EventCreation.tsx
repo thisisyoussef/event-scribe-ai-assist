@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -155,7 +156,7 @@ const EventCreation = () => {
         shiftEnd: eventData.startTime.slice(0, 3) + String(parseInt(eventData.startTime.slice(3)) + 30).padStart(2, '0'),
         slotsBrother: 4,
         slotsSister: 2,
-        suggestedPOC: contacts[0]?.id || null,
+        suggestedPOC: null, // Set to null to avoid foreign key issues
         notes: "Setup tables, chairs, and decorations"
       },
       {
@@ -165,7 +166,7 @@ const EventCreation = () => {
         shiftEnd: eventData.endTime,
         slotsBrother: 2,
         slotsSister: 3,
-        suggestedPOC: contacts[1]?.id || null,
+        suggestedPOC: null, // Set to null to avoid foreign key issues
         notes: "Check-in volunteers and guests"
       },
       {
@@ -175,7 +176,7 @@ const EventCreation = () => {
         shiftEnd: eventData.endTime,
         slotsBrother: 1,
         slotsSister: 1,
-        suggestedPOC: contacts[0]?.id || null,
+        suggestedPOC: null, // Set to null to avoid foreign key issues
         notes: "Overall event oversight and troubleshooting"
       }
     ];
@@ -202,7 +203,7 @@ const EventCreation = () => {
       shiftEnd: eventData.endTime,
       slotsBrother: 1,
       slotsSister: 0,
-      suggestedPOC: null,
+      suggestedPOC: null, // Set to null to avoid foreign key issues
       notes: "",
       status: "custom"
     };
@@ -297,7 +298,7 @@ const EventCreation = () => {
         savedEventId = newEvent.id;
       }
 
-      // Insert volunteer roles - make sure we have valid data
+      // Insert volunteer roles - ensure suggested_poc is always null for now
       if (finalRoles.length > 0) {
         const rolesPayload = finalRoles
           .filter(role => role.roleLabel && role.roleLabel.trim() !== '') // Filter out empty roles
@@ -308,7 +309,7 @@ const EventCreation = () => {
             shift_end: role.shiftEnd,
             slots_brother: role.slotsBrother || 0,
             slots_sister: role.slotsSister || 0,
-            suggested_poc: role.suggestedPOC || null,
+            suggested_poc: null, // Always set to null to avoid foreign key constraint issues
             notes: role.notes || ""
           }));
 
