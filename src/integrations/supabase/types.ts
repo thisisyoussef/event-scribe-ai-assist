@@ -107,6 +107,7 @@ export type Database = {
       volunteers: {
         Row: {
           event_id: string | null
+          gender: string
           id: string
           name: string
           notes: string | null
@@ -117,6 +118,7 @@ export type Database = {
         }
         Insert: {
           event_id?: string | null
+          gender?: string
           id?: string
           name: string
           notes?: string | null
@@ -127,6 +129,7 @@ export type Database = {
         }
         Update: {
           event_id?: string | null
+          gender?: string
           id?: string
           name?: string
           notes?: string | null

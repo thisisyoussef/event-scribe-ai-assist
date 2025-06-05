@@ -34,6 +34,7 @@ export interface Volunteer {
   role_id: string;
   name: string;
   phone: string;
+  gender: 'brother' | 'sister';
   notes?: string;
   signup_date?: string;
   status: 'confirmed' | 'cancelled';

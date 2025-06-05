@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,22 +7,31 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useParams } from "react-router-dom";
-import { Calendar, Clock, MapPin, Users, Phone, CheckCircle2 } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, Phone, CheckCircle2, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Event, VolunteerRole, Volunteer } from "@/types/database";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const VolunteerSignup = () => {
   const { eventId } = useParams();
   const { toast } = useToast();
   const [event, setEvent] = useState<(Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] }) | null>(null);
-  const [contacts, setContacts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<VolunteerRole | null>(null);
   const [volunteerData, setVolunteerData] = useState({
     name: "",
     phone: "",
+    gender: "brother" as "brother" | "sister",
     notes: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,7 +68,6 @@ const VolunteerSignup = () => {
       }
 
       console.log("Found event:", eventData);
-      // Type assert the data to match our expected types
       setEvent(eventData as Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] });
     } catch (error) {
       console.error('Error:', error);
@@ -72,8 +81,15 @@ const VolunteerSignup = () => {
     return event?.volunteers?.filter((v: Volunteer) => v.role_id === roleId) || [];
   };
 
-  const getRemainingSlots = (role: VolunteerRole) => {
+  const getRemainingSlots = (role: VolunteerRole, gender?: "brother" | "sister") => {
     const volunteers = getVolunteersForRole(role.id);
+    
+    if (gender) {
+      const genderVolunteers = volunteers.filter(v => v.gender === gender);
+      const maxSlots = gender === 'brother' ? role.slots_brother : role.slots_sister;
+      return maxSlots - genderVolunteers.length;
+    }
+    
     const totalSlots = (role.slots_brother || 0) + (role.slots_sister || 0);
     return totalSlots - volunteers.length;
   };
@@ -90,8 +106,57 @@ const VolunteerSignup = () => {
     }
     
     setSelectedRole(role);
-    setVolunteerData({ name: "", phone: "", notes: "" });
+    setVolunteerData({ name: "", phone: "", gender: "brother", notes: "" });
     setIsModalOpen(true);
+  };
+
+  const removeVolunteer = async (volunteerId: string, volunteerName: string) => {
+    try {
+      const { error } = await supabase
+        .from('volunteers')
+        .delete()
+        .eq('id', volunteerId);
+
+      if (error) {
+        console.error('Error removing volunteer:', error);
+        toast({
+          title: "Error",
+          description: "Failed to remove from event.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Update local state
+      setEvent(prev => prev ? {
+        ...prev,
+        volunteers: prev.volunteers?.filter(v => v.id !== volunteerId) || []
+      } : null);
+
+      toast({
+        title: "Successfully Removed",
+        description: `${volunteerName} has been removed from the event.`,
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const sendTestSMS = (phone: string, name: string, roleLabel: string) => {
+    // Simulate SMS sending
+    const message = `Hi ${name}! You're confirmed for ${roleLabel} on ${new Date(event?.start_datetime || '').toLocaleDateString()}. Thanks for volunteering! 📅`;
+    
+    console.log(`TEST SMS to ${phone}: ${message}`);
+    
+    toast({
+      title: "Test SMS Sent! 📱",
+      description: `SMS simulation sent to ${phone}. Check console for message content.`,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -109,6 +174,18 @@ const VolunteerSignup = () => {
     }
 
     if (!selectedRole || !eventId) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Check if the specific gender slot is available
+    const remainingForGender = getRemainingSlots(selectedRole, volunteerData.gender);
+    if (remainingForGender <= 0) {
+      toast({
+        title: "Gender Slot Full",
+        description: `The ${volunteerData.gender} slots for this role are full. Please try a different role or gender selection.`,
+        variant: "destructive",
+      });
       setIsSubmitting(false);
       return;
     }
@@ -133,6 +210,7 @@ const VolunteerSignup = () => {
           role_id: selectedRole.id,
           name: volunteerData.name,
           phone: volunteerData.phone,
+          gender: volunteerData.gender,
           notes: volunteerData.notes,
           status: 'confirmed'
         })
@@ -150,7 +228,7 @@ const VolunteerSignup = () => {
         return;
       }
 
-      // Update local state with type assertion
+      // Update local state
       setEvent(prev => prev ? {
         ...prev,
         volunteers: [...(prev.volunteers || []), newVolunteer as Volunteer]
@@ -161,11 +239,12 @@ const VolunteerSignup = () => {
       
       toast({
         title: "Successfully Signed Up!",
-        description: `You're now registered for ${selectedRole.role_label}. You should receive a confirmation SMS shortly.`,
+        description: `You're now registered for ${selectedRole.role_label}.`,
       });
 
-      // Simulate SMS confirmation
-      console.log(`SMS would be sent to ${volunteerData.phone}: Thanks ${volunteerData.name}! You're signed up as ${selectedRole.role_label} on ${new Date(event?.start_datetime || '').toLocaleDateString()} at ${selectedRole.shift_start}-${selectedRole.shift_end}.`);
+      // Send test SMS
+      sendTestSMS(volunteerData.phone, volunteerData.name, selectedRole.role_label);
+
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -269,22 +348,32 @@ const VolunteerSignup = () => {
           </CardHeader>
           <CardContent>
             {event.volunteer_roles && event.volunteer_roles.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {event.volunteer_roles.map((role: VolunteerRole) => {
                   const volunteers = getVolunteersForRole(role.id);
                   const totalSlots = (role.slots_brother || 0) + (role.slots_sister || 0);
                   const remainingSlots = getRemainingSlots(role);
+                  const brotherSlots = getRemainingSlots(role, 'brother');
+                  const sisterSlots = getRemainingSlots(role, 'sister');
                   
                   return (
                     <Card key={role.id} className={`${remainingSlots === 0 ? 'opacity-75' : ''}`}>
                       <CardContent className="p-6">
-                        <div className="flex justify-between items-start">
+                        <div className="flex justify-between items-start mb-4">
                           <div className="flex-1">
                             <div className="flex items-center space-x-3 mb-3">
                               <h3 className="text-lg font-semibold">{role.role_label}</h3>
-                              <Badge variant={remainingSlots > 0 ? "default" : "secondary"}>
-                                {remainingSlots > 0 ? `${remainingSlots} slots open` : "Full"}
-                              </Badge>
+                              <div className="flex space-x-2">
+                                <Badge variant={remainingSlots > 0 ? "default" : "secondary"}>
+                                  {remainingSlots > 0 ? `${remainingSlots} total open` : "Full"}
+                                </Badge>
+                                <Badge variant="outline">
+                                  Brothers: {brotherSlots}/{role.slots_brother}
+                                </Badge>
+                                <Badge variant="outline">
+                                  Sisters: {sisterSlots}/{role.slots_sister}
+                                </Badge>
+                              </div>
                             </div>
                             
                             <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
@@ -317,6 +406,53 @@ const VolunteerSignup = () => {
                             </Button>
                           </div>
                         </div>
+
+                        {/* Volunteers Table */}
+                        {volunteers.length > 0 && (
+                          <div className="mt-6 border-t pt-4">
+                            <h4 className="font-medium mb-3">Current Volunteers:</h4>
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Name</TableHead>
+                                  <TableHead>Phone</TableHead>
+                                  <TableHead>Gender</TableHead>
+                                  <TableHead>Notes</TableHead>
+                                  <TableHead>Action</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {volunteers.map((volunteer: Volunteer) => (
+                                  <TableRow key={volunteer.id}>
+                                    <TableCell className="font-medium">{volunteer.name}</TableCell>
+                                    <TableCell>
+                                      <div className="flex items-center space-x-2">
+                                        <Phone className="w-4 h-4" />
+                                        <span>{volunteer.phone}</span>
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Badge variant={volunteer.gender === 'brother' ? 'default' : 'secondary'}>
+                                        {volunteer.gender}
+                                      </Badge>
+                                    </TableCell>
+                                    <TableCell>{volunteer.notes || '-'}</TableCell>
+                                    <TableCell>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => removeVolunteer(volunteer.id, volunteer.name)}
+                                        className="text-red-600 hover:text-red-700"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </Button>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   );
@@ -368,6 +504,28 @@ const VolunteerSignup = () => {
                 <div className="text-xs text-gray-500">
                   Used for event reminders and communication
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="gender">Gender *</Label>
+                <Select 
+                  value={volunteerData.gender} 
+                  onValueChange={(value: "brother" | "sister") => setVolunteerData(prev => ({ ...prev, gender: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="brother">Brother</SelectItem>
+                    <SelectItem value="sister">Sister</SelectItem>
+                  </SelectContent>
+                </Select>
+                {selectedRole && (
+                  <div className="text-xs text-gray-500">
+                    Available slots - Brothers: {getRemainingSlots(selectedRole, 'brother')}/{selectedRole.slots_brother}, 
+                    Sisters: {getRemainingSlots(selectedRole, 'sister')}/{selectedRole.slots_sister}
+                  </div>
+                )}
               </div>
               
               <div className="space-y-2">
