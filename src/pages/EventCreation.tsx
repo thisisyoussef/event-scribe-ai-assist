@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import Navigation from "@/components/Navigation";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Zap, Plus, Trash2, Clock, Users, MapPin } from "lucide-react";
+import { ChevronLeft, ChevronRight, Zap, Plus, Trash2, Clock, Users, MapPin, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const EventCreation = () => {
