@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useNavigate } from "react-router-dom";
 import { Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -14,27 +15,92 @@ const Login = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        navigate("/dashboard");
+      }
+    };
     
-    // Mock authentication - in real app this would use Supabase
-    if (email && password) {
-      localStorage.setItem("user", JSON.stringify({ 
-        email, 
-        fullName: fullName || "Event Coordinator",
-        phone: phone || "+1 (555) 123-4567",
-        role: "coordinator" 
-      }));
-      
+    checkUser();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          navigate("/dashboard");
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+              phone: phone,
+            },
+            emailRedirectTo: `${window.location.origin}/dashboard`
+          }
+        });
+
+        if (error) {
+          toast({
+            title: "Sign Up Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Account Created!",
+            description: "Please check your email to verify your account.",
+          });
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          toast({
+            title: "Sign In Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Welcome Back!",
+            description: "You've successfully signed in.",
+          });
+          // Navigation will be handled by the auth state change listener
+        }
+      }
+    } catch (error) {
+      console.error('Auth error:', error);
       toast({
-        title: isSignUp ? "Account Created!" : "Welcome Back!",
-        description: isSignUp ? "Your coordinator account has been created." : "You've successfully signed in.",
+        title: "Error",
+        description: "An unexpected error occurred.",
+        variant: "destructive",
       });
-      
-      navigate("/dashboard");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -117,8 +183,9 @@ const Login = () => {
             <Button 
               type="submit" 
               className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+              disabled={loading}
             >
-              {isSignUp ? "Create Account" : "Sign In"}
+              {loading ? "Processing..." : (isSignUp ? "Create Account" : "Sign In")}
             </Button>
           </form>
 
