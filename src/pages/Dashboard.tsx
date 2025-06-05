@@ -50,6 +50,11 @@ const Dashboard = () => {
     });
   };
 
+  const openSignupLink = (eventId: string) => {
+    const link = `/event/${eventId}/signup`;
+    window.open(link, '_blank');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -59,7 +64,7 @@ const Dashboard = () => {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Event Dashboard</h1>
-            <p className="text-gray-600 mt-1">Manage your events and volunteer coordination</p>
+            <div className="text-gray-600 mt-1">Manage your events and volunteer coordination</div>
           </div>
           <Button 
             onClick={() => navigate("/events/create")}
@@ -135,7 +140,7 @@ const Dashboard = () => {
               <div className="text-center py-12">
                 <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No events yet</h3>
-                <p className="text-gray-500 mb-4">Get started by creating your first event</p>
+                <div className="text-gray-500 mb-4">Get started by creating your first event</div>
                 <Button 
                   onClick={() => navigate("/events/create")}
                   className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
@@ -197,6 +202,7 @@ const Dashboard = () => {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => navigate(`/events/${event.id}/roster`)}
+                                title="View Roster"
                               >
                                 <Eye className="w-4 h-4" />
                               </Button>
@@ -204,17 +210,30 @@ const Dashboard = () => {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => navigate(`/events/${event.id}/edit`)}
+                                title="Edit Event"
                               >
                                 <Edit className="w-4 h-4" />
                               </Button>
                               {event.status === "published" && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => copySignupLink(event.id)}
-                                >
-                                  <Copy className="w-4 h-4" />
-                                </Button>
+                                <>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => copySignupLink(event.id)}
+                                    title="Copy Signup Link"
+                                  >
+                                    <Copy className="w-4 h-4" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="default"
+                                    onClick={() => openSignupLink(event.id)}
+                                    title="Open Signup Page"
+                                    className="bg-green-600 hover:bg-green-700"
+                                  >
+                                    Open
+                                  </Button>
+                                </>
                               )}
                             </div>
                           </td>

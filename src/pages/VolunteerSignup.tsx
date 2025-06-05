@@ -26,14 +26,22 @@ const VolunteerSignup = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    console.log("Loading event with ID:", eventId);
+    
     // Load event data
     const savedEvents = localStorage.getItem("events");
     if (savedEvents) {
       const events = JSON.parse(savedEvents);
+      console.log("All events:", events);
       const foundEvent = events.find((e: any) => e.id === eventId);
+      console.log("Found event:", foundEvent);
       if (foundEvent) {
         setEvent(foundEvent);
+      } else {
+        console.log("Event not found with ID:", eventId);
       }
+    } else {
+      console.log("No events found in localStorage");
     }
 
     // Load contacts
@@ -150,7 +158,12 @@ const VolunteerSignup = () => {
         <Card className="w-full max-w-md">
           <CardContent className="p-8 text-center">
             <h2 className="text-xl font-semibold mb-2">Event Not Found</h2>
-            <p className="text-gray-600">The event you're looking for doesn't exist or has been removed.</p>
+            <div className="text-gray-600">
+              The event you're looking for doesn't exist or has been removed.
+            </div>
+            <div className="text-sm text-gray-500 mt-2">
+              Event ID: {eventId}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -202,7 +215,7 @@ const VolunteerSignup = () => {
               <CardTitle>About This Event</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600">{event.description}</p>
+              <div className="text-gray-600">{event.description}</div>
             </CardContent>
           </Card>
         )}
@@ -262,9 +275,9 @@ const VolunteerSignup = () => {
                             </div>
                             
                             {role.notes && (
-                              <p className="text-sm text-gray-600 mt-3 italic">
+                              <div className="text-sm text-gray-600 mt-3 italic">
                                 {role.notes}
-                              </p>
+                              </div>
                             )}
                           </div>
                           
@@ -287,7 +300,7 @@ const VolunteerSignup = () => {
               <div className="text-center py-8">
                 <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No Roles Available</h3>
-                <p className="text-gray-500">Volunteer roles for this event haven't been set up yet.</p>
+                <div className="text-gray-500">Volunteer roles for this event haven't been set up yet.</div>
               </div>
             )}
           </CardContent>
@@ -326,9 +339,9 @@ const VolunteerSignup = () => {
                   onChange={(e) => setVolunteerData(prev => ({ ...prev, phone: e.target.value }))}
                   required
                 />
-                <p className="text-xs text-gray-500">
+                <div className="text-xs text-gray-500">
                   Used for event reminders and communication
-                </p>
+                </div>
               </div>
               
               <div className="space-y-2">
@@ -346,9 +359,9 @@ const VolunteerSignup = () => {
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <h4 className="font-medium mb-2">Role Details:</h4>
                   <div className="text-sm text-gray-600 space-y-1">
-                    <p><strong>Time:</strong> {selectedRole.shiftStart} - {selectedRole.shiftEnd}</p>
-                    <p><strong>Date:</strong> {new Date(event?.startDatetime).toLocaleDateString()}</p>
-                    <p><strong>Location:</strong> {event?.location}</p>
+                    <div><strong>Time:</strong> {selectedRole.shiftStart} - {selectedRole.shiftEnd}</div>
+                    <div><strong>Date:</strong> {new Date(event?.startDatetime).toLocaleDateString()}</div>
+                    <div><strong>Location:</strong> {event?.location}</div>
                   </div>
                 </div>
               )}
