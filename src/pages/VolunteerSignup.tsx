@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -147,16 +146,42 @@ const VolunteerSignup = () => {
     }
   };
 
-  const sendTestSMS = (phone: string, name: string, roleLabel: string) => {
-    // Simulate SMS sending
-    const message = `Hi ${name}! You're confirmed for ${roleLabel} on ${new Date(event?.start_datetime || '').toLocaleDateString()}. Thanks for volunteering! 📅`;
-    
-    console.log(`TEST SMS to ${phone}: ${message}`);
-    
-    toast({
-      title: "Test SMS Sent! 📱",
-      description: `SMS simulation sent to ${phone}. Check console for message content.`,
-    });
+  const sendSMS = async (phone: string, name: string, roleLabel: string) => {
+    try {
+      const message = `Hi ${name}! You're confirmed for ${roleLabel} on ${new Date(event?.start_datetime || '').toLocaleDateString()}. Thanks for volunteering! 📅`;
+      
+      console.log(`Sending SMS to ${phone}: ${message}`);
+      
+      const { data, error } = await supabase.functions.invoke('send-sms', {
+        body: {
+          to: phone,
+          message: message
+        }
+      });
+
+      if (error) {
+        console.error('Error sending SMS:', error);
+        toast({
+          title: "SMS Failed",
+          description: "Failed to send confirmation SMS, but signup was successful.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log('SMS sent successfully:', data);
+      toast({
+        title: "SMS Sent! 📱",
+        description: `Confirmation SMS sent to ${phone}`,
+      });
+    } catch (error) {
+      console.error('SMS error:', error);
+      toast({
+        title: "SMS Failed",
+        description: "Failed to send confirmation SMS, but signup was successful.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -242,8 +267,8 @@ const VolunteerSignup = () => {
         description: `You're now registered for ${selectedRole.role_label}.`,
       });
 
-      // Send test SMS
-      sendTestSMS(volunteerData.phone, volunteerData.name, selectedRole.role_label);
+      // Send real SMS
+      await sendSMS(volunteerData.phone, volunteerData.name, selectedRole.role_label);
 
     } catch (error) {
       console.error('Error:', error);
