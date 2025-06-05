@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,7 +58,8 @@ const VolunteerSignup = () => {
       }
 
       console.log("Found event:", eventData);
-      setEvent(eventData);
+      // Type assert the data to match our expected types
+      setEvent(eventData as Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] });
     } catch (error) {
       console.error('Error:', error);
       setEvent(null);
@@ -150,10 +150,10 @@ const VolunteerSignup = () => {
         return;
       }
 
-      // Update local state
+      // Update local state with type assertion
       setEvent(prev => prev ? {
         ...prev,
-        volunteers: [...(prev.volunteers || []), newVolunteer]
+        volunteers: [...(prev.volunteers || []), newVolunteer as Volunteer]
       } : null);
 
       setIsSubmitting(false);

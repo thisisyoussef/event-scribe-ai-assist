@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,7 +50,8 @@ const Dashboard = () => {
         return;
       }
 
-      setEvents(eventsData || []);
+      // Type assert the data to match our expected types
+      setEvents((eventsData || []) as Event[]);
     } catch (error) {
       console.error('Error:', error);
     } finally {
