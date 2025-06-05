@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,12 +32,15 @@ const VolunteerSignup = () => {
     if (savedEvents) {
       const events = JSON.parse(savedEvents);
       console.log("All events:", events);
+      console.log("Event IDs in storage:", events.map((e: any) => e.id));
+      console.log("Looking for event ID:", eventId);
       const foundEvent = events.find((e: any) => e.id === eventId);
       console.log("Found event:", foundEvent);
       if (foundEvent) {
         setEvent(foundEvent);
       } else {
         console.log("Event not found with ID:", eventId);
+        console.log("Available events:", events);
       }
     } else {
       console.log("No events found in localStorage");
@@ -163,6 +165,9 @@ const VolunteerSignup = () => {
             </div>
             <div className="text-sm text-gray-500 mt-2">
               Event ID: {eventId}
+            </div>
+            <div className="text-xs text-gray-400 mt-4">
+              Check the console logs for debugging information.
             </div>
           </CardContent>
         </Card>
