@@ -12,7 +12,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Zap, Plus, Trash2, Clock, Users, MapPin, Calendar, TestTube } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { v4 as uuidv4 } from 'uuid';
 
 const EventCreation = () => {
   const navigate = useNavigate();
@@ -64,9 +63,9 @@ const EventCreation = () => {
       // For now, we'll use a mock contacts array since we don't have a contacts table yet
       // In a full implementation, you'd fetch from Supabase
       const mockContacts = [
-        { id: uuidv4(), name: "Ahmed Hassan", phone: "+1234567890" },
-        { id: uuidv4(), name: "Fatima Ali", phone: "+1234567891" },
-        { id: uuidv4(), name: "Omar Khan", phone: "+1234567892" }
+        { id: crypto.randomUUID(), name: "Ahmed Hassan", phone: "+1234567890" },
+        { id: crypto.randomUUID(), name: "Fatima Ali", phone: "+1234567891" },
+        { id: crypto.randomUUID(), name: "Omar Khan", phone: "+1234567892" }
       ];
       setContacts(mockContacts);
     } catch (error) {
@@ -150,7 +149,7 @@ const EventCreation = () => {
     
     const mockSuggestions = [
       {
-        id: uuidv4(), // Use proper UUID instead of timestamp
+        id: crypto.randomUUID(),
         roleLabel: "Event Setup",
         shiftStart: eventData.startTime,
         shiftEnd: eventData.startTime.slice(0, 3) + String(parseInt(eventData.startTime.slice(3)) + 30).padStart(2, '0'),
@@ -160,7 +159,7 @@ const EventCreation = () => {
         notes: "Setup tables, chairs, and decorations"
       },
       {
-        id: uuidv4(), // Use proper UUID instead of timestamp
+        id: crypto.randomUUID(),
         roleLabel: "Registration & Welcome",
         shiftStart: eventData.startTime,
         shiftEnd: eventData.endTime,
@@ -170,7 +169,7 @@ const EventCreation = () => {
         notes: "Check-in volunteers and guests"
       },
       {
-        id: uuidv4(), // Use proper UUID instead of timestamp
+        id: crypto.randomUUID(),
         roleLabel: "Event Coordination",
         shiftStart: eventData.startTime,
         shiftEnd: eventData.endTime,
@@ -197,7 +196,7 @@ const EventCreation = () => {
 
   const addCustomRole = () => {
     const newRole = {
-      id: uuidv4(), // Use proper UUID instead of timestamp
+      id: crypto.randomUUID(),
       roleLabel: "",
       shiftStart: eventData.startTime,
       shiftEnd: eventData.endTime,
