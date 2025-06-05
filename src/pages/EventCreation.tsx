@@ -11,6 +11,7 @@ import Navigation from "@/components/Navigation";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Zap, Plus, Trash2, Clock, Users, MapPin, Calendar, TestTube } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const EventCreation = () => {
   const navigate = useNavigate();
@@ -40,43 +41,88 @@ const EventCreation = () => {
 
   useEffect(() => {
     // Check if user is logged in
-    const user = localStorage.getItem("user");
-    if (!user) {
-      navigate("/login");
-      return;
-    }
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/login");
+        return;
+      }
+    };
 
-    // Load contacts
+    checkUser();
+
+    // Load contacts from localStorage for now
     const savedContacts = localStorage.getItem("contacts");
     if (savedContacts) {
       setContacts(JSON.parse(savedContacts));
     }
 
-    // If editing, load event data
+    // If editing, load event data from Supabase
     if (eventId) {
-      const savedEvents = localStorage.getItem("events");
-      if (savedEvents) {
-        const events = JSON.parse(savedEvents);
-        const event = events.find((e: any) => e.id === eventId);
-        if (event) {
-          setEventData({
-            title: event.title,
-            date: event.startDatetime.split('T')[0],
-            startTime: event.startDatetime.split('T')[1].slice(0, 5),
-            endTime: event.endDatetime.split('T')[1].slice(0, 5),
-            location: event.location,
-            description: event.description,
-            smsEnabled: event.smsEnabled || true,
-            dayBeforeTime: event.dayBeforeTime || "09:00",
-            dayOfTime: event.dayOfTime || "15:00",
-            status: event.status
-          });
-          setFinalRoles(event.roles || []);
-          setCurrentStep(event.roles?.length > 0 ? 3 : 1);
-        }
-      }
+      loadEventData(eventId);
     }
   }, [navigate, eventId]);
+
+  const loadEventData = async (id: string) => {
+    try {
+      const { data: eventData, error } = await supabase
+        .from('events')
+        .select(`
+          *,
+          volunteer_roles(*)
+        `)
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        console.error('Error loading event:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load event data.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (eventData) {
+        setEventData({
+          title: eventData.title,
+          date: eventData.start_datetime.split('T')[0],
+          startTime: eventData.start_datetime.split('T')[1].slice(0, 5),
+          endTime: eventData.end_datetime.split('T')[1].slice(0, 5),
+          location: eventData.location,
+          description: eventData.description || "",
+          smsEnabled: eventData.sms_enabled || true,
+          dayBeforeTime: eventData.day_before_time || "09:00",
+          dayOfTime: eventData.day_of_time || "15:00",
+          status: eventData.status as "draft" | "published"
+        });
+
+        // Convert volunteer_roles to finalRoles format
+        const roles = eventData.volunteer_roles?.map((role: any) => ({
+          id: role.id,
+          roleLabel: role.role_label,
+          shiftStart: role.shift_start,
+          shiftEnd: role.shift_end,
+          slotsBrother: role.slots_brother || 0,
+          slotsSister: role.slots_sister || 0,
+          suggestedPOC: role.suggested_poc,
+          notes: role.notes || "",
+          status: "accepted"
+        })) || [];
+
+        setFinalRoles(roles);
+        setCurrentStep(roles.length > 0 ? 3 : 1);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load event data.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const steps = [
     { number: 1, title: "Basic Info", description: "Event details" },
@@ -163,41 +209,124 @@ const EventCreation = () => {
     setFinalRoles(prev => prev.filter(role => role.id !== roleId));
   };
 
-  const publishEvent = () => {
-    const eventToSave = {
-      id: eventId || Date.now().toString(),
-      title: eventData.title,
-      description: eventData.description,
-      location: eventData.location,
-      startDatetime: `${eventData.date}T${eventData.startTime}:00`,
-      endDatetime: `${eventData.date}T${eventData.endTime}:00`,
-      smsEnabled: eventData.smsEnabled,
-      dayBeforeTime: eventData.dayBeforeTime,
-      dayOfTime: eventData.dayOfTime,
-      status: "published",
-      roles: finalRoles,
-      volunteers: [],
-      createdAt: eventId ? undefined : new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+  const publishEvent = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to create events.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    const savedEvents = localStorage.getItem("events");
-    let events = savedEvents ? JSON.parse(savedEvents) : [];
-    
-    if (eventId) {
-      events = events.map((e: any) => e.id === eventId ? eventToSave : e);
-    } else {
-      events.push(eventToSave);
+      // Create or update the event
+      const eventPayload = {
+        title: eventData.title,
+        description: eventData.description,
+        location: eventData.location,
+        start_datetime: `${eventData.date}T${eventData.startTime}:00`,
+        end_datetime: `${eventData.date}T${eventData.endTime}:00`,
+        sms_enabled: eventData.smsEnabled,
+        day_before_time: eventData.dayBeforeTime,
+        day_of_time: eventData.dayOfTime,
+        status: "published",
+        created_by: user.id,
+        updated_at: new Date().toISOString()
+      };
+
+      let savedEventId = eventId;
+
+      if (eventId) {
+        // Update existing event
+        const { error: eventError } = await supabase
+          .from('events')
+          .update(eventPayload)
+          .eq('id', eventId);
+
+        if (eventError) {
+          console.error('Error updating event:', eventError);
+          toast({
+            title: "Error",
+            description: "Failed to update event.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Delete existing volunteer roles
+        const { error: deleteRolesError } = await supabase
+          .from('volunteer_roles')
+          .delete()
+          .eq('event_id', eventId);
+
+        if (deleteRolesError) {
+          console.error('Error deleting roles:', deleteRolesError);
+        }
+      } else {
+        // Create new event
+        const { data: newEvent, error: eventError } = await supabase
+          .from('events')
+          .insert([eventPayload])
+          .select()
+          .single();
+
+        if (eventError) {
+          console.error('Error creating event:', eventError);
+          toast({
+            title: "Error",
+            description: "Failed to create event.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        savedEventId = newEvent.id;
+      }
+
+      // Insert volunteer roles
+      if (finalRoles.length > 0) {
+        const rolesPayload = finalRoles.map(role => ({
+          event_id: savedEventId,
+          role_label: role.roleLabel,
+          shift_start: role.shiftStart,
+          shift_end: role.shiftEnd,
+          slots_brother: role.slotsBrother,
+          slots_sister: role.slotsSister,
+          suggested_poc: role.suggestedPOC,
+          notes: role.notes
+        }));
+
+        const { error: rolesError } = await supabase
+          .from('volunteer_roles')
+          .insert(rolesPayload);
+
+        if (rolesError) {
+          console.error('Error creating roles:', rolesError);
+          toast({
+            title: "Error",
+            description: "Failed to create volunteer roles.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      toast({
+        title: "Event Published!",
+        description: `${eventData.title} is now live and accepting volunteer sign-ups.`,
+      });
+      
+      navigate("/dashboard");
+    } catch (error) {
+      console.error('Error publishing event:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred.",
+        variant: "destructive",
+      });
     }
-    
-    localStorage.setItem("events", JSON.stringify(events));
-    
-    toast({
-      title: "Event Published!",
-      description: `${eventData.title} is now live and accepting volunteer sign-ups.`,
-    });
-    
-    navigate("/dashboard");
   };
 
   const nextStep = () => {
