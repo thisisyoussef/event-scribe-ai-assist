@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,65 +10,75 @@ import { Badge } from "@/components/ui/badge";
 import { useParams } from "react-router-dom";
 import { Calendar, Clock, MapPin, Users, Phone, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Event, VolunteerRole, Volunteer } from "@/types/database";
 
 const VolunteerSignup = () => {
   const { eventId } = useParams();
   const { toast } = useToast();
-  const [event, setEvent] = useState(null);
+  const [event, setEvent] = useState<(Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] }) | null>(null);
   const [contacts, setContacts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedRole, setSelectedRole] = useState<VolunteerRole | null>(null);
   const [volunteerData, setVolunteerData] = useState({
     name: "",
     phone: "",
     notes: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("Loading event with ID:", eventId);
-    
-    // Load event data
-    const savedEvents = localStorage.getItem("events");
-    if (savedEvents) {
-      const events = JSON.parse(savedEvents);
-      console.log("All events:", events);
-      console.log("Event IDs in storage:", events.map((e: any) => e.id));
-      console.log("Looking for event ID:", eventId);
-      const foundEvent = events.find((e: any) => e.id === eventId);
-      console.log("Found event:", foundEvent);
-      if (foundEvent) {
-        setEvent(foundEvent);
-      } else {
-        console.log("Event not found with ID:", eventId);
-        console.log("Available events:", events);
-      }
-    } else {
-      console.log("No events found in localStorage");
-    }
-
-    // Load contacts
-    const savedContacts = localStorage.getItem("contacts");
-    if (savedContacts) {
-      setContacts(JSON.parse(savedContacts));
-    }
+    loadEvent();
   }, [eventId]);
 
-  const getVolunteersForRole = (roleId: string) => {
-    return event?.volunteers?.filter((v: any) => v.roleId === roleId) || [];
+  const loadEvent = async () => {
+    if (!eventId) return;
+    
+    try {
+      console.log("Loading event with ID:", eventId);
+      
+      const { data: eventData, error } = await supabase
+        .from('events')
+        .select(`
+          *,
+          volunteer_roles(*),
+          volunteers(*)
+        `)
+        .eq('id', eventId)
+        .eq('status', 'published')
+        .single();
+
+      if (error) {
+        console.error('Error loading event:', error);
+        if (error.code === 'PGRST116') {
+          console.log("Event not found or not published");
+        }
+        setEvent(null);
+        return;
+      }
+
+      console.log("Found event:", eventData);
+      setEvent(eventData);
+    } catch (error) {
+      console.error('Error:', error);
+      setEvent(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getRemainingSlots = (role: any) => {
+  const getVolunteersForRole = (roleId: string) => {
+    return event?.volunteers?.filter((v: Volunteer) => v.role_id === roleId) || [];
+  };
+
+  const getRemainingSlots = (role: VolunteerRole) => {
     const volunteers = getVolunteersForRole(role.id);
-    const totalSlots = (role.slotsBrother || 0) + (role.slotsSister || 0);
+    const totalSlots = (role.slots_brother || 0) + (role.slots_sister || 0);
     return totalSlots - volunteers.length;
   };
 
-  const getPOCInfo = (pocId: string) => {
-    return contacts.find((c: any) => c.id === pocId);
-  };
-
-  const openSignupModal = (role: any) => {
+  const openSignupModal = (role: VolunteerRole) => {
     const remaining = getRemainingSlots(role);
     if (remaining <= 0) {
       toast({
@@ -97,6 +108,11 @@ const VolunteerSignup = () => {
       return;
     }
 
+    if (!selectedRole || !eventId) {
+      setIsSubmitting(false);
+      return;
+    }
+
     // Validate phone number format (basic)
     const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
     if (!phoneRegex.test(volunteerData.phone.replace(/[\s\-\(\)]/g, ''))) {
@@ -109,50 +125,68 @@ const VolunteerSignup = () => {
       return;
     }
 
-    const newVolunteer = {
-      id: Date.now().toString(),
-      roleId: selectedRole.id,
-      name: volunteerData.name,
-      phone: volunteerData.phone,
-      notes: volunteerData.notes,
-      signupDate: new Date().toISOString(),
-      status: "confirmed"
-    };
+    try {
+      const { data: newVolunteer, error } = await supabase
+        .from('volunteers')
+        .insert({
+          event_id: eventId,
+          role_id: selectedRole.id,
+          name: volunteerData.name,
+          phone: volunteerData.phone,
+          notes: volunteerData.notes,
+          status: 'confirmed'
+        })
+        .select()
+        .single();
 
-    // Update event with new volunteer
-    const savedEvents = localStorage.getItem("events");
-    if (savedEvents) {
-      const events = JSON.parse(savedEvents);
-      const updatedEvents = events.map((e: any) => {
-        if (e.id === eventId) {
-          return {
-            ...e,
-            volunteers: [...(e.volunteers || []), newVolunteer]
-          };
-        }
-        return e;
-      });
-      
-      localStorage.setItem("events", JSON.stringify(updatedEvents));
-      
+      if (error) {
+        console.error('Error signing up:', error);
+        toast({
+          title: "Signup Failed",
+          description: "There was an error signing up. Please try again.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       // Update local state
-      setEvent(prev => ({
+      setEvent(prev => prev ? {
         ...prev,
-        volunteers: [...(prev?.volunteers || []), newVolunteer]
-      }));
+        volunteers: [...(prev.volunteers || []), newVolunteer]
+      } : null);
+
+      setIsSubmitting(false);
+      setIsModalOpen(false);
+      
+      toast({
+        title: "Successfully Signed Up!",
+        description: `You're now registered for ${selectedRole.role_label}. You should receive a confirmation SMS shortly.`,
+      });
+
+      // Simulate SMS confirmation
+      console.log(`SMS would be sent to ${volunteerData.phone}: Thanks ${volunteerData.name}! You're signed up as ${selectedRole.role_label} on ${new Date(event?.start_datetime || '').toLocaleDateString()} at ${selectedRole.shift_start}-${selectedRole.shift_end}.`);
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Signup Failed",
+        description: "There was an error signing up. Please try again.",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
-    setIsModalOpen(false);
-    
-    toast({
-      title: "Successfully Signed Up!",
-      description: `You're now registered for ${selectedRole.roleLabel}. You should receive a confirmation SMS shortly.`,
-    });
-
-    // Simulate SMS confirmation
-    console.log(`SMS would be sent to ${volunteerData.phone}: Thanks ${volunteerData.name}! You're signed up as ${selectedRole.roleLabel} on ${new Date(event?.startDatetime).toLocaleDateString()} at ${selectedRole.shiftStart}-${selectedRole.shiftEnd}.`);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p>Loading event details...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!event) {
     return (
@@ -161,13 +195,13 @@ const VolunteerSignup = () => {
           <CardContent className="p-8 text-center">
             <h2 className="text-xl font-semibold mb-2">Event Not Found</h2>
             <div className="text-gray-600">
-              The event you're looking for doesn't exist or has been removed.
+              The event you're looking for doesn't exist, isn't published yet, or has been removed.
             </div>
             <div className="text-sm text-gray-500 mt-2">
               Event ID: {eventId}
             </div>
             <div className="text-xs text-gray-400 mt-4">
-              Check the console logs for debugging information.
+              Only published events are available for volunteer signup.
             </div>
           </CardContent>
         </Card>
@@ -194,13 +228,13 @@ const VolunteerSignup = () => {
             <div className="flex flex-wrap items-center gap-4 text-gray-600">
               <div className="flex items-center space-x-2">
                 <Calendar className="w-4 h-4" />
-                <span>{new Date(event.startDatetime).toLocaleDateString()}</span>
+                <span>{new Date(event.start_datetime).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Clock className="w-4 h-4" />
                 <span>
-                  {new Date(event.startDatetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
-                  {new Date(event.endDatetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                  {new Date(event.start_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
+                  {new Date(event.end_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                 </span>
               </div>
               <div className="flex items-center space-x-2">
@@ -234,13 +268,12 @@ const VolunteerSignup = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {event.roles && event.roles.length > 0 ? (
+            {event.volunteer_roles && event.volunteer_roles.length > 0 ? (
               <div className="space-y-4">
-                {event.roles.map((role: any) => {
+                {event.volunteer_roles.map((role: VolunteerRole) => {
                   const volunteers = getVolunteersForRole(role.id);
-                  const totalSlots = (role.slotsBrother || 0) + (role.slotsSister || 0);
+                  const totalSlots = (role.slots_brother || 0) + (role.slots_sister || 0);
                   const remainingSlots = getRemainingSlots(role);
-                  const pocInfo = role.suggestedPOC ? getPOCInfo(role.suggestedPOC) : null;
                   
                   return (
                     <Card key={role.id} className={`${remainingSlots === 0 ? 'opacity-75' : ''}`}>
@@ -248,7 +281,7 @@ const VolunteerSignup = () => {
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
                             <div className="flex items-center space-x-3 mb-3">
-                              <h3 className="text-lg font-semibold">{role.roleLabel}</h3>
+                              <h3 className="text-lg font-semibold">{role.role_label}</h3>
                               <Badge variant={remainingSlots > 0 ? "default" : "secondary"}>
                                 {remainingSlots > 0 ? `${remainingSlots} slots open` : "Full"}
                               </Badge>
@@ -258,25 +291,13 @@ const VolunteerSignup = () => {
                               <div className="space-y-2">
                                 <div className="flex items-center space-x-2">
                                   <Clock className="w-4 h-4" />
-                                  <span>{role.shiftStart} - {role.shiftEnd}</span>
+                                  <span>{role.shift_start} - {role.shift_end}</span>
                                 </div>
                                 <div className="flex items-center space-x-2">
                                   <Users className="w-4 h-4" />
                                   <span>{volunteers.length} / {totalSlots} volunteers signed up</span>
                                 </div>
                               </div>
-                              
-                              {pocInfo && (
-                                <div className="space-y-2">
-                                  <div className="flex items-center space-x-2">
-                                    <Phone className="w-4 h-4" />
-                                    <span>Contact: {pocInfo.name}</span>
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    {pocInfo.phone}
-                                  </div>
-                                </div>
-                              )}
                             </div>
                             
                             {role.notes && (
@@ -315,7 +336,7 @@ const VolunteerSignup = () => {
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Sign Up for {selectedRole?.roleLabel}</DialogTitle>
+              <DialogTitle>Sign Up for {selectedRole?.role_label}</DialogTitle>
               <DialogDescription>
                 Fill in your information to register for this volunteer role.
               </DialogDescription>
@@ -364,8 +385,8 @@ const VolunteerSignup = () => {
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <h4 className="font-medium mb-2">Role Details:</h4>
                   <div className="text-sm text-gray-600 space-y-1">
-                    <div><strong>Time:</strong> {selectedRole.shiftStart} - {selectedRole.shiftEnd}</div>
-                    <div><strong>Date:</strong> {new Date(event?.startDatetime).toLocaleDateString()}</div>
+                    <div><strong>Time:</strong> {selectedRole.shift_start} - {selectedRole.shift_end}</div>
+                    <div><strong>Date:</strong> {new Date(event?.start_datetime || '').toLocaleDateString()}</div>
                     <div><strong>Location:</strong> {event?.location}</div>
                   </div>
                 </div>

@@ -7,30 +7,61 @@ import Navigation from "@/components/Navigation";
 import { useNavigate } from "react-router-dom";
 import { Plus, Calendar, Users, Eye, Edit, MoreHorizontal, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Event, VolunteerRole, Volunteer } from "@/types/database";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is logged in
-    const user = localStorage.getItem("user");
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-
-    // Load events from localStorage
-    const savedEvents = localStorage.getItem("events");
-    if (savedEvents) {
-      setEvents(JSON.parse(savedEvents));
-    }
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/login");
+        return;
+      }
+      await loadEvents();
+    };
+    
+    checkUser();
   }, [navigate]);
 
-  const getEventStats = (event: any) => {
-    const totalSlots = event.roles?.reduce((sum: number, role: any) => 
-      sum + (role.slotsBrother || 0) + (role.slotsSister || 0), 0) || 0;
+  const loadEvents = async () => {
+    try {
+      const { data: eventsData, error } = await supabase
+        .from('events')
+        .select(`
+          *,
+          volunteer_roles(*),
+          volunteers(*)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading events:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load events.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setEvents(eventsData || []);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getEventStats = (event: Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] }) => {
+    const totalSlots = event.volunteer_roles?.reduce((sum: number, role: VolunteerRole) => 
+      sum + (role.slots_brother || 0) + (role.slots_sister || 0), 0) || 0;
     
     const filledSlots = event.volunteers?.length || 0;
     
@@ -54,6 +85,22 @@ const Dashboard = () => {
     const link = `/event/${eventId}/signup`;
     window.open(link, '_blank');
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <main className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p>Loading events...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -94,7 +141,7 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {events.filter((event: any) => event.status === "published").length}
+                {events.filter((event: Event) => event.status === "published").length}
               </div>
             </CardContent>
           </Card>
@@ -174,11 +221,11 @@ const Dashboard = () => {
                           </td>
                           <td className="py-4 px-4">
                             <div className="text-sm">
-                              {new Date(event.startDatetime).toLocaleDateString()}
+                              {new Date(event.start_datetime).toLocaleDateString()}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {new Date(event.startDatetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
-                              {new Date(event.endDatetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                              {new Date(event.start_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
+                              {new Date(event.end_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                             </div>
                           </td>
                           <td className="py-4 px-4">

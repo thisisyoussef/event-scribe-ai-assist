@@ -9,7 +9,149 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      events: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          day_before_time: string | null
+          day_of_time: string | null
+          description: string | null
+          end_datetime: string
+          id: string
+          location: string
+          sms_enabled: boolean | null
+          start_datetime: string
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          day_before_time?: string | null
+          day_of_time?: string | null
+          description?: string | null
+          end_datetime: string
+          id?: string
+          location: string
+          sms_enabled?: boolean | null
+          start_datetime: string
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          day_before_time?: string | null
+          day_of_time?: string | null
+          description?: string | null
+          end_datetime?: string
+          id?: string
+          location?: string
+          sms_enabled?: boolean | null
+          start_datetime?: string
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      volunteer_roles: {
+        Row: {
+          created_at: string | null
+          event_id: string | null
+          id: string
+          notes: string | null
+          role_label: string
+          shift_end: string
+          shift_start: string
+          slots_brother: number | null
+          slots_sister: number | null
+          suggested_poc: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_id?: string | null
+          id?: string
+          notes?: string | null
+          role_label: string
+          shift_end: string
+          shift_start: string
+          slots_brother?: number | null
+          slots_sister?: number | null
+          suggested_poc?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string | null
+          id?: string
+          notes?: string | null
+          role_label?: string
+          shift_end?: string
+          shift_start?: string
+          slots_brother?: number | null
+          slots_sister?: number | null
+          suggested_poc?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "volunteer_roles_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      volunteers: {
+        Row: {
+          event_id: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string
+          role_id: string | null
+          signup_date: string | null
+          status: string | null
+        }
+        Insert: {
+          event_id?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone: string
+          role_id?: string | null
+          signup_date?: string | null
+          status?: string | null
+        }
+        Update: {
+          event_id?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string
+          role_id?: string | null
+          signup_date?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "volunteers_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "volunteers_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "volunteer_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
