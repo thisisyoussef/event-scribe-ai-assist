@@ -12,6 +12,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Zap, Plus, Trash2, Clock, Users, MapPin, Calendar, TestTube } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { v4 as uuidv4 } from 'uuid';
 
 const EventCreation = () => {
   const navigate = useNavigate();
@@ -50,18 +51,28 @@ const EventCreation = () => {
     };
 
     checkUser();
-
-    // Load contacts from localStorage for now
-    const savedContacts = localStorage.getItem("contacts");
-    if (savedContacts) {
-      setContacts(JSON.parse(savedContacts));
-    }
+    loadContacts();
 
     // If editing, load event data from Supabase
     if (eventId) {
       loadEventData(eventId);
     }
   }, [navigate, eventId]);
+
+  const loadContacts = async () => {
+    try {
+      // For now, we'll use a mock contacts array since we don't have a contacts table yet
+      // In a full implementation, you'd fetch from Supabase
+      const mockContacts = [
+        { id: uuidv4(), name: "Ahmed Hassan", phone: "+1234567890" },
+        { id: uuidv4(), name: "Fatima Ali", phone: "+1234567891" },
+        { id: uuidv4(), name: "Omar Khan", phone: "+1234567892" }
+      ];
+      setContacts(mockContacts);
+    } catch (error) {
+      console.error('Error loading contacts:', error);
+    }
+  };
 
   const loadEventData = async (id: string) => {
     try {
@@ -139,7 +150,7 @@ const EventCreation = () => {
     
     const mockSuggestions = [
       {
-        id: "1",
+        id: uuidv4(), // Use proper UUID instead of timestamp
         roleLabel: "Event Setup",
         shiftStart: eventData.startTime,
         shiftEnd: eventData.startTime.slice(0, 3) + String(parseInt(eventData.startTime.slice(3)) + 30).padStart(2, '0'),
@@ -149,7 +160,7 @@ const EventCreation = () => {
         notes: "Setup tables, chairs, and decorations"
       },
       {
-        id: "2", 
+        id: uuidv4(), // Use proper UUID instead of timestamp
         roleLabel: "Registration & Welcome",
         shiftStart: eventData.startTime,
         shiftEnd: eventData.endTime,
@@ -159,7 +170,7 @@ const EventCreation = () => {
         notes: "Check-in volunteers and guests"
       },
       {
-        id: "3",
+        id: uuidv4(), // Use proper UUID instead of timestamp
         roleLabel: "Event Coordination",
         shiftStart: eventData.startTime,
         shiftEnd: eventData.endTime,
@@ -186,7 +197,7 @@ const EventCreation = () => {
 
   const addCustomRole = () => {
     const newRole = {
-      id: Date.now().toString(),
+      id: uuidv4(), // Use proper UUID instead of timestamp
       roleLabel: "",
       shiftStart: eventData.startTime,
       shiftEnd: eventData.endTime,
@@ -220,6 +231,8 @@ const EventCreation = () => {
         });
         return;
       }
+
+      console.log('Publishing event with final roles:', finalRoles);
 
       // Create or update the event
       const eventPayload = {
@@ -285,31 +298,37 @@ const EventCreation = () => {
         savedEventId = newEvent.id;
       }
 
-      // Insert volunteer roles
+      // Insert volunteer roles - make sure we have valid data
       if (finalRoles.length > 0) {
-        const rolesPayload = finalRoles.map(role => ({
-          event_id: savedEventId,
-          role_label: role.roleLabel,
-          shift_start: role.shiftStart,
-          shift_end: role.shiftEnd,
-          slots_brother: role.slotsBrother,
-          slots_sister: role.slotsSister,
-          suggested_poc: role.suggestedPOC,
-          notes: role.notes
-        }));
+        const rolesPayload = finalRoles
+          .filter(role => role.roleLabel && role.roleLabel.trim() !== '') // Filter out empty roles
+          .map(role => ({
+            event_id: savedEventId,
+            role_label: role.roleLabel,
+            shift_start: role.shiftStart,
+            shift_end: role.shiftEnd,
+            slots_brother: role.slotsBrother || 0,
+            slots_sister: role.slotsSister || 0,
+            suggested_poc: role.suggestedPOC || null,
+            notes: role.notes || ""
+          }));
 
-        const { error: rolesError } = await supabase
-          .from('volunteer_roles')
-          .insert(rolesPayload);
+        console.log('Inserting roles payload:', rolesPayload);
 
-        if (rolesError) {
-          console.error('Error creating roles:', rolesError);
-          toast({
-            title: "Error",
-            description: "Failed to create volunteer roles.",
-            variant: "destructive",
-          });
-          return;
+        if (rolesPayload.length > 0) {
+          const { error: rolesError } = await supabase
+            .from('volunteer_roles')
+            .insert(rolesPayload);
+
+          if (rolesError) {
+            console.error('Error creating roles:', rolesError);
+            toast({
+              title: "Error",
+              description: "Failed to create volunteer roles.",
+              variant: "destructive",
+            });
+            return;
+          }
         }
       }
 
@@ -344,7 +363,7 @@ const EventCreation = () => {
       case 2:
         return finalRoles.length > 0;
       case 3:
-        return finalRoles.every(role => role.roleLabel && (role.slotsBrother > 0 || role.slotsSister > 0));
+        return finalRoles.every(role => role.roleLabel && role.roleLabel.trim() !== '' && (role.slotsBrother > 0 || role.slotsSister > 0));
       default:
         return true;
     }
