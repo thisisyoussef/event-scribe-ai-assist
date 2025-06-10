@@ -73,14 +73,25 @@ const EventCreation = () => {
 
   const loadContacts = async () => {
     try {
-      // For now, we'll use a mock contacts array since we don't have a contacts table yet
-      // In a full implementation, you'd fetch from Supabase
-      const mockContacts = [
-        { id: crypto.randomUUID(), name: "Ahmed Hassan", phone: "+1234567890" },
-        { id: crypto.randomUUID(), name: "Fatima Ali", phone: "+1234567891" },
-        { id: crypto.randomUUID(), name: "Omar Khan", phone: "+1234567892" }
-      ];
-      setContacts(mockContacts);
+      // Load teams from the database instead of mock data
+      const { data: teamsData, error } = await supabase
+        .from('teams')
+        .select('*')
+        .order('name');
+
+      if (error) {
+        console.error('Error loading teams:', error);
+        return;
+      }
+
+      // Convert teams to contacts format for backward compatibility
+      const teamContacts = teamsData?.map(team => ({
+        id: team.id,
+        name: team.name,
+        phone: team.phone
+      })) || [];
+
+      setContacts(teamContacts);
     } catch (error) {
       console.error('Error loading contacts:', error);
     }
@@ -92,7 +103,9 @@ const EventCreation = () => {
         .from('events')
         .select(`
           *,
-          volunteer_roles(*)
+          volunteer_roles(*),
+          itineraries(*),
+          additional_details(*)
         `)
         .eq('id', id)
         .single();
@@ -120,6 +133,28 @@ const EventCreation = () => {
           dayOfTime: eventData.day_of_time || "15:00",
           status: eventData.status as "draft" | "published"
         });
+
+        // Load itinerary if exists
+        if (eventData.itineraries && eventData.itineraries.length > 0) {
+          const loadedItinerary = eventData.itineraries.map((item: any) => ({
+            id: item.id,
+            time: item.time_slot,
+            title: item.title,
+            description: item.description || ""
+          }));
+          setItinerary(loadedItinerary);
+        }
+
+        // Load additional details if exists
+        if (eventData.additional_details && eventData.additional_details.length > 0) {
+          const details = eventData.additional_details[0];
+          setAdditionalDetails({
+            marketingLevel: details.marketing_level || '',
+            ageGroups: details.age_groups || [],
+            tone: details.tone || '',
+            expectedAttendance: details.attendance_estimate || 50
+          });
+        }
 
         // Convert volunteer_roles to finalRoles format
         const roles = eventData.volunteer_roles?.map((role: any) => ({
@@ -317,15 +352,12 @@ const EventCreation = () => {
           return;
         }
 
-        // Delete existing volunteer roles
-        const { error: deleteRolesError } = await supabase
-          .from('volunteer_roles')
-          .delete()
-          .eq('event_id', eventId);
-
-        if (deleteRolesError) {
-          console.error('Error deleting roles:', deleteRolesError);
-        }
+        // Delete existing related data
+        await Promise.all([
+          supabase.from('volunteer_roles').delete().eq('event_id', eventId),
+          supabase.from('itineraries').delete().eq('event_id', eventId),
+          supabase.from('additional_details').delete().eq('event_id', eventId)
+        ]);
       } else {
         // Create new event
         const { data: newEvent, error: eventError } = await supabase
@@ -345,6 +377,43 @@ const EventCreation = () => {
         }
 
         savedEventId = newEvent.id;
+      }
+
+      // Save itinerary if using advanced features
+      if (useAdvancedFeatures && itinerary.length > 0) {
+        const itineraryPayload = itinerary.map(item => ({
+          event_id: savedEventId,
+          time_slot: item.time,
+          title: item.title,
+          description: item.description
+        }));
+
+        const { error: itineraryError } = await supabase
+          .from('itineraries')
+          .insert(itineraryPayload);
+
+        if (itineraryError) {
+          console.error('Error saving itinerary:', itineraryError);
+        }
+      }
+
+      // Save additional details if using advanced features
+      if (useAdvancedFeatures && (additionalDetails.marketingLevel || additionalDetails.ageGroups.length > 0 || additionalDetails.tone)) {
+        const additionalDetailsPayload = {
+          event_id: savedEventId,
+          marketing_level: additionalDetails.marketingLevel || null,
+          age_groups: additionalDetails.ageGroups,
+          tone: additionalDetails.tone || null,
+          attendance_estimate: additionalDetails.expectedAttendance
+        };
+
+        const { error: detailsError } = await supabase
+          .from('additional_details')
+          .insert([additionalDetailsPayload]);
+
+        if (detailsError) {
+          console.error('Error saving additional details:', detailsError);
+        }
       }
 
       // Insert volunteer roles - ensure suggested_poc is always null for now
@@ -1139,3 +1208,5 @@ const EventCreation = () => {
 };
 
 export default EventCreation;
+
+</edits_to_apply>
