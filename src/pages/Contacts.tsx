@@ -120,7 +120,7 @@ const Contacts = () => {
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 md:mb-8 space-y-4 lg:space-y-0">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-amber-800">Contact Management</h1>
-            <p className="text-amber-600 mt-1 text-sm md:text-base">Manage your event coordinators and points of contact</p>
+            <p className="text-amber-600 mt-1 text-sm md:text-base">Manage your event contacts and coordinators</p>
           </div>
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

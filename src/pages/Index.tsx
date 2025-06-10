@@ -29,11 +29,11 @@ const Index = () => {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
         <h2 className="text-6xl font-bold mb-8 bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent leading-tight">
-          Beautiful Event Coordination
+          Streamlined Event Planning
         </h2>
         <p className="text-xl text-gray-700 mb-10 max-w-4xl mx-auto leading-relaxed">
-          Turn your event dreams into reality with elegant planning tools. 
-          Connect hearts, coordinate schedules, and create meaningful moments that bring communities together.
+          Plan and coordinate events with ease. Connect with your team, manage volunteer schedules, 
+          and keep everyone informed with simple, effective tools.
         </p>
         <div className="flex gap-6 justify-center">
           <Button 
@@ -41,10 +41,10 @@ const Index = () => {
             className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-8 py-4 text-lg rounded-xl shadow-lg"
             onClick={() => navigate("/login")}
           >
-            Start Planning
+            Get Started
           </Button>
           <Button size="lg" variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50 px-8 py-4 text-lg rounded-xl">
-            See How It Works
+            Learn More
           </Button>
         </div>
       </section>
@@ -58,11 +58,11 @@ const Index = () => {
               <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Star className="w-8 h-8 text-white" />
               </div>
-              <CardTitle className="text-amber-800">Effortless Planning</CardTitle>
+              <CardTitle className="text-amber-800">Smart Planning</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-center text-gray-600 leading-relaxed">
-                Share your vision and watch as intelligent suggestions help you create the perfect event structure and volunteer roles.
+                Get helpful suggestions for event structure and volunteer roles. Make planning efficient and organized.
               </CardDescription>
             </CardContent>
           </Card>
@@ -72,11 +72,11 @@ const Index = () => {
               <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Calendar className="w-8 h-8 text-white" />
               </div>
-              <CardTitle className="text-amber-800">Live Coordination</CardTitle>
+              <CardTitle className="text-amber-800">Real-Time Updates</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-center text-gray-600 leading-relaxed">
-                Watch your community come together in real-time. See who's joining, what needs filling, and celebrate every commitment.
+                Track volunteer signups and availability as they happen. Stay informed about who's participating and what roles need filling.
               </CardDescription>
             </CardContent>
           </Card>
@@ -86,11 +86,11 @@ const Index = () => {
               <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <MessageSquare className="w-8 h-8 text-white" />
               </div>
-              <CardTitle className="text-amber-800">Gentle Reminders</CardTitle>
+              <CardTitle className="text-amber-800">Automatic Reminders</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-center text-gray-600 leading-relaxed">
-                Thoughtful messages sent at just the right time. Keep everyone connected without overwhelming their day.
+                Send timely notifications to keep volunteers informed. Reduce no-shows with well-timed reminders.
               </CardDescription>
             </CardContent>
           </Card>
@@ -100,11 +100,11 @@ const Index = () => {
               <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Heart className="w-8 h-8 text-white" />
               </div>
-              <CardTitle className="text-amber-800">Simple Sharing</CardTitle>
+              <CardTitle className="text-amber-800">Easy Sharing</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-center text-gray-600 leading-relaxed">
-                One beautiful link brings your community together. No complicated steps, just heartfelt participation.
+                Share your event with a simple link. No complicated setup required for volunteers to sign up and participate.
               </CardDescription>
             </CardContent>
           </Card>
@@ -114,9 +114,9 @@ const Index = () => {
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-20">
         <div className="container mx-auto px-4 text-center">
-          <h3 className="text-4xl font-bold mb-6">Ready to Create Something Beautiful?</h3>
+          <h3 className="text-4xl font-bold mb-6">Ready to Simplify Your Events?</h3>
           <p className="text-xl mb-10 opacity-95 max-w-2xl mx-auto leading-relaxed">
-            Join event organizers who've discovered the joy of stress-free coordination and meaningful community connections.
+            Join event organizers who've streamlined their coordination process and improved volunteer participation.
           </p>
           <Button 
             size="lg" 
@@ -124,7 +124,7 @@ const Index = () => {
             className="bg-white text-amber-600 hover:bg-amber-50 px-8 py-4 text-lg rounded-xl shadow-lg"
             onClick={() => navigate("/login")}
           >
-            Begin Your Journey
+            Start Planning Today
           </Button>
         </div>
       </section>
@@ -132,7 +132,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-amber-50 border-t border-amber-200 py-12">
         <div className="container mx-auto px-4 text-center text-amber-700">
-          <p className="text-lg">&copy; 2025 EasyEvent. Where beautiful events begin.</p>
+          <p className="text-lg">&copy; 2025 EasyEvent. Streamlined event coordination.</p>
         </div>
       </footer>
     </div>

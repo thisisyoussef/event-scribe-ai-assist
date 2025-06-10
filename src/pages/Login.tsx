@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,7 +66,7 @@ const Login = () => {
           });
         } else {
           toast({
-            title: "Account Created!",
+            title: "Account Created",
             description: "Please check your email to verify your account.",
           });
         }
@@ -83,7 +84,7 @@ const Login = () => {
           });
         } else {
           toast({
-            title: "Welcome Back!",
+            title: "Welcome Back",
             description: "You've successfully signed in.",
           });
         }
@@ -115,12 +116,12 @@ const Login = () => {
       <Card className="w-full max-w-md border-amber-200 bg-white/90 backdrop-blur-sm shadow-xl">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl text-amber-800">
-            {isSignUp ? "Join Our Community" : "Welcome Back"}
+            {isSignUp ? "Create Account" : "Welcome Back"}
           </CardTitle>
           <CardDescription className="text-amber-600">
             {isSignUp 
-              ? "Start creating beautiful events that bring people together" 
-              : "Sign in to continue coordinating meaningful moments"
+              ? "Sign up to start organizing events" 
+              : "Sign in to access your event dashboard"
             }
           </CardDescription>
         </CardHeader>
@@ -192,7 +193,7 @@ const Login = () => {
           <div className="mt-6 text-center text-sm">
             {isSignUp ? (
               <>
-                Already part of our community?{" "}
+                Already have an account?{" "}
                 <button
                   type="button"
                   onClick={() => setIsSignUp(false)}
@@ -209,7 +210,7 @@ const Login = () => {
                   onClick={() => setIsSignUp(true)}
                   className="text-amber-600 hover:text-amber-700 hover:underline font-medium"
                 >
-                  Join our community
+                  Create an account
                 </button>
               </>
             )}
