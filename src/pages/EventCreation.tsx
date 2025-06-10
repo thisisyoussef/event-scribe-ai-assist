@@ -1177,5 +1177,3 @@ const EventCreation = () => {
 };
 
 export default EventCreation;
-
-</edits_to_apply>
