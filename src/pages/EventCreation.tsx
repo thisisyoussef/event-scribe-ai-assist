@@ -1129,5 +1129,3 @@ const EventCreation = () => {
 };
 
 export default EventCreation;
-
-</initial_code>
