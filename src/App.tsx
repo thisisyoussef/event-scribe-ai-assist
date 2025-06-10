@@ -10,9 +10,8 @@ import Dashboard from "./pages/Dashboard";
 import EventCreation from "./pages/EventCreation";
 import VolunteerSignup from "./pages/VolunteerSignup";
 import EventRoster from "./pages/EventRoster";
-import Contacts from "./pages/Contacts";
-import Settings from "./pages/Settings";
 import Database from "./pages/Database";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,7 +30,6 @@ const App = () => (
           <Route path="/events/:eventId/edit" element={<EventCreation />} />
           <Route path="/events/:eventId" element={<VolunteerSignup />} />
           <Route path="/events/:eventId/roster" element={<EventRoster />} />
-          <Route path="/contacts" element={<Contacts />} />
           <Route path="/database" element={<Database />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
