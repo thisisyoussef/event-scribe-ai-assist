@@ -172,7 +172,7 @@ const EventCreation = () => {
       // Generate more detailed suggestions based on itinerary
       mockSuggestions = itinerary.map(item => ({
         id: crypto.randomUUID(),
-        roleLabel: `${item.title} Coordinator`,
+        roleLabel: item.title, // Use the itinerary title directly instead of adding "Coordinator"
         shiftStart: item.time,
         shiftEnd: item.time.slice(0, 3) + String(Math.min(parseInt(item.time.slice(3)) + 60, 59)).padStart(2, '0'),
         slotsBrother: additionalDetails.expectedAttendance > 100 ? 3 : 2,
@@ -185,21 +185,21 @@ const EventCreation = () => {
       if (additionalDetails.expectedAttendance > 50) {
         mockSuggestions.push({
           id: crypto.randomUUID(),
-          roleLabel: "Event Coordination",
+          roleLabel: "Event Support", // Changed from "Event Coordination"
           shiftStart: eventData.startTime,
           shiftEnd: eventData.endTime,
           slotsBrother: 1,
           slotsSister: 1,
           suggestedPOC: null,
-          notes: "Overall event oversight and coordination"
+          notes: "General event support and assistance"
         });
       }
     } else {
-      // Fallback to original simple suggestions
+      // Fallback to original simple suggestions with better role names
       mockSuggestions = [
         {
           id: crypto.randomUUID(),
-          roleLabel: "Event Setup",
+          roleLabel: "Setup Team", // Changed from "Event Setup"
           shiftStart: eventData.startTime,
           shiftEnd: eventData.startTime.slice(0, 3) + String(parseInt(eventData.startTime.slice(3)) + 30).padStart(2, '0'),
           slotsBrother: 4,
@@ -209,13 +209,23 @@ const EventCreation = () => {
         },
         {
           id: crypto.randomUUID(),
-          roleLabel: "Registration & Welcome",
+          roleLabel: "Registration & Welcome", // Keep as is since it's already a good task name
           shiftStart: eventData.startTime,
           shiftEnd: eventData.endTime,
           slotsBrother: 2,
           slotsSister: 3,
           suggestedPOC: null,
           notes: "Check-in volunteers and guests"
+        },
+        {
+          id: crypto.randomUUID(),
+          roleLabel: "Cleanup Team", // Add a cleanup role
+          shiftStart: eventData.endTime.slice(0, 3) + String(Math.max(parseInt(eventData.endTime.slice(3)) - 30, 0)).padStart(2, '0'),
+          shiftEnd: eventData.endTime.slice(0, 3) + String(parseInt(eventData.endTime.slice(3)) + 30).padStart(2, '0'),
+          slotsBrother: 3,
+          slotsSister: 2,
+          suggestedPOC: null,
+          notes: "Post-event cleanup and breakdown"
         }
       ];
     }
