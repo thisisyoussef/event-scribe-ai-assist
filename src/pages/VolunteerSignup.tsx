@@ -1,25 +1,14 @@
+
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useParams } from "react-router-dom";
-import { Calendar, Clock, MapPin, Users, Phone, CheckCircle2, Trash2, Heart } from "lucide-react";
+import { Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Event, VolunteerRole, Volunteer } from "@/types/database";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import EventHeader from "@/components/volunteer/EventHeader";
+import VolunteerRoleCard from "@/components/volunteer/VolunteerRoleCard";
+import SignupModal from "@/components/volunteer/SignupModal";
 
 const VolunteerSignup = () => {
   const { eventId } = useParams();
@@ -27,12 +16,6 @@ const VolunteerSignup = () => {
   const [event, setEvent] = useState<(Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] }) | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<VolunteerRole | null>(null);
-  const [volunteerData, setVolunteerData] = useState({
-    name: "",
-    phone: "",
-    gender: "brother" as "brother" | "sister",
-    notes: ""
-  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -105,7 +88,6 @@ const VolunteerSignup = () => {
     }
     
     setSelectedRole(role);
-    setVolunteerData({ name: "", phone: "", gender: "brother", notes: "" });
     setIsModalOpen(true);
   };
 
@@ -126,7 +108,6 @@ const VolunteerSignup = () => {
         return;
       }
 
-      // Update local state
       setEvent(prev => prev ? {
         ...prev,
         volunteers: prev.volunteers?.filter(v => v.id !== volunteerId) || []
@@ -184,8 +165,12 @@ const VolunteerSignup = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSignupSubmit = async (volunteerData: {
+    name: string;
+    phone: string;
+    gender: "brother" | "sister";
+    notes: string;
+  }) => {
     setIsSubmitting(true);
 
     if (!volunteerData.name || !volunteerData.phone) {
@@ -203,7 +188,6 @@ const VolunteerSignup = () => {
       return;
     }
 
-    // Check if the specific gender slot is available
     const remainingForGender = getRemainingSlots(selectedRole, volunteerData.gender);
     if (remainingForGender <= 0) {
       toast({
@@ -215,7 +199,6 @@ const VolunteerSignup = () => {
       return;
     }
 
-    // Validate phone number format (basic)
     const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
     if (!phoneRegex.test(volunteerData.phone.replace(/[\s\-\(\)]/g, ''))) {
       toast({
@@ -253,7 +236,6 @@ const VolunteerSignup = () => {
         return;
       }
 
-      // Update local state
       setEvent(prev => prev ? {
         ...prev,
         volunteers: [...(prev.volunteers || []), newVolunteer as Volunteer]
@@ -267,7 +249,6 @@ const VolunteerSignup = () => {
         description: `You're now registered for ${selectedRole.role_label}.`,
       });
 
-      // Send real SMS
       await sendSMS(volunteerData.phone, volunteerData.name, selectedRole.role_label);
 
     } catch (error) {
@@ -315,43 +296,9 @@ const VolunteerSignup = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-amber-200">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Heart className="w-6 h-6 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">
-              EasyEvent
-            </h1>
-          </div>
-          
-          <div>
-            <h2 className="text-3xl font-bold text-amber-800 mb-2">{event.title}</h2>
-            <div className="flex flex-wrap items-center gap-4 text-amber-600">
-              <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4" />
-                <span>{new Date(event.start_datetime).toLocaleDateString()}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4" />
-                <span>
-                  {new Date(event.start_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
-                  {new Date(event.end_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <MapPin className="w-4 h-4" />
-                <span>{event.location}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <EventHeader event={event} />
 
       <main className="container mx-auto px-4 py-8">
-        {/* Event Description */}
         {event.description && (
           <Card className="mb-8 border-amber-200 bg-white/90 backdrop-blur-sm">
             <CardHeader>
@@ -363,7 +310,6 @@ const VolunteerSignup = () => {
           </Card>
         )}
 
-        {/* Volunteer Roles */}
         <Card className="border-amber-200 bg-white/90 backdrop-blur-sm shadow-xl">
           <CardHeader>
             <CardTitle className="text-amber-800">Available Volunteer Roles</CardTitle>
@@ -376,110 +322,16 @@ const VolunteerSignup = () => {
               <div className="space-y-6">
                 {event.volunteer_roles.map((role: VolunteerRole) => {
                   const volunteers = getVolunteersForRole(role.id);
-                  const totalSlots = (role.slots_brother || 0) + (role.slots_sister || 0);
-                  const remainingSlots = getRemainingSlots(role);
-                  const brotherSlots = getRemainingSlots(role, 'brother');
-                  const sisterSlots = getRemainingSlots(role, 'sister');
                   
                   return (
-                    <Card key={role.id} className={`${remainingSlots === 0 ? 'opacity-75' : ''} border-amber-200 bg-white/80`}>
-                      <CardContent className="p-6">
-                        <div className="flex justify-between items-start mb-4">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-3 mb-3">
-                              <h3 className="text-lg font-semibold text-amber-800">{role.role_label}</h3>
-                              <div className="flex space-x-2">
-                                <Badge variant={remainingSlots > 0 ? "default" : "secondary"} className="bg-amber-100 text-amber-700 border-amber-200">
-                                  {remainingSlots > 0 ? `${remainingSlots} total open` : "Full"}
-                                </Badge>
-                                <Badge variant="outline" className="border-amber-300 text-amber-700">
-                                  Brothers: {brotherSlots}/{role.slots_brother}
-                                </Badge>
-                                <Badge variant="outline" className="border-amber-300 text-amber-700">
-                                  Sisters: {sisterSlots}/{role.slots_sister}
-                                </Badge>
-                              </div>
-                            </div>
-                            
-                            <div className="grid md:grid-cols-2 gap-4 text-sm text-amber-600">
-                              <div className="space-y-2">
-                                <div className="flex items-center space-x-2">
-                                  <Clock className="w-4 h-4" />
-                                  <span>{role.shift_start} - {role.shift_end}</span>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <Users className="w-4 h-4" />
-                                  <span>{volunteers.length} / {totalSlots} volunteers signed up</span>
-                                </div>
-                              </div>
-                            </div>
-                            
-                            {role.notes && (
-                              <div className="text-sm text-amber-600 mt-3 italic">
-                                {role.notes}
-                              </div>
-                            )}
-                          </div>
-                          
-                          <div className="ml-6">
-                            <Button
-                              onClick={() => openSignupModal(role)}
-                              disabled={remainingSlots === 0}
-                              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {remainingSlots === 0 ? "Full" : "Sign Up"}
-                            </Button>
-                          </div>
-                        </div>
-
-                        {/* Volunteers Table */}
-                        {volunteers.length > 0 && (
-                          <div className="mt-6 border-t border-amber-100 pt-4">
-                            <h4 className="font-medium mb-3 text-amber-800">Current Volunteers:</h4>
-                            <Table>
-                              <TableHeader>
-                                <TableRow>
-                                  <TableHead className="text-amber-800">Name</TableHead>
-                                  <TableHead className="text-amber-800">Phone</TableHead>
-                                  <TableHead className="text-amber-800">Gender</TableHead>
-                                  <TableHead className="text-amber-800">Notes</TableHead>
-                                  <TableHead className="text-amber-800">Action</TableHead>
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                {volunteers.map((volunteer: Volunteer) => (
-                                  <TableRow key={volunteer.id}>
-                                    <TableCell className="font-medium text-amber-800">{volunteer.name}</TableCell>
-                                    <TableCell>
-                                      <div className="flex items-center space-x-2 text-amber-700">
-                                        <Phone className="w-4 h-4" />
-                                        <span>{volunteer.phone}</span>
-                                      </div>
-                                    </TableCell>
-                                    <TableCell>
-                                      <Badge variant={volunteer.gender === 'brother' ? 'default' : 'secondary'} className="bg-amber-100 text-amber-700 border-amber-200">
-                                        {volunteer.gender}
-                                      </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-amber-700">{volunteer.notes || '-'}</TableCell>
-                                    <TableCell>
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => removeVolunteer(volunteer.id, volunteer.name)}
-                                        className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
-                                      >
-                                        <Trash2 className="w-4 h-4" />
-                                      </Button>
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
+                    <VolunteerRoleCard
+                      key={role.id}
+                      role={role}
+                      volunteers={volunteers}
+                      onSignUp={openSignupModal}
+                      onRemoveVolunteer={removeVolunteer}
+                      getRemainingSlots={getRemainingSlots}
+                    />
                   );
                 })}
               </div>
@@ -493,122 +345,15 @@ const VolunteerSignup = () => {
           </CardContent>
         </Card>
 
-        {/* Sign-up Modal */}
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="border-amber-200 bg-white/95 backdrop-blur-sm">
-            <DialogHeader>
-              <DialogTitle className="text-amber-800">Sign Up for {selectedRole?.role_label}</DialogTitle>
-              <DialogDescription className="text-amber-700">
-                Fill in your information to register for this volunteer role.
-              </DialogDescription>
-            </DialogHeader>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-amber-800">Full Name *</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Your full name"
-                  value={volunteerData.name}
-                  onChange={(e) => setVolunteerData(prev => ({ ...prev, name: e.target.value }))}
-                  required
-                  className="border-amber-200 focus:border-amber-400"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-amber-800">Phone Number *</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+1 (555) 123-4567"
-                  value={volunteerData.phone}
-                  onChange={(e) => setVolunteerData(prev => ({ ...prev, phone: e.target.value }))}
-                  required
-                  className="border-amber-200 focus:border-amber-400"
-                />
-                <div className="text-xs text-amber-600">
-                  Used for event reminders and communication
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="gender" className="text-amber-800">Gender *</Label>
-                <Select 
-                  value={volunteerData.gender} 
-                  onValueChange={(value: "brother" | "sister") => setVolunteerData(prev => ({ ...prev, gender: value }))}
-                >
-                  <SelectTrigger className="border-amber-200">
-                    <SelectValue placeholder="Select gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="brother">Brother</SelectItem>
-                    <SelectItem value="sister">Sister</SelectItem>
-                  </SelectContent>
-                </Select>
-                {selectedRole && (
-                  <div className="text-xs text-amber-600">
-                    Available slots - Brothers: {getRemainingSlots(selectedRole, 'brother')}/{selectedRole.slots_brother}, 
-                    Sisters: {getRemainingSlots(selectedRole, 'sister')}/{selectedRole.slots_sister}
-                  </div>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="notes" className="text-amber-800">Additional Notes (Optional)</Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Any special requirements, questions, or information..."
-                  value={volunteerData.notes}
-                  onChange={(e) => setVolunteerData(prev => ({ ...prev, notes: e.target.value }))}
-                  rows={3}
-                  className="border-amber-200 focus:border-amber-400"
-                />
-              </div>
-
-              {selectedRole && (
-                <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                  <h4 className="font-medium mb-2 text-amber-800">Role Details:</h4>
-                  <div className="text-sm text-amber-700 space-y-1">
-                    <div><strong>Time:</strong> {selectedRole.shift_start} - {selectedRole.shift_end}</div>
-                    <div><strong>Date:</strong> {new Date(event?.start_datetime || '').toLocaleDateString()}</div>
-                    <div><strong>Location:</strong> {event?.location}</div>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex justify-end space-x-2 pt-4">
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  onClick={() => setIsModalOpen(false)}
-                  disabled={isSubmitting}
-                  className="border-amber-300 text-amber-700 hover:bg-amber-50"
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                      Signing Up...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="w-4 h-4 mr-2" />
-                      Sign Me Up!
-                    </>
-                  )}
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <SignupModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          selectedRole={selectedRole}
+          event={event}
+          onSubmit={handleSignupSubmit}
+          getRemainingSlots={getRemainingSlots}
+          isSubmitting={isSubmitting}
+        />
       </main>
     </div>
   );
