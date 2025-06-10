@@ -41,9 +41,9 @@ const EventCreation = () => {
   // New advanced features state
   const [itinerary, setItinerary] = useState([]);
   const [additionalDetails, setAdditionalDetails] = useState({
-    marketingLevel: '',
-    ageGroups: [],
-    tone: '',
+    marketingLevel: '' as '' | 'low' | 'medium' | 'high',
+    ageGroups: [] as string[],
+    tone: '' as '' | 'formal' | 'casual' | 'fun',
     expectedAttendance: 50
   });
   const [showAdditionalDetails, setShowAdditionalDetails] = useState(false);
@@ -1129,3 +1129,5 @@ const EventCreation = () => {
 };
 
 export default EventCreation;
+
+}

@@ -108,7 +108,7 @@ const AdditionalDetailsWizard = ({
             <Megaphone className="w-4 h-4" />
             <span>Marketing Intensity</span>
           </Label>
-          <Select value={details.marketingLevel} onValueChange={(value) => updateDetails('marketingLevel', value)}>
+          <Select value={details.marketingLevel} onValueChange={(value: 'low' | 'medium' | 'high') => updateDetails('marketingLevel', value)}>
             <SelectTrigger className="border-blue-200">
               <SelectValue placeholder="How much marketing effort do you want?" />
             </SelectTrigger>
@@ -171,7 +171,7 @@ const AdditionalDetailsWizard = ({
             <Target className="w-4 h-4" />
             <span>Event Tone</span>
           </Label>
-          <Select value={details.tone} onValueChange={(value) => updateDetails('tone', value)}>
+          <Select value={details.tone} onValueChange={(value: 'formal' | 'casual' | 'fun') => updateDetails('tone', value)}>
             <SelectTrigger className="border-blue-200">
               <SelectValue placeholder="What's the atmosphere you're aiming for?" />
             </SelectTrigger>
