@@ -1178,4 +1178,4 @@ const EventCreation = () => {
 
 export default EventCreation;
 
-</initial_code>
+</edits_to_apply>
