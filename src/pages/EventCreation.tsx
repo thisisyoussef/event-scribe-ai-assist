@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -925,14 +924,14 @@ const EventCreation = () => {
                             <div className="md:col-span-2">
                               <Label htmlFor={`poc-${index}`}>Point of Contact</Label>
                               <Select
-                                value={role.suggestedPOC || ""}
-                                onValueChange={(value) => updateRole(role.id, { suggestedPOC: value || null })}
+                                value={role.suggestedPOC || "none"}
+                                onValueChange={(value) => updateRole(role.id, { suggestedPOC: value === "none" ? null : value })}
                               >
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select POC" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="">No POC</SelectItem>
+                                  <SelectItem value="none">No POC</SelectItem>
                                   {contacts.map((contact) => (
                                     <SelectItem key={contact.id} value={contact.id}>
                                       {contact.name}
@@ -1178,3 +1177,5 @@ const EventCreation = () => {
 };
 
 export default EventCreation;
+
+</initial_code>
