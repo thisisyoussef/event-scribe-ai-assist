@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useParams } from "react-router-dom";
-import { Calendar, Clock, MapPin, Users, Phone, CheckCircle2, Trash2 } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, Phone, CheckCircle2, Trash2, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Event, VolunteerRole, Volunteer } from "@/types/database";
@@ -283,10 +283,10 @@ const VolunteerSignup = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p>Loading event details...</p>
+          <div className="animate-spin w-8 h-8 border-2 border-amber-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-amber-700">Loading event details...</p>
         </div>
       </div>
     );
@@ -294,17 +294,17 @@ const VolunteerSignup = () => {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100 flex items-center justify-center">
+        <Card className="w-full max-w-md border-amber-200 bg-white/90 backdrop-blur-sm">
           <CardContent className="p-8 text-center">
-            <h2 className="text-xl font-semibold mb-2">Event Not Found</h2>
-            <div className="text-gray-600">
+            <h2 className="text-xl font-semibold mb-2 text-amber-800">Event Not Found</h2>
+            <div className="text-amber-600">
               The event you're looking for doesn't exist, isn't published yet, or has been removed.
             </div>
-            <div className="text-sm text-gray-500 mt-2">
+            <div className="text-sm text-amber-500 mt-2">
               Event ID: {eventId}
             </div>
-            <div className="text-xs text-gray-400 mt-4">
+            <div className="text-xs text-amber-400 mt-4">
               Only published events are available for volunteer signup.
             </div>
           </CardContent>
@@ -314,22 +314,22 @@ const VolunteerSignup = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-amber-200">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center space-x-2 mb-4">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
-              <Users className="w-5 h-5 text-white" />
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Heart className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-              VolunTech
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">
+              EasyEvent
             </h1>
           </div>
           
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">{event.title}</h2>
-            <div className="flex flex-wrap items-center gap-4 text-gray-600">
+            <h2 className="text-3xl font-bold text-amber-800 mb-2">{event.title}</h2>
+            <div className="flex flex-wrap items-center gap-4 text-amber-600">
               <div className="flex items-center space-x-2">
                 <Calendar className="w-4 h-4" />
                 <span>{new Date(event.start_datetime).toLocaleDateString()}</span>
@@ -353,21 +353,21 @@ const VolunteerSignup = () => {
       <main className="container mx-auto px-4 py-8">
         {/* Event Description */}
         {event.description && (
-          <Card className="mb-8">
+          <Card className="mb-8 border-amber-200 bg-white/90 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle>About This Event</CardTitle>
+              <CardTitle className="text-amber-800">About This Event</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-gray-600">{event.description}</div>
+              <div className="text-amber-700">{event.description}</div>
             </CardContent>
           </Card>
         )}
 
         {/* Volunteer Roles */}
-        <Card>
+        <Card className="border-amber-200 bg-white/90 backdrop-blur-sm shadow-xl">
           <CardHeader>
-            <CardTitle>Available Volunteer Roles</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-amber-800">Available Volunteer Roles</CardTitle>
+            <CardDescription className="text-amber-700">
               Choose a role that fits your schedule and sign up to help make this event successful!
             </CardDescription>
           </CardHeader>
@@ -382,26 +382,26 @@ const VolunteerSignup = () => {
                   const sisterSlots = getRemainingSlots(role, 'sister');
                   
                   return (
-                    <Card key={role.id} className={`${remainingSlots === 0 ? 'opacity-75' : ''}`}>
+                    <Card key={role.id} className={`${remainingSlots === 0 ? 'opacity-75' : ''} border-amber-200 bg-white/80`}>
                       <CardContent className="p-6">
                         <div className="flex justify-between items-start mb-4">
                           <div className="flex-1">
                             <div className="flex items-center space-x-3 mb-3">
-                              <h3 className="text-lg font-semibold">{role.role_label}</h3>
+                              <h3 className="text-lg font-semibold text-amber-800">{role.role_label}</h3>
                               <div className="flex space-x-2">
-                                <Badge variant={remainingSlots > 0 ? "default" : "secondary"}>
+                                <Badge variant={remainingSlots > 0 ? "default" : "secondary"} className="bg-amber-100 text-amber-700 border-amber-200">
                                   {remainingSlots > 0 ? `${remainingSlots} total open` : "Full"}
                                 </Badge>
-                                <Badge variant="outline">
+                                <Badge variant="outline" className="border-amber-300 text-amber-700">
                                   Brothers: {brotherSlots}/{role.slots_brother}
                                 </Badge>
-                                <Badge variant="outline">
+                                <Badge variant="outline" className="border-amber-300 text-amber-700">
                                   Sisters: {sisterSlots}/{role.slots_sister}
                                 </Badge>
                               </div>
                             </div>
                             
-                            <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
+                            <div className="grid md:grid-cols-2 gap-4 text-sm text-amber-600">
                               <div className="space-y-2">
                                 <div className="flex items-center space-x-2">
                                   <Clock className="w-4 h-4" />
@@ -415,7 +415,7 @@ const VolunteerSignup = () => {
                             </div>
                             
                             {role.notes && (
-                              <div className="text-sm text-gray-600 mt-3 italic">
+                              <div className="text-sm text-amber-600 mt-3 italic">
                                 {role.notes}
                               </div>
                             )}
@@ -425,7 +425,7 @@ const VolunteerSignup = () => {
                             <Button
                               onClick={() => openSignupModal(role)}
                               disabled={remainingSlots === 0}
-                              className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               {remainingSlots === 0 ? "Full" : "Sign Up"}
                             </Button>
@@ -434,40 +434,40 @@ const VolunteerSignup = () => {
 
                         {/* Volunteers Table */}
                         {volunteers.length > 0 && (
-                          <div className="mt-6 border-t pt-4">
-                            <h4 className="font-medium mb-3">Current Volunteers:</h4>
+                          <div className="mt-6 border-t border-amber-100 pt-4">
+                            <h4 className="font-medium mb-3 text-amber-800">Current Volunteers:</h4>
                             <Table>
                               <TableHeader>
                                 <TableRow>
-                                  <TableHead>Name</TableHead>
-                                  <TableHead>Phone</TableHead>
-                                  <TableHead>Gender</TableHead>
-                                  <TableHead>Notes</TableHead>
-                                  <TableHead>Action</TableHead>
+                                  <TableHead className="text-amber-800">Name</TableHead>
+                                  <TableHead className="text-amber-800">Phone</TableHead>
+                                  <TableHead className="text-amber-800">Gender</TableHead>
+                                  <TableHead className="text-amber-800">Notes</TableHead>
+                                  <TableHead className="text-amber-800">Action</TableHead>
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
                                 {volunteers.map((volunteer: Volunteer) => (
                                   <TableRow key={volunteer.id}>
-                                    <TableCell className="font-medium">{volunteer.name}</TableCell>
+                                    <TableCell className="font-medium text-amber-800">{volunteer.name}</TableCell>
                                     <TableCell>
-                                      <div className="flex items-center space-x-2">
+                                      <div className="flex items-center space-x-2 text-amber-700">
                                         <Phone className="w-4 h-4" />
                                         <span>{volunteer.phone}</span>
                                       </div>
                                     </TableCell>
                                     <TableCell>
-                                      <Badge variant={volunteer.gender === 'brother' ? 'default' : 'secondary'}>
+                                      <Badge variant={volunteer.gender === 'brother' ? 'default' : 'secondary'} className="bg-amber-100 text-amber-700 border-amber-200">
                                         {volunteer.gender}
                                       </Badge>
                                     </TableCell>
-                                    <TableCell>{volunteer.notes || '-'}</TableCell>
+                                    <TableCell className="text-amber-700">{volunteer.notes || '-'}</TableCell>
                                     <TableCell>
                                       <Button
                                         size="sm"
                                         variant="outline"
                                         onClick={() => removeVolunteer(volunteer.id, volunteer.name)}
-                                        className="text-red-600 hover:text-red-700"
+                                        className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
                                       >
                                         <Trash2 className="w-4 h-4" />
                                       </Button>
@@ -485,9 +485,9 @@ const VolunteerSignup = () => {
               </div>
             ) : (
               <div className="text-center py-8">
-                <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Roles Available</h3>
-                <div className="text-gray-500">Volunteer roles for this event haven't been set up yet.</div>
+                <Users className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-amber-800 mb-2">No Roles Available</h3>
+                <div className="text-amber-600">Volunteer roles for this event haven't been set up yet.</div>
               </div>
             )}
           </CardContent>
@@ -495,17 +495,17 @@ const VolunteerSignup = () => {
 
         {/* Sign-up Modal */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent>
+          <DialogContent className="border-amber-200 bg-white/95 backdrop-blur-sm">
             <DialogHeader>
-              <DialogTitle>Sign Up for {selectedRole?.role_label}</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-amber-800">Sign Up for {selectedRole?.role_label}</DialogTitle>
+              <DialogDescription className="text-amber-700">
                 Fill in your information to register for this volunteer role.
               </DialogDescription>
             </DialogHeader>
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name *</Label>
+                <Label htmlFor="name" className="text-amber-800">Full Name *</Label>
                 <Input
                   id="name"
                   type="text"
@@ -513,11 +513,12 @@ const VolunteerSignup = () => {
                   value={volunteerData.name}
                   onChange={(e) => setVolunteerData(prev => ({ ...prev, name: e.target.value }))}
                   required
+                  className="border-amber-200 focus:border-amber-400"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number *</Label>
+                <Label htmlFor="phone" className="text-amber-800">Phone Number *</Label>
                 <Input
                   id="phone"
                   type="tel"
@@ -525,19 +526,20 @@ const VolunteerSignup = () => {
                   value={volunteerData.phone}
                   onChange={(e) => setVolunteerData(prev => ({ ...prev, phone: e.target.value }))}
                   required
+                  className="border-amber-200 focus:border-amber-400"
                 />
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-amber-600">
                   Used for event reminders and communication
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="gender">Gender *</Label>
+                <Label htmlFor="gender" className="text-amber-800">Gender *</Label>
                 <Select 
                   value={volunteerData.gender} 
                   onValueChange={(value: "brother" | "sister") => setVolunteerData(prev => ({ ...prev, gender: value }))}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="border-amber-200">
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
                   <SelectContent>
@@ -546,7 +548,7 @@ const VolunteerSignup = () => {
                   </SelectContent>
                 </Select>
                 {selectedRole && (
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-amber-600">
                     Available slots - Brothers: {getRemainingSlots(selectedRole, 'brother')}/{selectedRole.slots_brother}, 
                     Sisters: {getRemainingSlots(selectedRole, 'sister')}/{selectedRole.slots_sister}
                   </div>
@@ -554,20 +556,21 @@ const VolunteerSignup = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="notes">Additional Notes (Optional)</Label>
+                <Label htmlFor="notes" className="text-amber-800">Additional Notes (Optional)</Label>
                 <Textarea
                   id="notes"
                   placeholder="Any special requirements, questions, or information..."
                   value={volunteerData.notes}
                   onChange={(e) => setVolunteerData(prev => ({ ...prev, notes: e.target.value }))}
                   rows={3}
+                  className="border-amber-200 focus:border-amber-400"
                 />
               </div>
 
               {selectedRole && (
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h4 className="font-medium mb-2">Role Details:</h4>
-                  <div className="text-sm text-gray-600 space-y-1">
+                <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                  <h4 className="font-medium mb-2 text-amber-800">Role Details:</h4>
+                  <div className="text-sm text-amber-700 space-y-1">
                     <div><strong>Time:</strong> {selectedRole.shift_start} - {selectedRole.shift_end}</div>
                     <div><strong>Date:</strong> {new Date(event?.start_datetime || '').toLocaleDateString()}</div>
                     <div><strong>Location:</strong> {event?.location}</div>
@@ -581,13 +584,14 @@ const VolunteerSignup = () => {
                   variant="outline"
                   onClick={() => setIsModalOpen(false)}
                   disabled={isSubmitting}
+                  className="border-amber-300 text-amber-700 hover:bg-amber-50"
                 >
                   Cancel
                 </Button>
                 <Button 
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
                 >
                   {isSubmitting ? (
                     <>
