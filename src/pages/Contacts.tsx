@@ -21,7 +21,6 @@ const Contacts = () => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    // Check if user is logged in and load user-specific contacts
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -30,7 +29,6 @@ const Contacts = () => {
       }
       setCurrentUser(user);
 
-      // Load contacts specific to this user
       const savedContacts = localStorage.getItem(`contacts_${user.id}`);
       if (savedContacts) {
         setContacts(JSON.parse(savedContacts));
@@ -119,7 +117,6 @@ const Contacts = () => {
       <Navigation />
       
       <main className="container mx-auto px-4 py-4 md:py-8">
-        {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 md:mb-8 space-y-4 lg:space-y-0">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-amber-800">Contact Management</h1>
@@ -194,7 +191,6 @@ const Contacts = () => {
           </Dialog>
         </div>
 
-        {/* Contacts List */}
         <Card className="bg-white/90 backdrop-blur-sm border-amber-200 shadow-xl">
           <CardHeader>
             <CardTitle className="text-lg md:text-xl text-amber-800">Your Contacts</CardTitle>
@@ -219,7 +215,6 @@ const Contacts = () => {
             ) : (
               <>
                 <div className="space-y-3 md:hidden">
-                  {/* Mobile Card Layout */}
                   {contacts.map((contact: any) => (
                     <Card key={contact.id} className="border-amber-200">
                       <CardContent className="p-4">
@@ -263,7 +258,6 @@ const Contacts = () => {
                   ))}
                 </div>
                 
-                {/* Desktop Table Layout */}
                 <div className="hidden md:block overflow-x-auto">
                   <table className="w-full">
                     <thead>
