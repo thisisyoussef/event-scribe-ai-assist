@@ -217,109 +217,111 @@ const Contacts = () => {
                 </Button>
               </div>
             ) : (
-              <div className="space-y-3 md:hidden">
-                {/* Mobile Card Layout */}
-                {contacts.map((contact: any) => (
-                  <Card key={contact.id} className="border-amber-200">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center space-x-3 flex-1">
-                          <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
-                            <User className="w-4 h-4 text-amber-600" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="font-medium text-amber-800 truncate">{contact.name}</div>
-                            <div className="flex items-center space-x-1 text-amber-600 text-sm">
-                              <Phone className="w-3 h-3" />
-                              <span className="truncate">{contact.phone}</span>
-                            </div>
-                            <div className="text-xs text-amber-500 mt-1">
-                              {new Date(contact.createdAt).toLocaleDateString()}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex space-x-1 ml-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleEdit(contact)}
-                            className="p-1.5"
-                          >
-                            <Edit className="w-3 h-3" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleDelete(contact.id)}
-                            className="p-1.5"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              
-              {/* Desktop Table Layout */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-amber-200">
-                      <th className="text-left py-3 px-4 font-medium text-amber-800">Name</th>
-                      <th className="text-left py-3 px-4 font-medium text-amber-800">Phone Number</th>
-                      <th className="text-left py-3 px-4 font-medium text-amber-800">Added</th>
-                      <th className="text-left py-3 px-4 font-medium text-amber-800">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {contacts.map((contact: any) => (
-                      <tr key={contact.id} className="border-b border-amber-100 hover:bg-amber-50/50">
-                        <td className="py-4 px-4">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+              <>
+                <div className="space-y-3 md:hidden">
+                  {/* Mobile Card Layout */}
+                  {contacts.map((contact: any) => (
+                    <Card key={contact.id} className="border-amber-200">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center space-x-3 flex-1">
+                            <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
                               <User className="w-4 h-4 text-amber-600" />
                             </div>
-                            <div className="font-medium text-amber-800">{contact.name}</div>
+                            <div className="min-w-0 flex-1">
+                              <div className="font-medium text-amber-800 truncate">{contact.name}</div>
+                              <div className="flex items-center space-x-1 text-amber-600 text-sm">
+                                <Phone className="w-3 h-3" />
+                                <span className="truncate">{contact.phone}</span>
+                              </div>
+                              <div className="text-xs text-amber-500 mt-1">
+                                {new Date(contact.createdAt).toLocaleDateString()}
+                              </div>
+                            </div>
                           </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="flex items-center space-x-2">
-                            <Phone className="w-4 h-4 text-amber-400" />
-                            <span className="text-amber-700">{contact.phone}</span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="text-sm text-amber-600">
-                            {new Date(contact.createdAt).toLocaleDateString()}
-                          </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="flex space-x-2">
+                          <div className="flex space-x-1 ml-2">
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => handleEdit(contact)}
-                              className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                              className="p-1.5"
                             >
-                              <Edit className="w-4 h-4" />
+                              <Edit className="w-3 h-3" />
                             </Button>
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => handleDelete(contact.id)}
-                              className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                              className="p-1.5"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3 h-3" />
                             </Button>
                           </div>
-                        </td>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+                
+                {/* Desktop Table Layout */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-amber-200">
+                        <th className="text-left py-3 px-4 font-medium text-amber-800">Name</th>
+                        <th className="text-left py-3 px-4 font-medium text-amber-800">Phone Number</th>
+                        <th className="text-left py-3 px-4 font-medium text-amber-800">Added</th>
+                        <th className="text-left py-3 px-4 font-medium text-amber-800">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {contacts.map((contact: any) => (
+                        <tr key={contact.id} className="border-b border-amber-100 hover:bg-amber-50/50">
+                          <td className="py-4 px-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                                <User className="w-4 h-4 text-amber-600" />
+                              </div>
+                              <div className="font-medium text-amber-800">{contact.name}</div>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="flex items-center space-x-2">
+                              <Phone className="w-4 h-4 text-amber-400" />
+                              <span className="text-amber-700">{contact.phone}</span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="text-sm text-amber-600">
+                              {new Date(contact.createdAt).toLocaleDateString()}
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="flex space-x-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleEdit(contact)}
+                                className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleDelete(contact.id)}
+                                className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
