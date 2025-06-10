@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -713,7 +714,9 @@ const EventCreation = () => {
                       <h3 className="text-lg font-medium text-amber-800 mb-3">Event Itinerary</h3>
                       <ItineraryEditor 
                         itinerary={itinerary}
-                        onUpdate={setItinerary}
+                        onItineraryChange={setItinerary}
+                        startTime={eventData.startTime}
+                        endTime={eventData.endTime}
                       />
                     </div>
 
@@ -733,7 +736,9 @@ const EventCreation = () => {
                       {showAdditionalDetails && (
                         <AdditionalDetailsWizard
                           details={additionalDetails}
-                          onUpdate={setAdditionalDetails}
+                          onDetailsChange={setAdditionalDetails}
+                          isExpanded={showAdditionalDetails}
+                          onToggleExpand={setShowAdditionalDetails}
                         />
                       )}
                     </div>
