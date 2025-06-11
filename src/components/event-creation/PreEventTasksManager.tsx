@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { CalendarDays, Users, DollarSign, Megaphone, Package, Trash2, Plus, Zap } from "lucide-react";
+import { CalendarDays, Users, DollarSign, Megaphone, Package, Trash2, Plus, Sparkles } from "lucide-react";
 
 interface Task {
   id: string;
@@ -145,7 +145,7 @@ const PreEventTasksManager = ({
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'medium': return 'bg-amber-100 text-amber-800';
       case 'low': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -153,22 +153,22 @@ const PreEventTasksManager = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h3 className="text-lg font-semibold">Pre-Event Task Planning</h3>
-          <p className="text-gray-600">Generate and assign tasks needed before your event</p>
+          <p className="text-gray-600 text-sm">Generate and assign tasks needed before your event</p>
         </div>
         
         {tasks.length === 0 && (
           <Button 
             onClick={generateAITasks}
             disabled={isGenerating}
-            className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+            className="bg-gradient-to-r from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-white w-full sm:w-auto"
           >
             {isGenerating ? (
               <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
             ) : (
-              <Zap className="w-4 h-4 mr-2" />
+              <Sparkles className="w-4 h-4 mr-2" />
             )}
             Generate AI Tasks
           </Button>
@@ -176,9 +176,9 @@ const PreEventTasksManager = ({
       </div>
 
       {isGenerating && (
-        <Card className="border-blue-200">
+        <Card className="border-amber-200">
           <CardContent className="p-6 text-center">
-            <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <div className="animate-spin w-8 h-8 border-2 border-amber-600 border-t-transparent rounded-full mx-auto mb-4"></div>
             <p>AI is analyzing your event and generating recommended tasks...</p>
           </CardContent>
         </Card>
@@ -187,102 +187,108 @@ const PreEventTasksManager = ({
       {tasks.length > 0 && (
         <div className="space-y-4">
           {tasks.map((task) => (
-            <Card key={task.id}>
+            <Card key={task.id} className="overflow-hidden">
               <CardContent className="p-4">
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid gap-4">
                   <div className="space-y-2">
                     <Label>Task Title</Label>
                     <Input
                       value={task.title}
                       onChange={(e) => updateTask(task.id, { title: e.target.value })}
                       placeholder="Task title"
+                      className="w-full"
                     />
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label>Category</Label>
-                    <Select 
-                      value={task.category} 
-                      onValueChange={(value) => updateTask(task.id, { category: value as Task['category'] })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {taskCategories.map((category) => (
-                          <SelectItem key={category.value} value={category.value}>
-                            <div className="flex items-center space-x-2">
-                              <category.icon className="w-4 h-4" />
-                              <span>{category.label}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Due Date</Label>
-                    <Input
-                      type="date"
-                      value={task.dueDate}
-                      onChange={(e) => updateTask(task.id, { dueDate: e.target.value })}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Priority</Label>
-                    <Select 
-                      value={task.priority} 
-                      onValueChange={(value) => updateTask(task.id, { priority: value as Task['priority'] })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="high">High</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="low">Low</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Assignee (Optional)</Label>
-                    <Select 
-                      value={task.assigneeId || ""} 
-                      onValueChange={(value) => updateTask(task.id, { assigneeId: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select assignee" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {contacts.map((contact: any) => (
-                          <SelectItem key={contact.id} value={contact.id}>
-                            {contact.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="flex items-end space-x-2">
-                    <div className="flex items-center space-x-2">
-                      {getCategoryIcon(task.category)}
-                      <Badge className={getPriorityColor(task.priority)}>
-                        {task.priority}
-                      </Badge>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label>Category</Label>
+                      <Select 
+                        value={task.category} 
+                        onValueChange={(value) => updateTask(task.id, { category: value as Task['category'] })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {taskCategories.map((category) => (
+                            <SelectItem key={category.value} value={category.value}>
+                              <div className="flex items-center space-x-2">
+                                <category.icon className="w-4 h-4" />
+                                <span>{category.label}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => removeTask(task.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    
+                    <div className="space-y-2">
+                      <Label>Due Date</Label>
+                      <Input
+                        type="date"
+                        value={task.dueDate}
+                        onChange={(e) => updateTask(task.id, { dueDate: e.target.value })}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Priority</Label>
+                      <Select 
+                        value={task.priority} 
+                        onValueChange={(value) => updateTask(task.id, { priority: value as Task['priority'] })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="high">High</SelectItem>
+                          <SelectItem value="medium">Medium</SelectItem>
+                          <SelectItem value="low">Low</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   
-                  <div className="space-y-2 md:col-span-2 lg:col-span-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Assignee (Optional)</Label>
+                      <Select 
+                        value={task.assigneeId || ""} 
+                        onValueChange={(value) => updateTask(task.id, { assigneeId: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select assignee" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {contacts.map((contact: any) => (
+                            <SelectItem key={contact.id} value={contact.id}>
+                              {contact.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="flex justify-between items-end">
+                      <div className="flex items-center space-x-2">
+                        {getCategoryIcon(task.category)}
+                        <Badge className={getPriorityColor(task.priority)}>
+                          {task.priority}
+                        </Badge>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => removeTask(task.id)}
+                        className="border-red-200 hover:border-red-300 hover:bg-red-50 text-red-600"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
                     <Label>Description</Label>
                     <Textarea
                       value={task.description}
@@ -301,14 +307,14 @@ const PreEventTasksManager = ({
       <Button 
         variant="outline" 
         onClick={addCustomTask}
-        className="w-full"
+        className="w-full border-amber-200 text-amber-800 hover:bg-amber-50"
       >
         <Plus className="w-4 h-4 mr-2" />
         Add Custom Task
       </Button>
 
       {tasks.length > 0 && (
-        <Card className="bg-blue-50">
+        <Card className="bg-amber-50">
           <CardContent className="p-4">
             <h4 className="font-medium mb-2">Task Summary</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">

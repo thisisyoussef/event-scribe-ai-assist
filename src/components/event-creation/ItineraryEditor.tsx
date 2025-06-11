@@ -45,7 +45,7 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime }: I
 
   return (
     <Card className="border-amber-200">
-      <CardHeader>
+      <CardHeader className="pb-2">
         <CardTitle className="flex items-center space-x-2 text-amber-800">
           <Clock className="w-5 h-5" />
           <span>Event Itinerary (Optional)</span>
@@ -59,7 +59,7 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime }: I
           <div className="text-center py-6 bg-amber-50 rounded-lg border border-amber-200">
             <Clock className="w-8 h-8 text-amber-400 mx-auto mb-2" />
             <p className="text-amber-600 mb-4">No itinerary items yet</p>
-            <Button onClick={addItineraryItem} variant="outline" className="border-amber-300 text-amber-700">
+            <Button onClick={addItineraryItem} variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-100">
               <Plus className="w-4 h-4 mr-2" />
               Add First Item
             </Button>
@@ -68,7 +68,7 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime }: I
           <>
             <div className="space-y-3">
               {itinerary.map((item, index) => (
-                <div key={item.id} className="grid grid-cols-1 lg:grid-cols-4 gap-3 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <div key={item.id} className="grid grid-cols-1 lg:grid-cols-4 gap-3 p-3 sm:p-4 bg-amber-50 rounded-lg border border-amber-200">
                   <div className="space-y-2">
                     <Label className="text-xs text-amber-700">Time</Label>
                     <Input
@@ -77,7 +77,7 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime }: I
                       onChange={(e) => updateItineraryItem(item.id, 'time', e.target.value)}
                       min={startTime}
                       max={endTime}
-                      className="text-sm"
+                      className="text-sm border-amber-200 focus-visible:ring-amber-500"
                     />
                   </div>
                   
@@ -87,7 +87,7 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime }: I
                       value={item.title}
                       onChange={(e) => updateItineraryItem(item.id, 'title', e.target.value)}
                       placeholder="e.g., Doors Open"
-                      className="text-sm"
+                      className="text-sm border-amber-200 focus-visible:ring-amber-500"
                     />
                   </div>
                   
@@ -98,7 +98,7 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime }: I
                         size="sm"
                         variant="ghost"
                         onClick={() => removeItineraryItem(item.id)}
-                        className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                        className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="w-3 h-3" />
                       </Button>
@@ -108,14 +108,14 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime }: I
                       onChange={(e) => updateItineraryItem(item.id, 'description', e.target.value)}
                       placeholder="Describe what happens during this time"
                       rows={2}
-                      className="text-sm resize-none"
+                      className="text-sm resize-none border-amber-200 focus-visible:ring-amber-500"
                     />
                   </div>
                 </div>
               ))}
             </div>
             
-            <Button onClick={addItineraryItem} variant="outline" className="w-full border-amber-300 text-amber-700">
+            <Button onClick={addItineraryItem} variant="outline" className="w-full border-amber-300 text-amber-700 hover:bg-amber-100">
               <Plus className="w-4 h-4 mr-2" />
               Add Another Item
             </Button>
