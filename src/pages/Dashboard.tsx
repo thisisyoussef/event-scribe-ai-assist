@@ -32,6 +32,7 @@ const Dashboard = () => {
   const loadEvents = async () => {
     try {
       setIsLoading(true);
+      // With RLS policies in place, this query will automatically only return events created by the current user
       const { data: eventsData, error } = await supabase
         .from('events')
         .select(`
