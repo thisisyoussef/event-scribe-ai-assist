@@ -9,6 +9,44 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      additional_details: {
+        Row: {
+          age_groups: string[] | null
+          attendance_estimate: number | null
+          created_at: string
+          event_id: string | null
+          id: string
+          marketing_level: string | null
+          tone: string | null
+        }
+        Insert: {
+          age_groups?: string[] | null
+          attendance_estimate?: number | null
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          marketing_level?: string | null
+          tone?: string | null
+        }
+        Update: {
+          age_groups?: string[] | null
+          attendance_estimate?: number | null
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          marketing_level?: string | null
+          tone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "additional_details_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           created_at: string | null
@@ -54,6 +92,294 @@ export type Database = {
           status?: string | null
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      feedback_forms: {
+        Row: {
+          created_at: string
+          event_id: string | null
+          id: string
+          question_order: number
+          question_text: string
+          question_type: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          question_order: number
+          question_text: string
+          question_type?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          question_order?: number
+          question_text?: string
+          question_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_forms_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feedback_responses: {
+        Row: {
+          created_at: string
+          id: string
+          question_id: string | null
+          rating: number | null
+          response_text: string | null
+          volunteer_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          question_id?: string | null
+          rating?: number | null
+          response_text?: string | null
+          volunteer_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          question_id?: string | null
+          rating?: number | null
+          response_text?: string | null
+          volunteer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "feedback_forms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feedback_responses_volunteer_id_fkey"
+            columns: ["volunteer_id"]
+            isOneToOne: false
+            referencedRelation: "volunteers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      itineraries: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_id: string | null
+          id: string
+          time_slot: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_id?: string | null
+          id?: string
+          time_slot: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_id?: string | null
+          id?: string
+          time_slot?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "itineraries_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      locations: {
+        Row: {
+          address: string
+          created_at: string
+          id: string
+          label: string
+          map_link: string | null
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          id?: string
+          label: string
+          map_link?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          id?: string
+          label?: string
+          map_link?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      marketing_ideas: {
+        Row: {
+          created_at: string
+          effort: string | null
+          event_id: string | null
+          id: string
+          idea_text: string
+          impact: string | null
+          selected: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          effort?: string | null
+          event_id?: string | null
+          id?: string
+          idea_text: string
+          impact?: string | null
+          selected?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          effort?: string | null
+          event_id?: string | null
+          id?: string
+          idea_text?: string
+          impact?: string | null
+          selected?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_ideas_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sponsors: {
+        Row: {
+          contact_email: string | null
+          contact_person: string
+          contact_phone: string | null
+          created_at: string
+          id: string
+          org_name: string
+          sponsorship_level: string | null
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_person: string
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          org_name: string
+          sponsorship_level?: string | null
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_person?: string
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          org_name?: string
+          sponsorship_level?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          assignee_id: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          event_id: string | null
+          id: string
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assignee_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          event_id?: string | null
+          id?: string
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assignee_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          event_id?: string | null
+          id?: string
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          phone: string
+          roles: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          phone: string
+          roles?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          phone?: string
+          roles?: string[] | null
+          updated_at?: string
         }
         Relationships: []
       }

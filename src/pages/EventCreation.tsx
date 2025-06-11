@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import Navigation from "@/components/Navigation";
 import ItineraryEditor from "@/components/event-creation/ItineraryEditor";
 import AdditionalDetailsWizard from "@/components/event-creation/AdditionalDetailsWizard";
+import PreEventTasksManager from "@/components/event-creation/PreEventTasksManager";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Zap, Plus, Trash2, Clock, Users, MapPin, Calendar, TestTube, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -22,7 +24,6 @@ const EventCreation = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [contacts, setContacts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [useAdvancedFeatures, setUseAdvancedFeatures] = useState(false);
   
   // Event form data
   const [eventData, setEventData] = useState({
@@ -38,7 +39,7 @@ const EventCreation = () => {
     status: "draft"
   });
 
-  // New advanced features state
+  // Enhanced features state (now always enabled)
   const [itinerary, setItinerary] = useState([]);
   const [additionalDetails, setAdditionalDetails] = useState({
     marketingLevel: '' as '' | 'low' | 'medium' | 'high',
@@ -46,7 +47,9 @@ const EventCreation = () => {
     tone: '' as '' | 'formal' | 'casual' | 'fun',
     expectedAttendance: 50
   });
-  const [showAdditionalDetails, setShowAdditionalDetails] = useState(false);
+
+  // Pre-event tasks
+  const [preEventTasks, setPreEventTasks] = useState([]);
 
   // AI suggestions and finalized roles
   const [aiSuggestions, setAiSuggestions] = useState([]);
@@ -135,7 +138,7 @@ const EventCreation = () => {
         })) || [];
 
         setFinalRoles(roles);
-        setCurrentStep(roles.length > 0 ? 3 : 1);
+        setCurrentStep(roles.length > 0 ? 4 : 1);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -147,17 +150,12 @@ const EventCreation = () => {
     }
   };
 
-  const steps = useAdvancedFeatures ? [
+  const steps = [
     { number: 1, title: "Basic Info", description: "Event details" },
-    { number: 2, title: "Enhanced Details", description: "Itinerary & AI tuning" },
-    { number: 3, title: "AI Parsing", description: "Generate roles" },
-    { number: 4, title: "Volunteer Slots", description: "Finalize roles" },
+    { number: 2, title: "Enhanced Details", description: "Itinerary & preferences" },
+    { number: 3, title: "Pre-Event Tasks", description: "Planning & assignments" },
+    { number: 4, title: "Volunteer Slots", description: "AI suggestions & roles" },
     { number: 5, title: "Review & Publish", description: "Final settings" }
-  ] : [
-    { number: 1, title: "Basic Info", description: "Event details" },
-    { number: 2, title: "AI Parsing", description: "Generate roles" },
-    { number: 3, title: "Volunteer Slots", description: "Finalize roles" },
-    { number: 4, title: "Review & Publish", description: "Final settings" }
   ];
 
   const parseWithAI = async () => {
@@ -168,11 +166,11 @@ const EventCreation = () => {
     
     let mockSuggestions = [];
     
-    if (useAdvancedFeatures && itinerary.length > 0) {
+    if (itinerary.length > 0) {
       // Generate more detailed suggestions based on itinerary
       mockSuggestions = itinerary.map(item => ({
         id: crypto.randomUUID(),
-        roleLabel: item.title, // Use the itinerary title directly instead of adding "Coordinator"
+        roleLabel: item.title,
         shiftStart: item.time,
         shiftEnd: item.time.slice(0, 3) + String(Math.min(parseInt(item.time.slice(3)) + 60, 59)).padStart(2, '0'),
         slotsBrother: additionalDetails.expectedAttendance > 100 ? 3 : 2,
@@ -185,7 +183,7 @@ const EventCreation = () => {
       if (additionalDetails.expectedAttendance > 50) {
         mockSuggestions.push({
           id: crypto.randomUUID(),
-          roleLabel: "Event Support", // Changed from "Event Coordination"
+          roleLabel: "Event Support",
           shiftStart: eventData.startTime,
           shiftEnd: eventData.endTime,
           slotsBrother: 1,
@@ -199,7 +197,7 @@ const EventCreation = () => {
       mockSuggestions = [
         {
           id: crypto.randomUUID(),
-          roleLabel: "Setup Team", // Changed from "Event Setup"
+          roleLabel: "Setup Team",
           shiftStart: eventData.startTime,
           shiftEnd: eventData.startTime.slice(0, 3) + String(parseInt(eventData.startTime.slice(3)) + 30).padStart(2, '0'),
           slotsBrother: 4,
@@ -209,7 +207,7 @@ const EventCreation = () => {
         },
         {
           id: crypto.randomUUID(),
-          roleLabel: "Registration & Welcome", // Keep as is since it's already a good task name
+          roleLabel: "Registration & Welcome",
           shiftStart: eventData.startTime,
           shiftEnd: eventData.endTime,
           slotsBrother: 2,
@@ -219,7 +217,7 @@ const EventCreation = () => {
         },
         {
           id: crypto.randomUUID(),
-          roleLabel: "Cleanup Team", // Add a cleanup role
+          roleLabel: "Cleanup Team",
           shiftStart: eventData.endTime.slice(0, 3) + String(Math.max(parseInt(eventData.endTime.slice(3)) - 30, 0)).padStart(2, '0'),
           shiftEnd: eventData.endTime.slice(0, 3) + String(parseInt(eventData.endTime.slice(3)) + 30).padStart(2, '0'),
           slotsBrother: 3,
@@ -235,7 +233,7 @@ const EventCreation = () => {
     
     toast({
       title: "AI Parsing Complete!",
-      description: `Generated ${mockSuggestions.length} role suggestions${useAdvancedFeatures ? ' using your detailed itinerary' : ''}.`,
+      description: `Generated ${mockSuggestions.length} role suggestions using your detailed itinerary.`,
     });
   };
 
@@ -252,7 +250,7 @@ const EventCreation = () => {
       shiftEnd: eventData.endTime,
       slotsBrother: 1,
       slotsSister: 0,
-      suggestedPOC: null, // Set to null to avoid foreign key issues
+      suggestedPOC: null,
       notes: "",
       status: "custom"
     };
@@ -347,10 +345,10 @@ const EventCreation = () => {
         savedEventId = newEvent.id;
       }
 
-      // Insert volunteer roles - ensure suggested_poc is always null for now
+      // Insert volunteer roles
       if (finalRoles.length > 0) {
         const rolesPayload = finalRoles
-          .filter(role => role.roleLabel && role.roleLabel.trim() !== '') // Filter out empty roles
+          .filter(role => role.roleLabel && role.roleLabel.trim() !== '')
           .map(role => ({
             event_id: savedEventId,
             role_label: role.roleLabel,
@@ -358,7 +356,7 @@ const EventCreation = () => {
             shift_end: role.shiftEnd,
             slots_brother: role.slotsBrother || 0,
             slots_sister: role.slotsSister || 0,
-            suggested_poc: null, // Always set to null to avoid foreign key constraint issues
+            suggested_poc: null,
             notes: role.notes || ""
           }));
 
@@ -398,8 +396,7 @@ const EventCreation = () => {
   };
 
   const nextStep = () => {
-    const maxStep = useAdvancedFeatures ? 5 : 4;
-    if (currentStep < maxStep) setCurrentStep(currentStep + 1);
+    if (currentStep < 5) setCurrentStep(currentStep + 1);
   };
 
   const prevStep = () => {
@@ -411,43 +408,13 @@ const EventCreation = () => {
       case 1:
         return eventData.title && eventData.date && eventData.startTime && eventData.endTime && eventData.location;
       case 2:
-        if (useAdvancedFeatures) {
-          return true; // Enhanced details are optional
-        } else {
-          return finalRoles.length > 0; // This is the AI parsing step for simple mode
-        }
+        return true; // Enhanced details are optional
       case 3:
-        if (useAdvancedFeatures) {
-          return finalRoles.length > 0; // AI parsing step for advanced mode
-        } else {
-          return finalRoles.every(role => role.roleLabel && role.roleLabel.trim() !== '' && (role.slotsBrother > 0 || role.slotsSister > 0));
-        }
+        return true; // Pre-event tasks are optional
       case 4:
-        if (useAdvancedFeatures) {
-          return finalRoles.every(role => role.roleLabel && role.roleLabel.trim() !== '' && (role.slotsBrother > 0 || role.slotsSister > 0));
-        } else {
-          return true; // Review step
-        }
+        return finalRoles.every(role => role.roleLabel && role.roleLabel.trim() !== '' && (role.slotsBrother > 0 || role.slotsSister > 0));
       default:
         return true;
-    }
-  };
-
-  const getStepNumber = (logicalStep: string) => {
-    if (!useAdvancedFeatures) {
-      switch (logicalStep) {
-        case 'ai-parsing': return 2;
-        case 'volunteer-slots': return 3;
-        case 'review': return 4;
-        default: return currentStep;
-      }
-    } else {
-      switch (logicalStep) {
-        case 'ai-parsing': return 3;
-        case 'volunteer-slots': return 4;
-        case 'review': return 5;
-        default: return currentStep;
-      }
     }
   };
 
@@ -469,9 +436,28 @@ const EventCreation = () => {
       status: "draft"
     });
 
+    // Prefill itinerary
+    setItinerary([
+      { id: crypto.randomUUID(), time: "16:00", title: "Setup & Preparation", description: "Tables, chairs, decorations setup" },
+      { id: crypto.randomUUID(), time: "17:30", title: "Volunteer Briefing", description: "Brief all volunteers on their roles" },
+      { id: crypto.randomUUID(), time: "18:00", title: "Guest Registration", description: "Welcome and check-in guests" },
+      { id: crypto.randomUUID(), time: "19:30", title: "Maghrib Prayer", description: "Community prayer time" },
+      { id: crypto.randomUUID(), time: "19:45", title: "Iftar Dinner Service", description: "Serve meals to community" },
+      { id: crypto.randomUUID(), time: "20:30", title: "Community Program", description: "Brief talks and announcements" },
+      { id: crypto.randomUUID(), time: "21:00", title: "Cleanup & Breakdown", description: "Clean venue and pack up" }
+    ]);
+
+    // Prefill additional details
+    setAdditionalDetails({
+      marketingLevel: 'medium',
+      ageGroups: ['adults', 'families'],
+      tone: 'casual',
+      expectedAttendance: 150
+    });
+
     toast({
       title: "Test data loaded!",
-      description: "Form has been filled with sample event data for testing.",
+      description: "Form has been filled with sample event data including itinerary.",
     });
   };
 
@@ -493,16 +479,6 @@ const EventCreation = () => {
             <h1 className="text-3xl font-bold text-gray-900">
               {eventId ? "Edit Event" : "Create New Event"}
             </h1>
-            
-            {/* Advanced Features Toggle */}
-            <div className="flex items-center space-x-3 bg-white p-3 rounded-lg border">
-              <Sparkles className="w-5 h-5 text-blue-600" />
-              <Label className="text-sm font-medium">Enhanced AI Features</Label>
-              <Switch
-                checked={useAdvancedFeatures}
-                onCheckedChange={setUseAdvancedFeatures}
-              />
-            </div>
           </div>
           
           {/* Step Indicator */}
@@ -620,149 +596,50 @@ const EventCreation = () => {
               </div>
             )}
 
-            {/* Step 2: Enhanced Details (Advanced Mode) or AI Parsing (Simple Mode) */}
+            {/* Step 2: Enhanced Details */}
             {currentStep === 2 && (
               <div className="space-y-6">
-                {useAdvancedFeatures ? (
-                  <>
-                    <h2 className="text-xl font-semibold mb-4">Enhanced Event Details</h2>
-                    <p className="text-gray-600 mb-6">
-                      Add detailed itinerary and preferences to help AI generate more precise volunteer roles and suggestions.
-                    </p>
-                    
-                    <ItineraryEditor
-                      itinerary={itinerary}
-                      onItineraryChange={setItinerary}
-                      startTime={eventData.startTime}
-                      endTime={eventData.endTime}
-                    />
-                    
-                    <AdditionalDetailsWizard
-                      details={additionalDetails}
-                      onDetailsChange={setAdditionalDetails}
-                      isExpanded={showAdditionalDetails}
-                      onToggleExpand={setShowAdditionalDetails}
-                    />
-                  </>
-                ) : (
-                  <>
-                    {/* Simple AI Parsing Step */}
-                    <div>
-                      <h2 className="text-xl font-semibold mb-4">AI-Assisted Role Generation</h2>
-                      <p className="text-gray-600 mb-6">
-                        Let AI analyze your event description to suggest volunteer roles, shift times, and slot requirements.
-                      </p>
-                      
-                      {aiSuggestions.length === 0 && !isLoading && (
-                        <div className="text-center py-8">
-                          <Zap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-                          <Button 
-                            onClick={parseWithAI}
-                            className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
-                            disabled={!eventData.description}
-                          >
-                            <Zap className="w-4 h-4 mr-2" />
-                            Parse Description with AI
-                          </Button>
-                          {!eventData.description && (
-                            <p className="text-sm text-gray-500 mt-2">Add an event description first</p>
-                          )}
-                        </div>
-                      )}
-
-                      {isLoading && (
-                        <div className="text-center py-8">
-                          <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-                          <p>AI is analyzing your event description...</p>
-                        </div>
-                      )}
-
-                      {aiSuggestions.length > 0 && (
-                        <div className="space-y-4">
-                          <h3 className="font-medium">AI Suggestions:</h3>
-                          {aiSuggestions.map((suggestion: any) => (
-                            <Card key={suggestion.id} className="border-blue-200">
-                              <CardContent className="p-4">
-                                <div className="flex justify-between items-start">
-                                  <div className="flex-1">
-                                    <h4 className="font-medium">{suggestion.roleLabel}</h4>
-                                    <div className="text-sm text-gray-600 space-y-1 mt-2">
-                                      <div className="flex items-center space-x-2">
-                                        <Clock className="w-4 h-4" />
-                                        <span>{suggestion.shiftStart} - {suggestion.shiftEnd}</span>
-                                      </div>
-                                      <div className="flex items-center space-x-2">
-                                        <Users className="w-4 h-4" />
-                                        <span>
-                                          {suggestion.slotsBrother} brothers, {suggestion.slotsSister} sisters
-                                        </span>
-                                      </div>
-                                      {suggestion.notes && (
-                                        <p className="text-gray-500">{suggestion.notes}</p>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="flex space-x-2 ml-4">
-                                    <Button 
-                                      size="sm"
-                                      onClick={() => acceptSuggestion(suggestion)}
-                                      className="bg-green-600 hover:bg-green-700"
-                                    >
-                                      Accept
-                                    </Button>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          ))}
-                        </div>
-                      )}
-
-                      {finalRoles.length > 0 && (
-                        <div className="mt-6 space-y-4">
-                          <h3 className="font-medium">Selected Roles:</h3>
-                          {finalRoles.map((role: any) => (
-                            <Card key={role.id} className="border-green-200">
-                              <CardContent className="p-4">
-                                <div className="flex justify-between items-center">
-                                  <div>
-                                    <h4 className="font-medium">{role.roleLabel}</h4>
-                                    <div className="text-sm text-gray-600">
-                                      {role.shiftStart} - {role.shiftEnd} • {role.slotsBrother + role.slotsSister} slots
-                                    </div>
-                                  </div>
-                                  <Badge variant="secondary">Selected</Badge>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          ))}
-                        </div>
-                      )}
-                      
-                      <Button 
-                        variant="outline" 
-                        onClick={addCustomRole}
-                        className="w-full"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Custom Role
-                      </Button>
-                    </div>
-                  </>
-                )}
+                <h2 className="text-xl font-semibold mb-4">Enhanced Event Details</h2>
+                <p className="text-gray-600 mb-6">
+                  Add detailed itinerary and preferences to help AI generate more precise volunteer roles and pre-event tasks.
+                </p>
+                
+                <ItineraryEditor
+                  itinerary={itinerary}
+                  onItineraryChange={setItinerary}
+                  startTime={eventData.startTime}
+                  endTime={eventData.endTime}
+                />
+                
+                <AdditionalDetailsWizard
+                  details={additionalDetails}
+                  onDetailsChange={setAdditionalDetails}
+                  isExpanded={true}
+                  onToggleExpand={() => {}}
+                />
               </div>
             )}
 
-            {/* AI Parsing Step (Advanced Mode) */}
-            {currentStep === getStepNumber('ai-parsing') && useAdvancedFeatures && (
+            {/* Step 3: Pre-Event Tasks */}
+            {currentStep === 3 && (
+              <PreEventTasksManager
+                tasks={preEventTasks}
+                onTasksChange={setPreEventTasks}
+                contacts={contacts}
+                eventDate={eventData.date}
+                eventDescription={eventData.description}
+              />
+            )}
+
+            {/* Step 4: Volunteer Slots */}
+            {currentStep === 4 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl font-semibold mb-4">Enhanced AI Role Generation</h2>
+                  <h2 className="text-xl font-semibold mb-4">Volunteer Role Generation</h2>
                   <p className="text-gray-600 mb-6">
-                    AI will analyze your itinerary, event details, and preferences to generate tailored volunteer roles.
+                    AI will analyze your itinerary and event details to generate tailored volunteer roles.
                   </p>
                   
-                  {/* Enhanced AI parsing display */}
                   {itinerary.length > 0 && (
                     <Card className="mb-4 border-green-200 bg-green-50">
                       <CardContent className="p-4">
@@ -790,7 +667,7 @@ const EventCreation = () => {
                         disabled={!eventData.description}
                       >
                         <Zap className="w-4 h-4 mr-2" />
-                        Parse Description with AI
+                        Generate AI Role Suggestions
                       </Button>
                       {!eventData.description && (
                         <p className="text-sm text-gray-500 mt-2">Add an event description first</p>
@@ -848,18 +725,98 @@ const EventCreation = () => {
 
                   {finalRoles.length > 0 && (
                     <div className="mt-6 space-y-4">
-                      <h3 className="font-medium">Selected Roles:</h3>
+                      <h3 className="font-medium">Finalized Roles:</h3>
                       {finalRoles.map((role: any) => (
-                        <Card key={role.id} className="border-green-200">
+                        <Card key={role.id}>
                           <CardContent className="p-4">
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <h4 className="font-medium">{role.roleLabel}</h4>
-                                <div className="text-sm text-gray-600">
-                                  {role.shiftStart} - {role.shiftEnd} • {role.slotsBrother + role.slotsSister} slots
+                            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                              <div className="space-y-2">
+                                <Label>Role Name</Label>
+                                <Input
+                                  value={role.roleLabel}
+                                  onChange={(e) => updateRole(role.id, { roleLabel: e.target.value })}
+                                  placeholder="Role name"
+                                />
+                              </div>
+                              
+                              <div className="space-y-2">
+                                <Label>Shift Time</Label>
+                                <div className="flex space-x-2">
+                                  <Input
+                                    type="time"
+                                    value={role.shiftStart}
+                                    onChange={(e) => updateRole(role.id, { shiftStart: e.target.value })}
+                                  />
+                                  <Input
+                                    type="time"
+                                    value={role.shiftEnd}
+                                    onChange={(e) => updateRole(role.id, { shiftEnd: e.target.value })}
+                                  />
                                 </div>
                               </div>
-                              <Badge variant="secondary">Selected</Badge>
+                              
+                              <div className="space-y-2">
+                                <Label>Slots Needed</Label>
+                                <div className="flex space-x-2">
+                                  <div>
+                                    <Input
+                                      type="number"
+                                      min="0"
+                                      value={role.slotsBrother}
+                                      onChange={(e) => updateRole(role.id, { slotsBrother: parseInt(e.target.value) || 0 })}
+                                      placeholder="Brothers"
+                                    />
+                                    <div className="text-xs text-gray-500 mt-1">Brothers</div>
+                                  </div>
+                                  <div>
+                                    <Input
+                                      type="number"
+                                      min="0"
+                                      value={role.slotsSister}
+                                      onChange={(e) => updateRole(role.id, { slotsSister: parseInt(e.target.value) || 0 })}
+                                      placeholder="Sisters"
+                                    />
+                                    <div className="text-xs text-gray-500 mt-1">Sisters</div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="space-y-2">
+                                <Label>Point of Contact</Label>
+                                <div className="flex space-x-2">
+                                  <Select 
+                                    value={role.suggestedPOC || ""} 
+                                    onValueChange={(value) => updateRole(role.id, { suggestedPOC: value })}
+                                  >
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select POC" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {contacts.map((contact: any) => (
+                                        <SelectItem key={contact.id} value={contact.id}>
+                                          {contact.name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => removeRole(role.id)}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                              
+                              <div className="space-y-2 md:col-span-2 lg:col-span-4">
+                                <Label>Notes (Optional)</Label>
+                                <Input
+                                  value={role.notes}
+                                  onChange={(e) => updateRole(role.id, { notes: e.target.value })}
+                                  placeholder="Special instructions or requirements"
+                                />
+                              </div>
                             </div>
                           </CardContent>
                         </Card>
@@ -879,136 +836,8 @@ const EventCreation = () => {
               </div>
             )}
 
-            {/* Volunteer Slots Step */}
-            {currentStep === getStepNumber('volunteer-slots') && (
-              <>
-                <div>
-                  <h2 className="text-xl font-semibold mb-4">Finalize Volunteer Slots</h2>
-                  <p className="text-gray-600 mb-6">
-                    Review and adjust your volunteer roles, shift times, and slot allocations.
-                  </p>
-
-                  <div className="space-y-4">
-                    {finalRoles.map((role: any) => (
-                      <Card key={role.id}>
-                        <CardContent className="p-4">
-                          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div className="space-y-2">
-                              <Label>Role Name</Label>
-                              <Input
-                                value={role.roleLabel}
-                                onChange={(e) => updateRole(role.id, { roleLabel: e.target.value })}
-                                placeholder="Role name"
-                              />
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <Label>Shift Time</Label>
-                              <div className="flex space-x-2">
-                                <Input
-                                  type="time"
-                                  value={role.shiftStart}
-                                  onChange={(e) => updateRole(role.id, { shiftStart: e.target.value })}
-                                />
-                                <Input
-                                  type="time"
-                                  value={role.shiftEnd}
-                                  onChange={(e) => updateRole(role.id, { shiftEnd: e.target.value })}
-                                />
-                              </div>
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <Label>Slots Needed</Label>
-                              <div className="flex space-x-2">
-                                <div>
-                                  <Input
-                                    type="number"
-                                    min="0"
-                                    value={role.slotsBrother}
-                                    onChange={(e) => updateRole(role.id, { slotsBrother: parseInt(e.target.value) || 0 })}
-                                    placeholder="Brothers"
-                                  />
-                                  <div className="text-xs text-gray-500 mt-1">Brothers</div>
-                                </div>
-                                <div>
-                                  <Input
-                                    type="number"
-                                    min="0"
-                                    value={role.slotsSister}
-                                    onChange={(e) => updateRole(role.id, { slotsSister: parseInt(e.target.value) || 0 })}
-                                    placeholder="Sisters"
-                                  />
-                                  <div className="text-xs text-gray-500 mt-1">Sisters</div>
-                                </div>
-                              </div>
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <Label>Point of Contact</Label>
-                              <div className="flex space-x-2">
-                                <Select 
-                                  value={role.suggestedPOC || ""} 
-                                  onValueChange={(value) => updateRole(role.id, { suggestedPOC: value })}
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select POC" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {contacts.map((contact: any) => (
-                                      <SelectItem key={contact.id} value={contact.id}>
-                                        {contact.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => removeRole(role.id)}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </div>
-                            
-                            <div className="space-y-2 md:col-span-2 lg:col-span-4">
-                              <Label>Notes (Optional)</Label>
-                              <Input
-                                value={role.notes}
-                                onChange={(e) => updateRole(role.id, { notes: e.target.value })}
-                                placeholder="Special instructions or requirements"
-                              />
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-
-                  <Button 
-                    variant="outline" 
-                    onClick={addCustomRole}
-                    className="w-full"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Another Role
-                  </Button>
-
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <h4 className="font-medium mb-2">Summary</h4>
-                    <p className="text-sm text-gray-600">
-                      Total volunteer slots: {finalRoles.reduce((sum, role) => sum + role.slotsBrother + role.slotsSister, 0)}
-                      <br />
-                      Roles created: {finalRoles.length}
-                    </p>
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Review & Publish Step */}
-            {currentStep === getStepNumber('review') && (
+            {/* Step 5: Review & Publish */}
+            {currentStep === 5 && (
               <>
                 {/* Event Summary */}
                 <Card className="mb-6">
@@ -1113,7 +942,7 @@ const EventCreation = () => {
           </Button>
           
           <div className="flex space-x-2">
-            {currentStep === (useAdvancedFeatures ? 5 : 4) ? (
+            {currentStep === 5 ? (
               <Button 
                 onClick={publishEvent}
                 className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
