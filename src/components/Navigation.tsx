@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Heart, Calendar, Database, Settings, LogOut, Menu, X } from "lucide-react";
+import { Heart, Calendar, Phone, Settings, LogOut, Menu, X } from "lucide-react";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const Navigation = () => {
 
   const navItems = [
     { label: "Events", path: "/dashboard", icon: Calendar },
-    { label: "Database", path: "/database", icon: Database },
+    { label: "Contacts", path: "/contacts", icon: Phone },
     { label: "Settings", path: "/settings", icon: Settings },
   ];
 

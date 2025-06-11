@@ -9,12 +9,10 @@ import { Event, VolunteerRole, Volunteer } from "@/types/database";
 import EventHeader from "@/components/volunteer/EventHeader";
 import VolunteerRoleCard from "@/components/volunteer/VolunteerRoleCard";
 import SignupModal from "@/components/volunteer/SignupModal";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 const VolunteerSignup = () => {
   const { eventId } = useParams();
   const { toast } = useToast();
-  const isMobile = useIsMobile();
   const [event, setEvent] = useState<(Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] }) | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<VolunteerRole | null>(null);
@@ -277,9 +275,9 @@ const VolunteerSignup = () => {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100 flex items-center justify-center">
         <Card className="w-full max-w-md border-amber-200 bg-white/90 backdrop-blur-sm">
-          <CardContent className="p-6 text-center">
+          <CardContent className="p-8 text-center">
             <h2 className="text-xl font-semibold mb-2 text-amber-800">Event Not Found</h2>
             <div className="text-amber-600">
               The event you're looking for doesn't exist, isn't published yet, or has been removed.
@@ -300,28 +298,28 @@ const VolunteerSignup = () => {
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100">
       <EventHeader event={event} />
 
-      <main className={`container mx-auto ${isMobile ? 'px-2' : 'px-4'} py-6`}>
+      <main className="container mx-auto px-4 py-8">
         {event.description && (
-          <Card className={`mb-6 border-amber-200 bg-white/90 backdrop-blur-sm ${isMobile ? 'p-0' : ''}`}>
-            <CardHeader className={isMobile ? 'p-4' : ''}>
+          <Card className="mb-8 border-amber-200 bg-white/90 backdrop-blur-sm">
+            <CardHeader>
               <CardTitle className="text-amber-800">About This Event</CardTitle>
             </CardHeader>
-            <CardContent className={isMobile ? 'p-4 pt-0' : ''}>
-              <div className="text-amber-700 text-sm md:text-base">{event.description}</div>
+            <CardContent>
+              <div className="text-amber-700">{event.description}</div>
             </CardContent>
           </Card>
         )}
 
-        <Card className={`border-amber-200 bg-white/90 backdrop-blur-sm shadow-xl ${isMobile ? 'p-0' : ''}`}>
-          <CardHeader className={isMobile ? 'p-4' : ''}>
-            <CardTitle className="text-amber-800 text-lg md:text-xl">Available Volunteer Roles</CardTitle>
-            <CardDescription className="text-amber-700 text-xs md:text-sm">
+        <Card className="border-amber-200 bg-white/90 backdrop-blur-sm shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-amber-800">Available Volunteer Roles</CardTitle>
+            <CardDescription className="text-amber-700">
               Choose a role that fits your schedule and sign up to help make this event successful!
             </CardDescription>
           </CardHeader>
-          <CardContent className={isMobile ? 'p-4 pt-0' : ''}>
+          <CardContent>
             {event.volunteer_roles && event.volunteer_roles.length > 0 ? (
-              <div className="space-y-4 md:space-y-6">
+              <div className="space-y-6">
                 {event.volunteer_roles.map((role: VolunteerRole) => {
                   const volunteers = getVolunteersForRole(role.id);
                   
@@ -341,7 +339,7 @@ const VolunteerSignup = () => {
               <div className="text-center py-8">
                 <Users className="w-12 h-12 text-amber-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-amber-800 mb-2">No Roles Available</h3>
-                <div className="text-amber-600 text-sm">Volunteer roles for this event haven't been set up yet.</div>
+                <div className="text-amber-600">Volunteer roles for this event haven't been set up yet.</div>
               </div>
             )}
           </CardContent>

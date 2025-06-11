@@ -5,15 +5,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import Navigation from "@/components/Navigation";
 import { useNavigate } from "react-router-dom";
-import { Calendar, MapPin, Users, Plus, Edit, Eye, Clock, CheckCircle } from "lucide-react";
+import { Plus, Calendar, Users, Eye, Edit, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Event, VolunteerRole, Volunteer } from "@/types/database";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [events, setEvents] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is logged in
@@ -23,23 +24,26 @@ const Dashboard = () => {
         navigate("/login");
         return;
       }
-      loadEvents();
+      await loadEvents();
     };
-
+    
     checkUser();
   }, [navigate]);
 
   const loadEvents = async () => {
     try {
-      setIsLoading(true);
-      // With RLS policies in place, this query will automatically only return events created by the current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
       const { data: eventsData, error } = await supabase
         .from('events')
         .select(`
           *,
-          volunteer_roles(*)
+          volunteer_roles(*),
+          volunteers(*)
         `)
-        .order('start_datetime', { ascending: true });
+        .eq('created_by', user.id)
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error loading events:', error);
@@ -51,194 +55,294 @@ const Dashboard = () => {
         return;
       }
 
-      setEvents(eventsData || []);
+      setEvents((eventsData || []) as Event[]);
     } catch (error) {
       console.error('Error:', error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred.",
-        variant: "destructive",
-      });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const getEventStatus = (event: any) => {
-    const now = new Date();
-    const startDate = new Date(event.start_datetime);
-    const endDate = new Date(event.end_datetime);
-
-    if (event.status === 'draft') {
-      return { label: 'Draft', variant: 'secondary' as const };
-    } else if (now < startDate) {
-      return { label: 'Upcoming', variant: 'default' as const };
-    } else if (now >= startDate && now <= endDate) {
-      return { label: 'In Progress', variant: 'default' as const };
-    } else {
-      return { label: 'Completed', variant: 'secondary' as const };
-    }
+  const getEventStats = (event: Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] }) => {
+    const totalSlots = event.volunteer_roles?.reduce((sum: number, role: VolunteerRole) => 
+      sum + (role.slots_brother || 0) + (role.slots_sister || 0), 0) || 0;
+    
+    const filledSlots = event.volunteers?.length || 0;
+    
+    return {
+      totalSlots,
+      filledSlots,
+      openSlots: totalSlots - filledSlots
+    };
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+  const copySignupLink = (eventId: string) => {
+    const link = `${window.location.origin}/event/${eventId}/signup`;
+    navigator.clipboard.writeText(link);
+    toast({
+      title: "Link Copied",
+      description: "Volunteer sign-up link copied to clipboard.",
     });
   };
 
-  const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    });
+  const openSignupLink = (eventId: string) => {
+    const link = `/event/${eventId}/signup`;
+    window.open(link, '_blank');
   };
 
-  const getTotalSlots = (volunteerRoles: any[]) => {
-    return volunteerRoles?.reduce((total, role) => 
-      total + (role.slots_brother || 0) + (role.slots_sister || 0), 0) || 0;
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100">
+        <Navigation />
+        <main className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="animate-spin w-12 h-12 border-3 border-amber-400 border-t-transparent rounded-full mx-auto mb-6"></div>
+              <p className="text-amber-700 font-medium text-lg">Loading your events...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100">
       <Navigation />
       
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-amber-800 mb-2">Event Dashboard</h1>
-              <p className="text-amber-600">Manage your community events and volunteer coordination</p>
-            </div>
-            <Button 
-              onClick={() => navigate("/events/new")}
-              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Create Event
-            </Button>
+      <main className="container mx-auto px-4 py-4 md:py-8">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 md:mb-12 space-y-4 lg:space-y-0">
+          <div>
+            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent mb-2">
+              Event Dashboard
+            </h1>
+            <p className="text-amber-700 text-base md:text-lg leading-relaxed">
+              Organize events and manage volunteer coordination
+            </p>
           </div>
-
-          {/* Events Grid */}
-          {isLoading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="animate-pulse">
-                  <CardHeader>
-                    <div className="h-4 bg-amber-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-amber-100 rounded w-1/2"></div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-20 bg-amber-50 rounded"></div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : events.length === 0 ? (
-            <div className="text-center py-12">
-              <Calendar className="w-16 h-16 text-amber-400 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-amber-800 mb-2">No events yet</h3>
-              <p className="text-amber-600 mb-6">Create your first community event to get started with volunteer coordination.</p>
-              <Button 
-                onClick={() => navigate("/events/new")}
-                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Create Your First Event
-              </Button>
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.map((event: any) => {
-                const status = getEventStatus(event);
-                const totalSlots = getTotalSlots(event.volunteer_roles);
-                
-                return (
-                  <Card key={event.id} className="bg-white/90 backdrop-blur-sm border-amber-200 shadow-lg hover:shadow-xl transition-all duration-200">
-                    <CardHeader>
-                      <div className="flex justify-between items-start mb-2">
-                        <CardTitle className="text-amber-800 text-lg">{event.title}</CardTitle>
-                        <Badge variant={status.variant} className="text-xs">
-                          {status.label}
-                        </Badge>
-                      </div>
-                      <CardDescription className="text-amber-600">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <Calendar className="w-4 h-4" />
-                          <span>{formatDate(event.start_datetime)}</span>
-                        </div>
-                        <div className="flex items-center space-x-2 mb-1">
-                          <Clock className="w-4 h-4" />
-                          <span>{formatTime(event.start_datetime)} - {formatTime(event.end_datetime)}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <MapPin className="w-4 h-4" />
-                          <span className="truncate">{event.location}</span>
-                        </div>
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between text-sm">
-                          <div className="flex items-center space-x-2 text-amber-700">
-                            <Users className="w-4 h-4" />
-                            <span>{totalSlots} volunteer slots</span>
-                          </div>
-                          <div className="flex items-center space-x-2 text-amber-700">
-                            <CheckCircle className="w-4 h-4" />
-                            <span>{event.volunteer_roles?.length || 0} roles</span>
-                          </div>
-                        </div>
-                        
-                        {event.description && (
-                          <p className="text-sm text-amber-600 line-clamp-2">
-                            {event.description}
-                          </p>
-                        )}
-
-                        <div className="flex space-x-2 pt-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigate(`/events/${event.id}/edit`)}
-                            className="flex-1 border-amber-300 text-amber-700 hover:bg-amber-50"
-                          >
-                            <Edit className="w-4 h-4 mr-1" />
-                            Edit
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigate(`/events/${event.id}/roster`)}
-                            className="flex-1 border-amber-300 text-amber-700 hover:bg-amber-50"
-                          >
-                            <Eye className="w-4 h-4 mr-1" />
-                            Roster
-                          </Button>
-                          {event.status === 'published' && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => navigate(`/events/${event.id}`)}
-                              className="flex-1 border-green-300 text-green-700 hover:bg-green-50"
-                            >
-                              <Users className="w-4 h-4 mr-1" />
-                              View
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
+          <Button 
+            onClick={() => navigate("/events/create")}
+            className="w-full lg:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 md:px-8 py-3 md:py-4 text-base md:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <Plus className="w-4 md:w-5 h-4 md:h-5 mr-2 md:mr-3" />
+            Create Event
+          </Button>
         </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-8 md:mb-12">
+          <Card className="bg-white/80 backdrop-blur-sm border-amber-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
+              <CardTitle className="text-xs md:text-sm font-medium text-amber-800">Total Events</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-gradient-to-br from-amber-400 to-amber-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+                <Calendar className="h-4 md:h-6 w-4 md:w-6 text-white" />
+              </div>
+            </CardHeader>
+            <CardContent className="pb-3 md:pb-4">
+              <div className="text-xl md:text-3xl font-bold text-amber-800 mb-1">{events.length}</div>
+              <p className="text-amber-600 text-xs md:text-sm">Events created</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-white/80 backdrop-blur-sm border-amber-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
+              <CardTitle className="text-xs md:text-sm font-medium text-amber-800">Active Events</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-gradient-to-br from-amber-400 to-amber-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+                <Calendar className="h-4 md:h-6 w-4 md:w-6 text-white" />
+              </div>
+            </CardHeader>
+            <CardContent className="pb-3 md:pb-4">
+              <div className="text-xl md:text-3xl font-bold text-amber-800 mb-1">
+                {events.filter((event: Event) => event.status === "published").length}
+              </div>
+              <p className="text-amber-600 text-xs md:text-sm">Published</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-white/80 backdrop-blur-sm border-amber-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
+              <CardTitle className="text-xs md:text-sm font-medium text-amber-800">Volunteers</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-gradient-to-br from-amber-400 to-amber-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+                <Users className="h-4 md:h-6 w-4 md:w-6 text-white" />
+              </div>
+            </CardHeader>
+            <CardContent className="pb-3 md:pb-4">
+              <div className="text-xl md:text-3xl font-bold text-amber-800 mb-1">
+                {events.reduce((total: number, event: any) => total + (event.volunteers?.length || 0), 0)}
+              </div>
+              <p className="text-amber-600 text-xs md:text-sm">Signed up</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-white/80 backdrop-blur-sm border-amber-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
+              <CardTitle className="text-xs md:text-sm font-medium text-amber-800">Open Spots</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-gradient-to-br from-amber-400 to-amber-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+                <Users className="h-4 md:h-6 w-4 md:w-6 text-white" />
+              </div>
+            </CardHeader>
+            <CardContent className="pb-3 md:pb-4">
+              <div className="text-xl md:text-3xl font-bold text-amber-800 mb-1">
+                {events.reduce((total: number, event: any) => {
+                  const stats = getEventStats(event);
+                  return total + stats.openSlots;
+                }, 0)}
+              </div>
+              <p className="text-amber-600 text-xs md:text-sm">Available</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Events Table */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 shadow-xl">
+          <CardHeader className="border-b border-amber-100 bg-gradient-to-r from-amber-50 to-white">
+            <CardTitle className="text-xl md:text-2xl text-amber-800">Your Events</CardTitle>
+            <CardDescription className="text-amber-700 text-base md:text-lg">
+              Manage your events and track volunteer participation
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            {events.length === 0 ? (
+              <div className="text-center py-12 md:py-20 px-4 md:px-8">
+                <div className="w-16 md:w-20 h-16 md:h-20 bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg">
+                  <Calendar className="w-8 md:w-10 h-8 md:h-10 text-white" />
+                </div>
+                <h3 className="text-xl md:text-2xl font-bold text-amber-800 mb-3 md:mb-4">Start Organizing Events</h3>
+                <p className="text-amber-600 mb-6 md:mb-8 max-w-lg mx-auto leading-relaxed text-base md:text-lg">
+                  Create your first event and start coordinating volunteers
+                </p>
+                <Button 
+                  onClick={() => navigate("/events/create")}
+                  className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 md:px-8 py-3 md:py-4 text-base md:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <Plus className="w-4 md:w-5 h-4 md:h-5 mr-2 md:mr-3" />
+                  Create Your First Event
+                </Button>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[600px]">
+                  <thead>
+                    <tr className="border-b border-amber-100 bg-amber-50/50">
+                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-amber-800 text-sm md:text-base">Event</th>
+                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-amber-800 text-sm md:text-base hidden md:table-cell">Date & Time</th>
+                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-amber-800 text-sm md:text-base">Volunteers</th>
+                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-amber-800 text-sm md:text-base">Status</th>
+                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-amber-800 text-sm md:text-base">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {events.map((event: any, index) => {
+                      const stats = getEventStats(event);
+                      return (
+                        <tr key={event.id} className={`border-b border-amber-100 hover:bg-amber-50/30 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white/50' : 'bg-amber-50/20'}`}>
+                          <td className="py-4 md:py-6 px-3 md:px-6">
+                            <div>
+                              <div className="font-semibold text-amber-800 text-sm md:text-lg mb-1">{event.title}</div>
+                              <div className="text-amber-600 text-xs md:text-sm">{event.location}</div>
+                              <div className="md:hidden text-amber-600 text-xs mt-1">
+                                {new Date(event.start_datetime).toLocaleDateString()}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-4 md:py-6 px-3 md:px-6 hidden md:table-cell">
+                            <div className="space-y-1">
+                              <div className="text-amber-800 font-medium text-sm">
+                                {new Date(event.start_datetime).toLocaleDateString('en-US', { 
+                                  weekday: 'short', 
+                                  month: 'short', 
+                                  day: 'numeric' 
+                                })}
+                              </div>
+                              <div className="text-amber-600 text-xs">
+                                {new Date(event.start_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-4 md:py-6 px-3 md:px-6">
+                            <div className="space-y-1 md:space-y-2">
+                              <div className="flex items-center space-x-1 md:space-x-2">
+                                <div className="text-sm md:text-lg font-semibold text-amber-800">
+                                  {stats.filledSlots} / {stats.totalSlots}
+                                </div>
+                              </div>
+                              <div className="w-full bg-amber-100 rounded-full h-1.5 md:h-2">
+                                <div 
+                                  className="bg-gradient-to-r from-amber-400 to-amber-500 h-1.5 md:h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${stats.totalSlots > 0 ? (stats.filledSlots / stats.totalSlots) * 100 : 0}%` }}
+                                ></div>
+                              </div>
+                              {stats.openSlots > 0 && (
+                                <div className="text-amber-600 text-xs">
+                                  {stats.openSlots} open
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-4 md:py-6 px-3 md:px-6">
+                            <Badge 
+                              variant={event.status === "published" ? "default" : "secondary"}
+                              className={`text-xs ${event.status === "published" 
+                                ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-none shadow-sm" 
+                                : "bg-amber-100 text-amber-700 border-amber-200"
+                              }`}
+                            >
+                              {event.status === "published" ? "Live" : "Draft"}
+                            </Badge>
+                          </td>
+                          <td className="py-4 md:py-6 px-3 md:px-6">
+                            <div className="flex space-x-1 md:space-x-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => navigate(`/events/${event.id}/roster`)}
+                                title="View Roster"
+                                className="border-amber-300 text-amber-700 hover:bg-amber-50 hover:border-amber-400 rounded-lg md:rounded-xl p-1 md:p-2"
+                              >
+                                <Eye className="w-3 md:w-4 h-3 md:h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => navigate(`/events/${event.id}/edit`)}
+                                title="Edit Event"
+                                className="border-amber-300 text-amber-700 hover:bg-amber-50 hover:border-amber-400 rounded-lg md:rounded-xl p-1 md:p-2"
+                              >
+                                <Edit className="w-3 md:w-4 h-3 md:h-4" />
+                              </Button>
+                              {event.status === "published" && (
+                                <>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => copySignupLink(event.id)}
+                                    title="Copy Link"
+                                    className="hidden md:flex border-amber-300 text-amber-700 hover:bg-amber-50 hover:border-amber-400 rounded-xl"
+                                  >
+                                    <Copy className="w-4 h-4" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => openSignupLink(event.id)}
+                                    title="Open Signup"
+                                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-lg md:rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-xs md:text-sm px-2 md:px-3"
+                                  >
+                                    Share
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </main>
     </div>
   );

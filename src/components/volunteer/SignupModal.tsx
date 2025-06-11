@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CheckCircle2 } from "lucide-react";
 import { VolunteerRole, Event } from "@/types/database";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SignupModalProps {
   isOpen: boolean;
@@ -40,7 +39,6 @@ const SignupModal = ({
     gender: "brother" as "brother" | "sister",
     notes: ""
   });
-  const isMobile = useIsMobile();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,19 +52,17 @@ const SignupModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className={`border-amber-200 bg-white/95 backdrop-blur-sm ${isMobile ? 'p-4 w-[calc(100%-16px)] max-w-[calc(100%-16px)] rounded-lg' : ''}`}>
-        <DialogHeader className={isMobile ? 'mb-2 space-y-1' : ''}>
-          <DialogTitle className="text-amber-800">{isMobile ? <div className="text-base">Sign Up for</div> : ''}
-            <div className={isMobile ? 'font-medium' : ''}>{selectedRole?.role_label}</div>
-          </DialogTitle>
-          <DialogDescription className="text-amber-700 text-xs md:text-sm">
+      <DialogContent className="border-amber-200 bg-white/95 backdrop-blur-sm">
+        <DialogHeader>
+          <DialogTitle className="text-amber-800">Sign Up for {selectedRole?.role_label}</DialogTitle>
+          <DialogDescription className="text-amber-700">
             Fill in your information to register for this volunteer role.
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
-          <div className="space-y-1 md:space-y-2">
-            <Label htmlFor="name" className="text-amber-800 text-sm">Full Name *</Label>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-amber-800">Full Name *</Label>
             <Input
               id="name"
               type="text"
@@ -74,12 +70,12 @@ const SignupModal = ({
               value={volunteerData.name}
               onChange={(e) => setVolunteerData(prev => ({ ...prev, name: e.target.value }))}
               required
-              className="border-amber-200 focus:border-amber-400 text-sm md:text-base"
+              className="border-amber-200 focus:border-amber-400"
             />
           </div>
           
-          <div className="space-y-1 md:space-y-2">
-            <Label htmlFor="phone" className="text-amber-800 text-sm">Phone Number *</Label>
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-amber-800">Phone Number *</Label>
             <Input
               id="phone"
               type="tel"
@@ -87,20 +83,20 @@ const SignupModal = ({
               value={volunteerData.phone}
               onChange={(e) => setVolunteerData(prev => ({ ...prev, phone: e.target.value }))}
               required
-              className="border-amber-200 focus:border-amber-400 text-sm md:text-base"
+              className="border-amber-200 focus:border-amber-400"
             />
             <div className="text-xs text-amber-600">
               Used for event reminders and communication
             </div>
           </div>
 
-          <div className="space-y-1 md:space-y-2">
-            <Label htmlFor="gender" className="text-amber-800 text-sm">Gender *</Label>
+          <div className="space-y-2">
+            <Label htmlFor="gender" className="text-amber-800">Gender *</Label>
             <Select 
               value={volunteerData.gender} 
               onValueChange={(value: "brother" | "sister") => setVolunteerData(prev => ({ ...prev, gender: value }))}
             >
-              <SelectTrigger className="border-amber-200 text-sm md:text-base">
+              <SelectTrigger className="border-amber-200">
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
               <SelectContent>
@@ -116,22 +112,22 @@ const SignupModal = ({
             )}
           </div>
           
-          <div className="space-y-1 md:space-y-2">
-            <Label htmlFor="notes" className="text-amber-800 text-sm">Additional Notes (Optional)</Label>
+          <div className="space-y-2">
+            <Label htmlFor="notes" className="text-amber-800">Additional Notes (Optional)</Label>
             <Textarea
               id="notes"
               placeholder="Any special requirements, questions, or information..."
               value={volunteerData.notes}
               onChange={(e) => setVolunteerData(prev => ({ ...prev, notes: e.target.value }))}
-              rows={isMobile ? 2 : 3}
-              className="border-amber-200 focus:border-amber-400 text-sm md:text-base"
+              rows={3}
+              className="border-amber-200 focus:border-amber-400"
             />
           </div>
 
           {selectedRole && (
-            <div className="bg-amber-50 p-3 rounded-lg border border-amber-200 text-sm">
-              <h4 className="font-medium mb-1 text-amber-800 text-xs md:text-sm">Role Details:</h4>
-              <div className="text-xs md:text-sm text-amber-700 space-y-0.5">
+            <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+              <h4 className="font-medium mb-2 text-amber-800">Role Details:</h4>
+              <div className="text-sm text-amber-700 space-y-1">
                 <div><strong>Time:</strong> {selectedRole.shift_start} - {selectedRole.shift_end}</div>
                 <div><strong>Date:</strong> {new Date(event?.start_datetime || '').toLocaleDateString()}</div>
                 <div><strong>Location:</strong> {event?.location}</div>
@@ -139,29 +135,29 @@ const SignupModal = ({
             </div>
           )}
 
-          <div className="flex justify-end space-x-2 pt-3">
+          <div className="flex justify-end space-x-2 pt-4">
             <Button 
               type="button" 
               variant="outline"
               onClick={handleClose}
               disabled={isSubmitting}
-              className="border-amber-300 text-amber-700 hover:bg-amber-50 text-xs md:text-sm"
+              className="border-amber-300 text-amber-700 hover:bg-amber-50"
             >
               Cancel
             </Button>
             <Button 
               type="submit"
               disabled={isSubmitting}
-              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-xs md:text-sm"
+              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white"
             >
               {isSubmitting ? (
                 <>
-                  <div className="animate-spin w-3 h-3 md:w-4 md:h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                  <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
                   Signing Up...
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="w-3 h-3 md:w-4 md:h-4 mr-1.5" />
+                  <CheckCircle2 className="w-4 h-4 mr-2" />
                   Sign Me Up!
                 </>
               )}

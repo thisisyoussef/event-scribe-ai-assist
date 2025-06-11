@@ -73,25 +73,14 @@ const EventCreation = () => {
 
   const loadContacts = async () => {
     try {
-      // Load teams from the database instead of mock data
-      const { data: teamsData, error } = await supabase
-        .from('teams')
-        .select('*')
-        .order('name');
-
-      if (error) {
-        console.error('Error loading teams:', error);
-        return;
-      }
-
-      // Convert teams to contacts format for backward compatibility
-      const teamContacts = teamsData?.map(team => ({
-        id: team.id,
-        name: team.name,
-        phone: team.phone
-      })) || [];
-
-      setContacts(teamContacts);
+      // For now, we'll use a mock contacts array since we don't have a contacts table yet
+      // In a full implementation, you'd fetch from Supabase
+      const mockContacts = [
+        { id: crypto.randomUUID(), name: "Ahmed Hassan", phone: "+1234567890" },
+        { id: crypto.randomUUID(), name: "Fatima Ali", phone: "+1234567891" },
+        { id: crypto.randomUUID(), name: "Omar Khan", phone: "+1234567892" }
+      ];
+      setContacts(mockContacts);
     } catch (error) {
       console.error('Error loading contacts:', error);
     }
@@ -103,9 +92,7 @@ const EventCreation = () => {
         .from('events')
         .select(`
           *,
-          volunteer_roles(*),
-          itineraries(*),
-          additional_details(*)
+          volunteer_roles(*)
         `)
         .eq('id', id)
         .single();
@@ -133,28 +120,6 @@ const EventCreation = () => {
           dayOfTime: eventData.day_of_time || "15:00",
           status: eventData.status as "draft" | "published"
         });
-
-        // Load itinerary if exists
-        if (eventData.itineraries && eventData.itineraries.length > 0) {
-          const loadedItinerary = eventData.itineraries.map((item: any) => ({
-            id: item.id,
-            time: item.time_slot,
-            title: item.title,
-            description: item.description || ""
-          }));
-          setItinerary(loadedItinerary);
-        }
-
-        // Load additional details if exists
-        if (eventData.additional_details && eventData.additional_details.length > 0) {
-          const details = eventData.additional_details[0];
-          setAdditionalDetails({
-            marketingLevel: (details.marketing_level as '' | 'low' | 'medium' | 'high') || '',
-            ageGroups: details.age_groups || [],
-            tone: (details.tone as '' | 'formal' | 'casual' | 'fun') || '',
-            expectedAttendance: details.attendance_estimate || 50
-          });
-        }
 
         // Convert volunteer_roles to finalRoles format
         const roles = eventData.volunteer_roles?.map((role: any) => ({
@@ -352,12 +317,15 @@ const EventCreation = () => {
           return;
         }
 
-        // Delete existing related data
-        await Promise.all([
-          supabase.from('volunteer_roles').delete().eq('event_id', eventId),
-          supabase.from('itineraries').delete().eq('event_id', eventId),
-          supabase.from('additional_details').delete().eq('event_id', eventId)
-        ]);
+        // Delete existing volunteer roles
+        const { error: deleteRolesError } = await supabase
+          .from('volunteer_roles')
+          .delete()
+          .eq('event_id', eventId);
+
+        if (deleteRolesError) {
+          console.error('Error deleting roles:', deleteRolesError);
+        }
       } else {
         // Create new event
         const { data: newEvent, error: eventError } = await supabase
@@ -377,43 +345,6 @@ const EventCreation = () => {
         }
 
         savedEventId = newEvent.id;
-      }
-
-      // Save itinerary if using advanced features
-      if (useAdvancedFeatures && itinerary.length > 0) {
-        const itineraryPayload = itinerary.map(item => ({
-          event_id: savedEventId,
-          time_slot: item.time,
-          title: item.title,
-          description: item.description
-        }));
-
-        const { error: itineraryError } = await supabase
-          .from('itineraries')
-          .insert(itineraryPayload);
-
-        if (itineraryError) {
-          console.error('Error saving itinerary:', itineraryError);
-        }
-      }
-
-      // Save additional details if using advanced features
-      if (useAdvancedFeatures && (additionalDetails.marketingLevel || additionalDetails.ageGroups.length > 0 || additionalDetails.tone)) {
-        const additionalDetailsPayload = {
-          event_id: savedEventId,
-          marketing_level: additionalDetails.marketingLevel || null,
-          age_groups: additionalDetails.ageGroups,
-          tone: additionalDetails.tone || null,
-          attendance_estimate: additionalDetails.expectedAttendance
-        };
-
-        const { error: detailsError } = await supabase
-          .from('additional_details')
-          .insert([additionalDetailsPayload]);
-
-        if (detailsError) {
-          console.error('Error saving additional details:', detailsError);
-        }
       }
 
       // Insert volunteer roles - ensure suggested_poc is always null for now
@@ -531,281 +462,383 @@ const EventCreation = () => {
       startTime: "18:00",
       endTime: "21:00",
       location: "Muslim Community Center - Main Hall",
-      description: "Join us for a community iftar dinner during Ramadan. We'll need volunteers to help with setup, registration, food service, and cleanup. The event will include a brief program after the meal. Setup should begin at 4:00 PM to ensure everything is ready for the 6:00 PM start time.",
+      description: "Join us for a community iftar dinner during Ramadan. We'll need volunteers to help with setup, registration, food service, and cleanup. The event will include a brief program after the meal. Setup should begin 2 hours before the event. We'll need brothers and sisters to help with various tasks including welcoming guests, managing the buffet line, and coordinating activities for children.",
       smsEnabled: true,
       dayBeforeTime: "09:00",
       dayOfTime: "15:00",
       status: "draft"
     });
 
-    if (useAdvancedFeatures) {
-      setItinerary([
-        { id: "1", time: "16:00", title: "Setup", description: "Tables, chairs, decorations" },
-        { id: "2", time: "17:30", title: "Registration", description: "Check-in and welcome" },
-        { id: "3", time: "18:00", title: "Iftar", description: "Breaking fast together" },
-        { id: "4", time: "19:30", title: "Program", description: "Brief spiritual reflection" },
-        { id: "5", time: "20:30", title: "Cleanup", description: "Pack up and clean" }
-      ]);
-
-      setAdditionalDetails({
-        marketingLevel: 'medium',
-        ageGroups: ['Adults (26-40)', 'Families'],
-        tone: 'formal',
-        expectedAttendance: 120
-      });
-    }
-
     toast({
-      title: "Test Data Loaded",
-      description: "Event form has been filled with sample data for testing.",
+      title: "Test data loaded!",
+      description: "Form has been filled with sample event data for testing.",
     });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-4">
-                <h1 className="text-3xl font-bold text-amber-800">
-                  {eventId ? "Edit Event" : "Create New Event"}
-                </h1>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Switch
-                    checked={useAdvancedFeatures}
-                    onCheckedChange={setUseAdvancedFeatures}
-                    className="data-[state=checked]:bg-amber-500"
-                  />
-                  <Label className="text-amber-700">Advanced Features</Label>
-                  <Sparkles className="w-4 h-4 text-amber-500" />
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                onClick={prefillTestData}
-                className="border-amber-300 text-amber-700 hover:bg-amber-50"
-              >
-                <TestTube className="w-4 h-4 mr-2" />
-                Fill Test Data
-              </Button>
-            </div>
+        {/* Header with Steps */}
+        <div className="mb-8">
+          <div className="flex items-center space-x-2 mb-4">
+            <Button variant="ghost" onClick={() => navigate("/dashboard")}>
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Back to Dashboard
+            </Button>
+          </div>
+          
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-3xl font-bold text-gray-900">
+              {eventId ? "Edit Event" : "Create New Event"}
+            </h1>
             
-            {/* Progress */}
-            <div className="flex items-center justify-between mb-6">
-              {steps.map((step, index) => (
-                <div key={step.number} className="flex items-center">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
-                      currentStep >= step.number
-                        ? 'bg-amber-500 text-white'
-                        : 'bg-amber-100 text-amber-600'
-                    }`}
-                  >
-                    {step.number}
-                  </div>
-                  <div className="ml-3 hidden md:block">
-                    <div className="text-sm font-medium text-amber-800">{step.title}</div>
-                    <div className="text-xs text-amber-600">{step.description}</div>
-                  </div>
-                  {index < steps.length - 1 && (
-                    <div className="flex-1 mx-4 h-px bg-amber-200 hidden md:block"></div>
-                  )}
-                </div>
-              ))}
+            {/* Advanced Features Toggle */}
+            <div className="flex items-center space-x-3 bg-white p-3 rounded-lg border">
+              <Sparkles className="w-5 h-5 text-blue-600" />
+              <Label className="text-sm font-medium">Enhanced AI Features</Label>
+              <Switch
+                checked={useAdvancedFeatures}
+                onCheckedChange={setUseAdvancedFeatures}
+              />
             </div>
           </div>
+          
+          {/* Step Indicator */}
+          <div className="flex items-center space-x-4 mb-6 overflow-x-auto">
+            {steps.map((step, index) => (
+              <div key={step.number} className="flex items-center flex-shrink-0">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                  currentStep >= step.number 
+                    ? "bg-blue-600 text-white" 
+                    : "bg-gray-200 text-gray-600"
+                }`}>
+                  {step.number}
+                </div>
+                <div className="ml-2 hidden sm:block">
+                  <div className="text-sm font-medium">{step.title}</div>
+                  <div className="text-xs text-gray-500">{step.description}</div>
+                </div>
+                {index < steps.length - 1 && (
+                  <div className={`w-8 h-0.5 mx-4 ${
+                    currentStep > step.number ? "bg-blue-600" : "bg-gray-200"
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
 
-          {/* Step Content */}
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200 shadow-xl">
-            <CardContent className="p-6">
-              {/* Step 1: Basic Info */}
-              {currentStep === 1 && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-xl font-semibold text-amber-800 mb-4">Event Details</h2>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="title">Event Title</Label>
-                      <Input
-                        id="title"
-                        value={eventData.title}
-                        onChange={(e) => setEventData(prev => ({ ...prev, title: e.target.value }))}
-                        placeholder="e.g., Community Iftar 2025"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="location">Location</Label>
-                      <Input
-                        id="location"
-                        value={eventData.location}
-                        onChange={(e) => setEventData(prev => ({ ...prev, location: e.target.value }))}
-                        placeholder="e.g., Community Center - Main Hall"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="date">Date</Label>
-                      <Input
-                        id="date"
-                        type="date"
-                        value={eventData.date}
-                        onChange={(e) => setEventData(prev => ({ ...prev, date: e.target.value }))}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="startTime">Start Time</Label>
-                      <Input
-                        id="startTime"
-                        type="time"
-                        value={eventData.startTime}
-                        onChange={(e) => setEventData(prev => ({ ...prev, startTime: e.target.value }))}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="endTime">End Time</Label>
-                      <Input
-                        id="endTime"
-                        type="time"
-                        value={eventData.endTime}
-                        onChange={(e) => setEventData(prev => ({ ...prev, endTime: e.target.value }))}
-                        required
-                      />
-                    </div>
-                  </div>
-
+        {/* Step Content */}
+        <Card>
+          <CardContent className="p-6">
+            {/* Step 1: Basic Info */}
+            {currentStep === 1 && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-semibold">Event Information</h2>
+                  {!eventId && (
+                    <Button 
+                      variant="outline" 
+                      onClick={prefillTestData}
+                      className="text-sm"
+                    >
+                      <TestTube className="w-4 h-4 mr-2" />
+                      Prefill with Test Data
+                    </Button>
+                  )}
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="description">Description</Label>
+                    <Label htmlFor="title">Event Title</Label>
+                    <Input
+                      id="title"
+                      value={eventData.title}
+                      onChange={(e) => setEventData(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Community Iftar 2025"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="date">Event Date</Label>
+                    <Input
+                      id="date"
+                      type="date"
+                      value={eventData.date}
+                      onChange={(e) => setEventData(prev => ({ ...prev, date: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="startTime">Start Time</Label>
+                    <Input
+                      id="startTime"
+                      type="time"
+                      value={eventData.startTime}
+                      onChange={(e) => setEventData(prev => ({ ...prev, startTime: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="endTime">End Time</Label>
+                    <Input
+                      id="endTime"
+                      type="time"
+                      value={eventData.endTime}
+                      onChange={(e) => setEventData(prev => ({ ...prev, endTime: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="location">Location</Label>
+                    <Input
+                      id="location"
+                      value={eventData.location}
+                      onChange={(e) => setEventData(prev => ({ ...prev, location: e.target.value }))}
+                      placeholder="Muslim Community Center"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="description">Event Description</Label>
                     <Textarea
                       id="description"
                       value={eventData.description}
                       onChange={(e) => setEventData(prev => ({ ...prev, description: e.target.value }))}
-                      placeholder="Describe your event, activities, and any special instructions..."
+                      placeholder="Describe your event, mention roles needed, timing requirements, and any specific instructions..."
                       rows={4}
                     />
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Step 2: Enhanced Details (Advanced Mode) / AI Parsing (Simple Mode) */}
-              {currentStep === 2 && useAdvancedFeatures && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-xl font-semibold text-amber-800 mb-4">Enhanced Event Details</h2>
-                    <p className="text-amber-600 mb-6">
-                      Add detailed itinerary and preferences to help AI generate better volunteer roles.
+            {/* Step 2: Enhanced Details (Advanced Mode) or AI Parsing (Simple Mode) */}
+            {currentStep === 2 && (
+              <div className="space-y-6">
+                {useAdvancedFeatures ? (
+                  <>
+                    <h2 className="text-xl font-semibold mb-4">Enhanced Event Details</h2>
+                    <p className="text-gray-600 mb-6">
+                      Add detailed itinerary and preferences to help AI generate more precise volunteer roles and suggestions.
                     </p>
-                  </div>
-
-                  <div className="space-y-6">
+                    
+                    <ItineraryEditor
+                      itinerary={itinerary}
+                      onItineraryChange={setItinerary}
+                      startTime={eventData.startTime}
+                      endTime={eventData.endTime}
+                    />
+                    
+                    <AdditionalDetailsWizard
+                      details={additionalDetails}
+                      onDetailsChange={setAdditionalDetails}
+                      isExpanded={showAdditionalDetails}
+                      onToggleExpand={setShowAdditionalDetails}
+                    />
+                  </>
+                ) : (
+                  <>
+                    {/* Simple AI Parsing Step */}
                     <div>
-                      <h3 className="text-lg font-medium text-amber-800 mb-3">Event Itinerary</h3>
-                      <ItineraryEditor 
-                        itinerary={itinerary}
-                        onItineraryChange={setItinerary}
-                        startTime={eventData.startTime}
-                        endTime={eventData.endTime}
-                      />
+                      <h2 className="text-xl font-semibold mb-4">AI-Assisted Role Generation</h2>
+                      <p className="text-gray-600 mb-6">
+                        Let AI analyze your event description to suggest volunteer roles, shift times, and slot requirements.
+                      </p>
+                      
+                      {aiSuggestions.length === 0 && !isLoading && (
+                        <div className="text-center py-8">
+                          <Zap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+                          <Button 
+                            onClick={parseWithAI}
+                            className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+                            disabled={!eventData.description}
+                          >
+                            <Zap className="w-4 h-4 mr-2" />
+                            Parse Description with AI
+                          </Button>
+                          {!eventData.description && (
+                            <p className="text-sm text-gray-500 mt-2">Add an event description first</p>
+                          )}
+                        </div>
+                      )}
+
+                      {isLoading && (
+                        <div className="text-center py-8">
+                          <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+                          <p>AI is analyzing your event description...</p>
+                        </div>
+                      )}
+
+                      {aiSuggestions.length > 0 && (
+                        <div className="space-y-4">
+                          <h3 className="font-medium">AI Suggestions:</h3>
+                          {aiSuggestions.map((suggestion: any) => (
+                            <Card key={suggestion.id} className="border-blue-200">
+                              <CardContent className="p-4">
+                                <div className="flex justify-between items-start">
+                                  <div className="flex-1">
+                                    <h4 className="font-medium">{suggestion.roleLabel}</h4>
+                                    <div className="text-sm text-gray-600 space-y-1 mt-2">
+                                      <div className="flex items-center space-x-2">
+                                        <Clock className="w-4 h-4" />
+                                        <span>{suggestion.shiftStart} - {suggestion.shiftEnd}</span>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <Users className="w-4 h-4" />
+                                        <span>
+                                          {suggestion.slotsBrother} brothers, {suggestion.slotsSister} sisters
+                                        </span>
+                                      </div>
+                                      {suggestion.notes && (
+                                        <p className="text-gray-500">{suggestion.notes}</p>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div className="flex space-x-2 ml-4">
+                                    <Button 
+                                      size="sm"
+                                      onClick={() => acceptSuggestion(suggestion)}
+                                      className="bg-green-600 hover:bg-green-700"
+                                    >
+                                      Accept
+                                    </Button>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      )}
+
+                      {finalRoles.length > 0 && (
+                        <div className="mt-6 space-y-4">
+                          <h3 className="font-medium">Selected Roles:</h3>
+                          {finalRoles.map((role: any) => (
+                            <Card key={role.id} className="border-green-200">
+                              <CardContent className="p-4">
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <h4 className="font-medium">{role.roleLabel}</h4>
+                                    <div className="text-sm text-gray-600">
+                                      {role.shiftStart} - {role.shiftEnd} • {role.slotsBrother + role.slotsSister} slots
+                                    </div>
+                                  </div>
+                                  <Badge variant="secondary">Selected</Badge>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      )}
+                      
+                      <Button 
+                        variant="outline" 
+                        onClick={addCustomRole}
+                        className="w-full"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Custom Role
+                      </Button>
                     </div>
+                  </>
+                )}
+              </div>
+            )}
 
-                    <div className="border-t border-amber-200 pt-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-medium text-amber-800">Additional Details</h3>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setShowAdditionalDetails(!showAdditionalDetails)}
-                          className="border-amber-300 text-amber-700 hover:bg-amber-50"
-                        >
-                          {showAdditionalDetails ? 'Hide' : 'Show'} Details
-                        </Button>
-                      </div>
-
-                      {showAdditionalDetails && (
-                        <AdditionalDetailsWizard
-                          details={additionalDetails}
-                          onDetailsChange={setAdditionalDetails}
-                          isExpanded={showAdditionalDetails}
-                          onToggleExpand={setShowAdditionalDetails}
-                        />
+            {/* AI Parsing Step (Advanced Mode) */}
+            {currentStep === getStepNumber('ai-parsing') && useAdvancedFeatures && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-xl font-semibold mb-4">Enhanced AI Role Generation</h2>
+                  <p className="text-gray-600 mb-6">
+                    AI will analyze your itinerary, event details, and preferences to generate tailored volunteer roles.
+                  </p>
+                  
+                  {/* Enhanced AI parsing display */}
+                  {itinerary.length > 0 && (
+                    <Card className="mb-4 border-green-200 bg-green-50">
+                      <CardContent className="p-4">
+                        <h4 className="font-medium text-green-800 mb-2">Itinerary Preview:</h4>
+                        <div className="space-y-1">
+                          {itinerary.slice(0, 3).map((item) => (
+                            <div key={item.id} className="text-sm text-green-700">
+                              {item.time} - {item.title}
+                            </div>
+                          ))}
+                          {itinerary.length > 3 && (
+                            <div className="text-sm text-green-600">+ {itinerary.length - 3} more items</div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                  
+                  {aiSuggestions.length === 0 && !isLoading && (
+                    <div className="text-center py-8">
+                      <Zap className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+                      <Button 
+                        onClick={parseWithAI}
+                        className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+                        disabled={!eventData.description}
+                      >
+                        <Zap className="w-4 h-4 mr-2" />
+                        Parse Description with AI
+                      </Button>
+                      {!eventData.description && (
+                        <p className="text-sm text-gray-500 mt-2">Add an event description first</p>
                       )}
                     </div>
-                  </div>
-                </div>
-              )}
+                  )}
 
-              {/* AI Parsing Step */}
-              {((currentStep === 2 && !useAdvancedFeatures) || (currentStep === 3 && useAdvancedFeatures)) && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-xl font-semibold text-amber-800 mb-4">AI Role Generation</h2>
-                    <p className="text-amber-600 mb-6">
-                      {useAdvancedFeatures 
-                        ? "Generate volunteer roles based on your event details, itinerary, and preferences."
-                        : "Generate volunteer roles based on your event description."
-                      }
-                    </p>
-                  </div>
+                  {isLoading && (
+                    <div className="text-center py-8">
+                      <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+                      <p>AI is analyzing your event description...</p>
+                    </div>
+                  )}
 
-                  <div className="text-center">
-                    <Button
-                      onClick={parseWithAI}
-                      disabled={isLoading}
-                      className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-8 py-3 text-lg"
-                    >
-                      {isLoading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                          Generating Roles...
-                        </>
-                      ) : (
-                        <>
-                          <Zap className="w-5 h-5 mr-3" />
-                          Generate with AI
-                        </>
-                      )}
-                    </Button>
-                  </div>
-
-                  {/* AI Suggestions */}
                   {aiSuggestions.length > 0 && (
                     <div className="space-y-4">
-                      <h3 className="text-lg font-medium text-amber-800">AI Suggestions</h3>
-                      {aiSuggestions.map((suggestion) => (
-                        <Card key={suggestion.id} className="border-amber-200">
+                      <h3 className="font-medium">AI Suggestions:</h3>
+                      {aiSuggestions.map((suggestion: any) => (
+                        <Card key={suggestion.id} className="border-blue-200">
                           <CardContent className="p-4">
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
-                                <h4 className="font-medium text-amber-800">{suggestion.roleLabel}</h4>
-                                <div className="flex items-center space-x-4 text-sm text-amber-600 mt-1">
-                                  <div className="flex items-center space-x-1">
+                                <h4 className="font-medium">{suggestion.roleLabel}</h4>
+                                <div className="text-sm text-gray-600 space-y-1 mt-2">
+                                  <div className="flex items-center space-x-2">
                                     <Clock className="w-4 h-4" />
                                     <span>{suggestion.shiftStart} - {suggestion.shiftEnd}</span>
                                   </div>
-                                  <div className="flex items-center space-x-1">
+                                  <div className="flex items-center space-x-2">
                                     <Users className="w-4 h-4" />
-                                    <span>{suggestion.slotsBrother}B / {suggestion.slotsSister}S</span>
+                                    <span>
+                                      {suggestion.slotsBrother} brothers, {suggestion.slotsSister} sisters
+                                    </span>
                                   </div>
+                                  {suggestion.notes && (
+                                    <p className="text-gray-500">{suggestion.notes}</p>
+                                  )}
                                 </div>
-                                <p className="text-sm text-amber-700 mt-2">{suggestion.notes}</p>
                               </div>
-                              <Button
-                                onClick={() => acceptSuggestion(suggestion)}
-                                className="bg-amber-500 hover:bg-amber-600 text-white"
-                              >
-                                Accept
-                              </Button>
+                              <div className="flex space-x-2 ml-4">
+                                <Button 
+                                  size="sm"
+                                  onClick={() => acceptSuggestion(suggestion)}
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  Accept
+                                </Button>
+                              </div>
                             </div>
                           </CardContent>
                         </Card>
@@ -813,362 +846,291 @@ const EventCreation = () => {
                     </div>
                   )}
 
-                  {/* Accepted Roles Preview */}
                   {finalRoles.length > 0 && (
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-medium text-amber-800">Accepted Roles</h3>
-                      {finalRoles.map((role) => (
-                        <Card key={role.id} className="border-green-200 bg-green-50">
+                    <div className="mt-6 space-y-4">
+                      <h3 className="font-medium">Selected Roles:</h3>
+                      {finalRoles.map((role: any) => (
+                        <Card key={role.id} className="border-green-200">
                           <CardContent className="p-4">
-                            <div className="flex justify-between items-start">
-                              <div className="flex-1">
-                                <h4 className="font-medium text-green-800">{role.roleLabel}</h4>
-                                <div className="flex items-center space-x-4 text-sm text-green-600 mt-1">
-                                  <div className="flex items-center space-x-1">
-                                    <Clock className="w-4 h-4" />
-                                    <span>{role.shiftStart} - {role.shiftEnd}</span>
-                                  </div>
-                                  <div className="flex items-center space-x-1">
-                                    <Users className="w-4 h-4" />
-                                    <span>{role.slotsBrother}B / {role.slotsSister}S</span>
-                                  </div>
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <h4 className="font-medium">{role.roleLabel}</h4>
+                                <div className="text-sm text-gray-600">
+                                  {role.shiftStart} - {role.shiftEnd} • {role.slotsBrother + role.slotsSister} slots
                                 </div>
                               </div>
-                              <Badge variant="secondary" className="bg-green-100 text-green-800">
-                                ✓ Accepted
-                              </Badge>
+                              <Badge variant="secondary">Selected</Badge>
                             </div>
                           </CardContent>
                         </Card>
                       ))}
                     </div>
                   )}
+                  
+                  <Button 
+                    variant="outline" 
+                    onClick={addCustomRole}
+                    className="w-full"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Custom Role
+                  </Button>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Volunteer Slots Step */}
-              {((currentStep === 3 && !useAdvancedFeatures) || (currentStep === 4 && useAdvancedFeatures)) && (
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h2 className="text-xl font-semibold text-amber-800 mb-2">Volunteer Slots</h2>
-                      <p className="text-amber-600">Fine-tune your volunteer roles and slot requirements.</p>
-                    </div>
-                    <Button
-                      onClick={addCustomRole}
-                      variant="outline"
-                      className="border-amber-300 text-amber-700 hover:bg-amber-50"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Custom Role
-                    </Button>
-                  </div>
+            {/* Volunteer Slots Step */}
+            {currentStep === getStepNumber('volunteer-slots') && (
+              <>
+                <div>
+                  <h2 className="text-xl font-semibold mb-4">Finalize Volunteer Slots</h2>
+                  <p className="text-gray-600 mb-6">
+                    Review and adjust your volunteer roles, shift times, and slot allocations.
+                  </p>
 
                   <div className="space-y-4">
-                    {finalRoles.map((role, index) => (
-                      <Card key={role.id} className="border-amber-200">
+                    {finalRoles.map((role: any) => (
+                      <Card key={role.id}>
                         <CardContent className="p-4">
-                          <div className="grid md:grid-cols-12 gap-4 items-start">
-                            <div className="md:col-span-3">
-                              <Label htmlFor={`role-${index}`}>Role Name</Label>
+                          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div className="space-y-2">
+                              <Label>Role Name</Label>
                               <Input
-                                id={`role-${index}`}
                                 value={role.roleLabel}
                                 onChange={(e) => updateRole(role.id, { roleLabel: e.target.value })}
-                                placeholder="Enter role name"
+                                placeholder="Role name"
                               />
                             </div>
                             
-                            <div className="md:col-span-2">
-                              <Label htmlFor={`start-${index}`}>Start Time</Label>
+                            <div className="space-y-2">
+                              <Label>Shift Time</Label>
+                              <div className="flex space-x-2">
+                                <Input
+                                  type="time"
+                                  value={role.shiftStart}
+                                  onChange={(e) => updateRole(role.id, { shiftStart: e.target.value })}
+                                />
+                                <Input
+                                  type="time"
+                                  value={role.shiftEnd}
+                                  onChange={(e) => updateRole(role.id, { shiftEnd: e.target.value })}
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label>Slots Needed</Label>
+                              <div className="flex space-x-2">
+                                <div>
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    value={role.slotsBrother}
+                                    onChange={(e) => updateRole(role.id, { slotsBrother: parseInt(e.target.value) || 0 })}
+                                    placeholder="Brothers"
+                                  />
+                                  <div className="text-xs text-gray-500 mt-1">Brothers</div>
+                                </div>
+                                <div>
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    value={role.slotsSister}
+                                    onChange={(e) => updateRole(role.id, { slotsSister: parseInt(e.target.value) || 0 })}
+                                    placeholder="Sisters"
+                                  />
+                                  <div className="text-xs text-gray-500 mt-1">Sisters</div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label>Point of Contact</Label>
+                              <div className="flex space-x-2">
+                                <Select 
+                                  value={role.suggestedPOC || ""} 
+                                  onValueChange={(value) => updateRole(role.id, { suggestedPOC: value })}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select POC" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {contacts.map((contact: any) => (
+                                      <SelectItem key={contact.id} value={contact.id}>
+                                        {contact.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => removeRole(role.id)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-2 md:col-span-2 lg:col-span-4">
+                              <Label>Notes (Optional)</Label>
                               <Input
-                                id={`start-${index}`}
-                                type="time"
-                                value={role.shiftStart}
-                                onChange={(e) => updateRole(role.id, { shiftStart: e.target.value })}
+                                value={role.notes}
+                                onChange={(e) => updateRole(role.id, { notes: e.target.value })}
+                                placeholder="Special instructions or requirements"
                               />
                             </div>
-                            
-                            <div className="md:col-span-2">
-                              <Label htmlFor={`end-${index}`}>End Time</Label>
-                              <Input
-                                id={`end-${index}`}
-                                type="time"
-                                value={role.shiftEnd}
-                                onChange={(e) => updateRole(role.id, { shiftEnd: e.target.value })}
-                              />
-                            </div>
-                            
-                            <div className="md:col-span-1">
-                              <Label htmlFor={`brother-${index}`}>Brothers</Label>
-                              <Input
-                                id={`brother-${index}`}
-                                type="number"
-                                min="0"
-                                value={role.slotsBrother}
-                                onChange={(e) => updateRole(role.id, { slotsBrother: parseInt(e.target.value) || 0 })}
-                              />
-                            </div>
-                            
-                            <div className="md:col-span-1">
-                              <Label htmlFor={`sister-${index}`}>Sisters</Label>
-                              <Input
-                                id={`sister-${index}`}
-                                type="number"
-                                min="0"
-                                value={role.slotsSister}
-                                onChange={(e) => updateRole(role.id, { slotsSister: parseInt(e.target.value) || 0 })}
-                              />
-                            </div>
-
-                            <div className="md:col-span-2">
-                              <Label htmlFor={`poc-${index}`}>Point of Contact</Label>
-                              <Select
-                                value={role.suggestedPOC || "none"}
-                                onValueChange={(value) => updateRole(role.id, { suggestedPOC: value === "none" ? null : value })}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select POC" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="none">No POC</SelectItem>
-                                  {contacts.map((contact) => (
-                                    <SelectItem key={contact.id} value={contact.id}>
-                                      {contact.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            
-                            <div className="md:col-span-1 flex items-end">
-                              <Button
-                                onClick={() => removeRole(role.id)}
-                                variant="outline"
-                                size="sm"
-                                className="border-red-300 text-red-700 hover:bg-red-50"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                          
-                          <div className="mt-4">
-                            <Label htmlFor={`notes-${index}`}>Notes</Label>
-                            <Textarea
-                              id={`notes-${index}`}
-                              value={role.notes}
-                              onChange={(e) => updateRole(role.id, { notes: e.target.value })}
-                              placeholder="Additional notes or requirements for this role"
-                              rows={2}
-                            />
                           </div>
                         </CardContent>
                       </Card>
                     ))}
                   </div>
 
-                  {finalRoles.length === 0 && (
-                    <div className="text-center py-8">
-                      <Users className="w-12 h-12 text-amber-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-amber-800 mb-2">No volunteer roles yet</h3>
-                      <p className="text-amber-600 mb-4">
-                        {useAdvancedFeatures 
-                          ? "Generate roles with AI or add custom roles to get started."
-                          : "Go back to generate roles with AI or add custom roles manually."
-                        }
-                      </p>
-                      <Button
-                        onClick={addCustomRole}
-                        className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add First Role
-                      </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={addCustomRole}
+                    className="w-full"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Another Role
+                  </Button>
+
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h4 className="font-medium mb-2">Summary</h4>
+                    <p className="text-sm text-gray-600">
+                      Total volunteer slots: {finalRoles.reduce((sum, role) => sum + role.slotsBrother + role.slotsSister, 0)}
+                      <br />
+                      Roles created: {finalRoles.length}
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Review & Publish Step */}
+            {currentStep === getStepNumber('review') && (
+              <>
+                {/* Event Summary */}
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Calendar className="w-5 h-5" />
+                      <span>Event Summary</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="font-medium">{eventData.title}</h4>
+                        <div className="text-sm text-gray-600 space-y-1 mt-2">
+                          <div className="flex items-center space-x-2">
+                            <Calendar className="w-4 h-4" />
+                            <span>{new Date(eventData.date).toLocaleDateString()}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Clock className="w-4 h-4" />
+                            <span>{eventData.startTime} - {eventData.endTime}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <MapPin className="w-4 h-4" />
+                            <span>{eventData.location}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <h5 className="font-medium mb-2">Volunteer Roles</h5>
+                        <div className="space-y-1">
+                          {finalRoles.map((role: any) => (
+                            <div key={role.id} className="text-sm text-gray-600">
+                              {role.roleLabel}: {role.slotsBrother + role.slotsSister} slots
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  )}
-                </div>
-              )}
+                  </CardContent>
+                </Card>
 
-              {/* Review & Publish Step */}
-              {((currentStep === 4 && !useAdvancedFeatures) || (currentStep === 5 && useAdvancedFeatures)) && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-xl font-semibold text-amber-800 mb-4">Review & Publish</h2>
-                    <p className="text-amber-600 mb-6">Review your event details and volunteer requirements before publishing.</p>
-                  </div>
-
-                  {/* Event Summary */}
-                  <Card className="border-amber-200">
-                    <CardHeader>
-                      <CardTitle className="text-amber-800">Event Summary</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                          <h4 className="font-medium text-amber-800">Basic Information</h4>
-                          <div className="mt-2 space-y-1 text-sm text-amber-700">
-                            <div><strong>Title:</strong> {eventData.title}</div>
-                            <div><strong>Date:</strong> {eventData.date}</div>
-                            <div><strong>Time:</strong> {eventData.startTime} - {eventData.endTime}</div>
-                            <div><strong>Location:</strong> {eventData.location}</div>
-                          </div>
+                {/* SMS Settings */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>SMS Reminder Settings</CardTitle>
+                    <CardDescription>
+                      Configure automatic reminders for volunteers
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label>Enable SMS Reminders</Label>
+                        <p className="text-sm text-gray-500">Send automatic reminders to volunteers</p>
+                      </div>
+                      <Switch
+                        checked={eventData.smsEnabled}
+                        onCheckedChange={(checked) => setEventData(prev => ({ ...prev, smsEnabled: checked }))}
+                      />
+                    </div>
+                    
+                    {eventData.smsEnabled && (
+                      <div className="grid md:grid-cols-2 gap-4 pt-4 border-t">
+                        <div className="space-y-2">
+                          <Label>Day Before Reminder</Label>
+                          <Input
+                            type="time"
+                            value={eventData.dayBeforeTime}
+                            onChange={(e) => setEventData(prev => ({ ...prev, dayBeforeTime: e.target.value }))}
+                          />
+                          <p className="text-xs text-gray-500">Time to send reminder the day before</p>
                         </div>
-                        <div>
-                          <h4 className="font-medium text-amber-800">Settings</h4>
-                          <div className="mt-2 space-y-1 text-sm text-amber-700">
-                            <div><strong>SMS Reminders:</strong> {eventData.smsEnabled ? 'Enabled' : 'Disabled'}</div>
-                            <div><strong>Day Before:</strong> {eventData.dayBeforeTime}</div>
-                            <div><strong>Day Of:</strong> {eventData.dayOfTime}</div>
-                            <div><strong>Total Roles:</strong> {finalRoles.length}</div>
-                          </div>
+                        
+                        <div className="space-y-2">
+                          <Label>Day Of Reminder</Label>
+                          <Input
+                            type="time"
+                            value={eventData.dayOfTime}
+                            onChange={(e) => setEventData(prev => ({ ...prev, dayOfTime: e.target.value }))}
+                          />
+                          <p className="text-xs text-gray-500">Time to send reminder on event day</p>
                         </div>
                       </div>
-                      {eventData.description && (
-                        <div className="mt-4">
-                          <h4 className="font-medium text-amber-800">Description</h4>
-                          <p className="mt-1 text-sm text-amber-700">{eventData.description}</p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                    )}
+                  </CardContent>
+                </Card>
+              </>
+            )}
+          </CardContent>
+        </Card>
 
-                  {/* Volunteer Roles Summary */}
-                  <Card className="border-amber-200">
-                    <CardHeader>
-                      <CardTitle className="text-amber-800">Volunteer Roles ({finalRoles.length})</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        {finalRoles.map((role) => (
-                          <div key={role.id} className="flex justify-between items-center py-2 border-b border-amber-100 last:border-0">
-                            <div>
-                              <div className="font-medium text-amber-800">{role.roleLabel}</div>
-                              <div className="text-sm text-amber-600">
-                                {role.shiftStart} - {role.shiftEnd} • {role.slotsBrother}B / {role.slotsSister}S
-                              </div>
-                            </div>
-                            <Badge variant="outline" className="border-amber-300 text-amber-700">
-                              {role.slotsBrother + role.slotsSister} slots
-                            </Badge>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Advanced Features Summary */}
-                  {useAdvancedFeatures && (
-                    <>
-                      {itinerary.length > 0 && (
-                        <Card className="border-amber-200">
-                          <CardHeader>
-                            <CardTitle className="text-amber-800">Event Itinerary ({itinerary.length} items)</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="space-y-2">
-                              {itinerary.map((item) => (
-                                <div key={item.id} className="flex items-center space-x-3 text-sm">
-                                  <div className="font-medium text-amber-800 w-16">{item.time}</div>
-                                  <div className="flex-1">
-                                    <div className="font-medium text-amber-700">{item.title}</div>
-                                    {item.description && (
-                                      <div className="text-amber-600">{item.description}</div>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      )}
-
-                      {(additionalDetails.marketingLevel || additionalDetails.ageGroups.length > 0 || additionalDetails.tone) && (
-                        <Card className="border-amber-200">
-                          <CardHeader>
-                            <CardTitle className="text-amber-800">Additional Details</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="grid md:grid-cols-2 gap-4 text-sm">
-                              {additionalDetails.marketingLevel && (
-                                <div>
-                                  <div className="font-medium text-amber-800">Marketing Level</div>
-                                  <div className="text-amber-700 capitalize">{additionalDetails.marketingLevel}</div>
-                                </div>
-                              )}
-                              {additionalDetails.tone && (
-                                <div>
-                                  <div className="font-medium text-amber-800">Tone</div>
-                                  <div className="text-amber-700 capitalize">{additionalDetails.tone}</div>
-                                </div>
-                              )}
-                              <div>
-                                <div className="font-medium text-amber-800">Expected Attendance</div>
-                                <div className="text-amber-700">{additionalDetails.expectedAttendance} people</div>
-                              </div>
-                              {additionalDetails.ageGroups.length > 0 && (
-                                <div>
-                                  <div className="font-medium text-amber-800">Age Groups</div>
-                                  <div className="text-amber-700">{additionalDetails.ageGroups.join(', ')}</div>
-                                </div>
-                              )}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      )}
-                    </>
-                  )}
-
-                  {/* Publish Button */}
-                  <div className="text-center pt-4">
-                    <Button
-                      onClick={publishEvent}
-                      className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-8 py-3 text-lg"
-                    >
-                      <Calendar className="w-5 h-5 mr-3" />
-                      {eventId ? "Update Event" : "Publish Event"}
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Navigation */}
-          <div className="flex justify-between mt-6">
-            <Button
-              onClick={prevStep}
-              disabled={currentStep === 1}
-              variant="outline"
-              className="border-amber-300 text-amber-700 hover:bg-amber-50"
-            >
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              Previous
-            </Button>
-            
-            <div className="flex items-center space-x-2">
-              {((currentStep === 2 && !useAdvancedFeatures) || (currentStep === 3 && useAdvancedFeatures)) && (
-                <Button
-                  onClick={() => setCurrentStep(currentStep + 1)}
-                  disabled={finalRoles.length === 0}
-                  variant="outline"
-                  className="border-amber-300 text-amber-700 hover:bg-amber-50"
-                >
-                  Skip AI & Add Manually
-                </Button>
-              )}
-              
-              {currentStep < (useAdvancedFeatures ? 5 : 4) && (
-                <Button
-                  onClick={nextStep}
-                  disabled={!canProceed()}
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
-                >
-                  Next
-                  <ChevronRight className="w-4 h-4 ml-2" />
-                </Button>
-              )}
-            </div>
+        {/* Navigation Buttons */}
+        <div className="flex justify-between mt-6">
+          <Button 
+            variant="outline" 
+            onClick={prevStep}
+            disabled={currentStep === 1}
+          >
+            <ChevronLeft className="w-4 h-4 mr-2" />
+            Previous
+          </Button>
+          
+          <div className="flex space-x-2">
+            {currentStep === (useAdvancedFeatures ? 5 : 4) ? (
+              <Button 
+                onClick={publishEvent}
+                className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+                disabled={!canProceed()}
+              >
+                {eventId ? "Update Event" : "Publish Event"}
+              </Button>
+            ) : (
+              <Button 
+                onClick={nextStep}
+                disabled={!canProceed()}
+                className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+              >
+                Next
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
+            )}
           </div>
         </div>
       </main>
