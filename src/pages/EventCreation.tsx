@@ -209,66 +209,111 @@ const EventCreation = () => {
     
     let mockSuggestions = [];
     
-    if (itinerary.length > 0) {
-      // Generate more detailed suggestions based on itinerary
-      mockSuggestions = itinerary.map(item => ({
+    // Always include standard roles for most events
+    const standardRoles = [];
+    
+    // Setup role (4-8 people depending on scale)
+    const setupCount = additionalDetails.expectedAttendance > 100 ? 8 : 4;
+    standardRoles.push({
+      id: crypto.randomUUID(),
+      roleLabel: "Setup Team",
+      shiftStart: addTimeMinutes(eventData.startTime, -60), // 1 hour before event
+      shiftEnd: eventData.startTime,
+      slotsBrother: Math.ceil(setupCount * 0.6),
+      slotsSister: Math.floor(setupCount * 0.4),
+      suggestedPOC: null,
+      notes: "Setup tables, chairs, decorations, and equipment before the event"
+    });
+
+    // Cleanup role (mirrors setup)
+    standardRoles.push({
+      id: crypto.randomUUID(),
+      roleLabel: "Cleanup Team",
+      shiftStart: addTimeMinutes(eventData.endTime, -30),
+      shiftEnd: addTimeMinutes(eventData.endTime, 60),
+      slotsBrother: Math.ceil(setupCount * 0.6),
+      slotsSister: Math.floor(setupCount * 0.4),
+      suggestedPOC: null,
+      notes: "Post-event cleanup, breakdown, and venue restoration"
+    });
+
+    // Check-in role (2 guys 2 girls)
+    standardRoles.push({
+      id: crypto.randomUUID(),
+      roleLabel: "Registration & Check-in",
+      shiftStart: addTimeMinutes(eventData.startTime, -15),
+      shiftEnd: addTimeMinutes(eventData.startTime, 60),
+      slotsBrother: 2,
+      slotsSister: 2,
+      suggestedPOC: null,
+      notes: "Welcome guests, manage registration, and provide event information"
+    });
+
+    // Ushers/floaters (2-8 depending on scale)
+    const usherCount = additionalDetails.expectedAttendance > 150 ? 8 : additionalDetails.expectedAttendance > 75 ? 4 : 2;
+    standardRoles.push({
+      id: crypto.randomUUID(),
+      roleLabel: "Ushers & Floaters",
+      shiftStart: eventData.startTime,
+      shiftEnd: eventData.endTime,
+      slotsBrother: Math.ceil(usherCount * 0.5),
+      slotsSister: Math.floor(usherCount * 0.5),
+      suggestedPOC: null,
+      notes: "Assist guests, manage crowds, and provide general event support"
+    });
+
+    // Check if event likely involves food/drinks based on description or time
+    const eventDescription = eventData.description.toLowerCase();
+    const hasFood = eventDescription.includes('food') || eventDescription.includes('meal') || eventDescription.includes('dinner') || eventDescription.includes('lunch') || eventDescription.includes('iftar') || eventDescription.includes('breakfast');
+    const hasDrinks = eventDescription.includes('drink') || eventDescription.includes('beverage') || eventDescription.includes('tea') || eventDescription.includes('coffee') || hasFood;
+    
+    // Add food serving if relevant
+    if (hasFood) {
+      const foodServers = additionalDetails.expectedAttendance > 100 ? 6 : 4;
+      standardRoles.push({
         id: crypto.randomUUID(),
-        roleLabel: item.title,
-        shiftStart: item.time,
-        shiftEnd: addTimeMinutes(item.time, 60),
-        slotsBrother: additionalDetails.expectedAttendance > 100 ? 3 : 2,
-        slotsSister: additionalDetails.expectedAttendance > 100 ? 3 : 2,
+        roleLabel: "Food Service Team",
+        shiftStart: addTimeMinutes(eventData.startTime, 30),
+        shiftEnd: addTimeMinutes(eventData.endTime, -30),
+        slotsBrother: Math.ceil(foodServers * 0.4),
+        slotsSister: Math.floor(foodServers * 0.6),
         suggestedPOC: null,
-        notes: item.description || `Handle ${item.title.toLowerCase()} activities`
-      }));
-      
-      // Add general roles based on attendance
-      if (additionalDetails.expectedAttendance > 50) {
-        mockSuggestions.push({
+        notes: "Serve meals, manage food lines, and maintain food presentation"
+      });
+    }
+
+    // Add drink serving if relevant
+    if (hasDrinks) {
+      standardRoles.push({
+        id: crypto.randomUUID(),
+        roleLabel: "Beverage Service",
+        shiftStart: eventData.startTime,
+        shiftEnd: addTimeMinutes(eventData.endTime, -15),
+        slotsBrother: 1,
+        slotsSister: 2,
+        suggestedPOC: null,
+        notes: "Serve drinks, maintain beverage stations, and restock supplies"
+      });
+    }
+
+    mockSuggestions = [...standardRoles];
+    
+    if (itinerary.length > 0) {
+      // Generate additional detailed suggestions based on itinerary
+      const itineraryRoles = itinerary
+        .filter(item => !item.title.toLowerCase().includes('setup') && !item.title.toLowerCase().includes('cleanup'))
+        .map(item => ({
           id: crypto.randomUUID(),
-          roleLabel: "Event Support",
-          shiftStart: eventData.startTime,
-          shiftEnd: eventData.endTime,
+          roleLabel: `${item.title} Coordinator`,
+          shiftStart: item.time,
+          shiftEnd: addTimeMinutes(item.time, 60),
           slotsBrother: 1,
           slotsSister: 1,
           suggestedPOC: null,
-          notes: "General event support and assistance"
-        });
-      }
-    } else {
-      // Fallback to original simple suggestions with better role names and fixed time calculations
-      mockSuggestions = [
-        {
-          id: crypto.randomUUID(),
-          roleLabel: "Setup Team",
-          shiftStart: eventData.startTime,
-          shiftEnd: addTimeMinutes(eventData.startTime, 30),
-          slotsBrother: 4,
-          slotsSister: 2,
-          suggestedPOC: null,
-          notes: "Setup tables, chairs, and decorations"
-        },
-        {
-          id: crypto.randomUUID(),
-          roleLabel: "Registration & Welcome",
-          shiftStart: eventData.startTime,
-          shiftEnd: eventData.endTime,
-          slotsBrother: 2,
-          slotsSister: 3,
-          suggestedPOC: null,
-          notes: "Check-in volunteers and guests"
-        },
-        {
-          id: crypto.randomUUID(),
-          roleLabel: "Cleanup Team",
-          shiftStart: addTimeMinutes(eventData.endTime, -30),
-          shiftEnd: addTimeMinutes(eventData.endTime, 30),
-          slotsBrother: 3,
-          slotsSister: 2,
-          suggestedPOC: null,
-          notes: "Post-event cleanup and breakdown"
-        }
-      ];
+          notes: item.description || `Coordinate and manage ${item.title.toLowerCase()} activities`
+        }));
+
+      mockSuggestions = [...mockSuggestions, ...itineraryRoles];
     }
     
     setAiSuggestions(mockSuggestions);
@@ -276,7 +321,7 @@ const EventCreation = () => {
     
     toast({
       title: "AI Parsing Complete!",
-      description: `Generated ${mockSuggestions.length} role suggestions using your detailed itinerary.`,
+      description: `Generated ${mockSuggestions.length} role suggestions including standard event roles.`,
     });
   };
 
