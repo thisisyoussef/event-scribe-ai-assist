@@ -23,34 +23,34 @@ const VolunteerTable = ({ volunteers, onRemoveVolunteer }: VolunteerTableProps) 
   }
 
   return (
-    <div className="mt-6 border-t border-amber-100 pt-4">
-      <h4 className="font-medium mb-3 text-amber-800">Current Volunteers:</h4>
+    <div className="mt-6 border-t border-umma-100 pt-4">
+      <h4 className="font-medium mb-3 text-umma-800">Current Volunteers:</h4>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-amber-800">Name</TableHead>
-            <TableHead className="text-amber-800">Phone</TableHead>
-            <TableHead className="text-amber-800">Gender</TableHead>
-            <TableHead className="text-amber-800">Notes</TableHead>
-            <TableHead className="text-amber-800">Action</TableHead>
+            <TableHead className="text-umma-800">Name</TableHead>
+            <TableHead className="text-umma-800">Phone</TableHead>
+            <TableHead className="text-umma-800">Gender</TableHead>
+            <TableHead className="text-umma-800">Notes</TableHead>
+            <TableHead className="text-umma-800">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {volunteers.map((volunteer: Volunteer) => (
             <TableRow key={volunteer.id}>
-              <TableCell className="font-medium text-amber-800">{volunteer.name}</TableCell>
+              <TableCell className="font-medium text-umma-800">{volunteer.name}</TableCell>
               <TableCell>
-                <div className="flex items-center space-x-2 text-amber-700">
+                <div className="flex items-center space-x-2 text-umma-700">
                   <Phone className="w-4 h-4" />
                   <span>{volunteer.phone}</span>
                 </div>
               </TableCell>
               <TableCell>
-                <Badge variant={volunteer.gender === 'brother' ? 'default' : 'secondary'} className="bg-amber-100 text-amber-700 border-amber-200">
+                <Badge variant={volunteer.gender === 'brother' ? 'default' : 'secondary'} className="bg-umma-100 text-umma-700 border-umma-200">
                   {volunteer.gender}
                 </Badge>
               </TableCell>
-              <TableCell className="text-amber-700">{volunteer.notes || '-'}</TableCell>
+              <TableCell className="text-umma-700">{volunteer.notes || '-'}</TableCell>
               <TableCell>
                 <Button
                   size="sm"
