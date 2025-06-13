@@ -24,15 +24,15 @@ const VolunteerRolesList = ({
 
   return (
     <Card className="border-umma-200 bg-white/90 backdrop-blur-sm shadow-xl">
-      <CardHeader className="pb-4">
+      <CardHeader className={`${isMobile ? 'pb-2 px-3 pt-4' : 'pb-4'}`}>
         <CardTitle className="text-umma-800 text-lg sm:text-xl">Available Volunteer Roles</CardTitle>
         <CardDescription className="text-umma-700 text-sm leading-relaxed">
           Choose a role that fits your schedule and sign up to help make this event successful!
         </CardDescription>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className={`${isMobile ? 'pt-0 px-3 pb-4' : 'pt-0'}`}>
         {volunteerRoles && volunteerRoles.length > 0 ? (
-          <div className="space-y-4">
+          <div className={`${isMobile ? 'space-y-3' : 'space-y-4'}`}>
             {volunteerRoles.map((role: VolunteerRole) => {
               const volunteers = getVolunteersForRole(role.id);
               
