@@ -1,19 +1,76 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Calendar, Phone, Settings, LogOut, Menu, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import type { User } from "@supabase/supabase-js";
 
 const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { toast } = useToast();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  useEffect(() => {
+    // Get initial session
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+    };
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/");
+    getSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+        if (event === 'SIGNED_OUT') {
+          navigate("/login");
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    setLoading(true);
+    try {
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        toast({
+          title: "Sign Out Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        // Clear any localStorage data
+        localStorage.removeItem("user");
+        
+        toast({
+          title: "Signed Out",
+          description: "You've been successfully signed out.",
+        });
+        
+        // Navigate to login page
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred during sign out.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const navItems = [
@@ -21,6 +78,12 @@ const Navigation = () => {
     { label: "Contacts", path: "/contacts", icon: Phone },
     { label: "Settings", path: "/settings", icon: Settings },
   ];
+
+  // Get display name from user metadata or email
+  const displayName = user?.user_metadata?.full_name || 
+                     user?.user_metadata?.name || 
+                     user?.email?.split('@')[0] || 
+                     "Organizer";
 
   return (
     <header className="bg-white/95 backdrop-blur-sm border-b border-umma-200 shadow-sm">
@@ -68,11 +131,17 @@ const Navigation = () => {
           {/* User Menu */}
           <div className="hidden md:flex items-center space-x-4">
             <span className="text-sm text-umma-700 font-medium">
-              {user.fullName || "Organizer"}
+              {displayName}
             </span>
-            <Button variant="outline" size="sm" onClick={handleLogout} className="border-umma-300 text-umma-700 hover:bg-umma-50">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleLogout} 
+              disabled={loading}
+              className="border-umma-300 text-umma-700 hover:bg-umma-50"
+            >
               <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
+              {loading ? "Signing Out..." : "Sign Out"}
             </Button>
           </div>
 
@@ -112,14 +181,17 @@ const Navigation = () => {
               })}
               <div className="border-t border-umma-200 pt-4 mt-4">
                 <p className="text-sm text-umma-700 px-4 pb-2 font-medium">
-                  {user.fullName || "Organizer"}
+                  {displayName}
                 </p>
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center space-x-3 px-4 py-3 text-umma-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200"
+                  disabled={loading}
+                  className="w-full flex items-center space-x-3 px-4 py-3 text-umma-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 disabled:opacity-50"
                 >
                   <LogOut className="w-5 h-5" />
-                  <span className="font-medium">Sign Out</span>
+                  <span className="font-medium">
+                    {loading ? "Signing Out..." : "Sign Out"}
+                  </span>
                 </button>
               </div>
             </nav>
