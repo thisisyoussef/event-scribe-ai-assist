@@ -5,14 +5,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import Navigation from "@/components/Navigation";
 import { useNavigate } from "react-router-dom";
-import { Plus, Calendar, Users, Eye, Edit, Copy } from "lucide-react";
+import { Plus, Calendar, Users, Eye, Edit, Copy, Phone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Event, VolunteerRole, Volunteer } from "@/types/database";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -196,13 +198,13 @@ const Dashboard = () => {
 
         {/* Events Table */}
         <Card className="shadow-xl">
-          <CardHeader className="border-b border-umma-100 bg-umma-50">
+          <CardHeader className={`border-b border-umma-100 bg-umma-50 ${isMobile ? 'p-4' : ''}`}>
             <CardTitle className="text-xl md:text-2xl text-umma-800">Your Events</CardTitle>
             <CardDescription className="text-umma-700 text-base md:text-lg">
               Manage your events and track volunteer participation
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-0">
+          <CardContent className={`${isMobile ? 'p-3' : 'p-0'}`}>
             {events.length === 0 ? (
               <div className="text-center py-12 md:py-20 px-4 md:px-8">
                 <div className="w-16 md:w-20 h-16 md:h-20 bg-umma-500 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg">
@@ -221,66 +223,28 @@ const Dashboard = () => {
                 </Button>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[600px]">
-                  <thead>
-                    <tr className="border-b border-umma-100 bg-umma-50/50">
-                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base">Event</th>
-                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base hidden md:table-cell">Date & Time</th>
-                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base">Volunteers</th>
-                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base">Status</th>
-                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {events.map((event: any, index) => {
+              <>
+                {isMobile ? (
+                  <div className="space-y-3">
+                    {events.map((event: any) => {
                       const stats = getEventStats(event);
                       return (
-                        <tr key={event.id} className={`border-b border-umma-100 hover:bg-umma-50/30 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white/50' : 'bg-umma-50/20'}`}>
-                          <td className="py-4 md:py-6 px-3 md:px-6">
-                            <div>
-                              <div className="font-semibold text-umma-800 text-sm md:text-lg mb-1">{event.title}</div>
-                              <div className="text-umma-600 text-xs md:text-sm">{event.location}</div>
-                              <div className="md:hidden text-umma-600 text-xs mt-1">
-                                {new Date(event.start_datetime).toLocaleDateString()}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="py-4 md:py-6 px-3 md:px-6 hidden md:table-cell">
-                            <div className="space-y-1">
-                              <div className="text-umma-800 font-medium text-sm">
+                        <div key={event.id} className="bg-umma-50 rounded-lg p-3 border border-umma-200">
+                          <div className="flex justify-between items-start mb-3">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-umma-800 text-sm mb-1">{event.title}</h3>
+                              <p className="text-umma-600 text-xs mb-1">{event.location}</p>
+                              <p className="text-umma-600 text-xs">
                                 {new Date(event.start_datetime).toLocaleDateString('en-US', { 
                                   weekday: 'short', 
                                   month: 'short', 
-                                  day: 'numeric' 
+                                  day: 'numeric',
+                                  hour: 'numeric',
+                                  minute: '2-digit',
+                                  hour12: true
                                 })}
-                              </div>
-                              <div className="text-umma-600 text-xs">
-                                {new Date(event.start_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                              </div>
+                              </p>
                             </div>
-                          </td>
-                          <td className="py-4 md:py-6 px-3 md:px-6">
-                            <div className="space-y-1 md:space-y-2">
-                              <div className="flex items-center space-x-1 md:space-x-2">
-                                <div className="text-sm md:text-lg font-semibold text-umma-800">
-                                  {stats.filledSlots} / {stats.totalSlots}
-                                </div>
-                              </div>
-                              <div className="w-full bg-umma-100 rounded-full h-1.5 md:h-2">
-                                <div 
-                                  className="bg-umma-500 h-1.5 md:h-2 rounded-full transition-all duration-300"
-                                  style={{ width: `${stats.totalSlots > 0 ? (stats.filledSlots / stats.totalSlots) * 100 : 0}%` }}
-                                ></div>
-                              </div>
-                              {stats.openSlots > 0 && (
-                                <div className="text-umma-600 text-xs">
-                                  {stats.openSlots} open
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                          <td className="py-4 md:py-6 px-3 md:px-6">
                             <Badge 
                               variant={event.status === "published" ? "default" : "secondary"}
                               className={`text-xs ${event.status === "published" 
@@ -290,56 +254,183 @@ const Dashboard = () => {
                             >
                               {event.status === "published" ? "Live" : "Draft"}
                             </Badge>
-                          </td>
-                          <td className="py-4 md:py-6 px-3 md:px-6">
-                            <div className="flex space-x-1 md:space-x-2">
+                          </div>
+                          
+                          <div className="mb-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs text-umma-600">Volunteers</span>
+                              <span className="text-sm font-semibold text-umma-800">
+                                {stats.filledSlots} / {stats.totalSlots}
+                              </span>
+                            </div>
+                            <div className="w-full bg-umma-100 rounded-full h-2">
+                              <div 
+                                className="bg-umma-500 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${stats.totalSlots > 0 ? (stats.filledSlots / stats.totalSlots) * 100 : 0}%` }}
+                              ></div>
+                            </div>
+                            {stats.openSlots > 0 && (
+                              <div className="text-umma-600 text-xs mt-1">
+                                {stats.openSlots} open spots
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex space-x-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => navigate(`/events/${event.id}/roster`)}
+                              className="flex-1 text-xs"
+                            >
+                              <Eye className="w-3 h-3 mr-1" />
+                              View
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => navigate(`/events/${event.id}/edit`)}
+                              className="flex-1 text-xs"
+                            >
+                              <Edit className="w-3 h-3 mr-1" />
+                              Edit
+                            </Button>
+                            {event.status === "published" && (
                               <Button
                                 size="sm"
-                                variant="outline"
-                                onClick={() => navigate(`/events/${event.id}/roster`)}
-                                title="View Roster"
-                                className="rounded-lg md:rounded-xl p-1 md:p-2"
+                                onClick={() => openSignupLink(event.id)}
+                                className="flex-1 text-xs"
                               >
-                                <Eye className="w-3 md:w-4 h-3 md:h-4" />
+                                Share
                               </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => navigate(`/events/${event.id}/edit`)}
-                                title="Edit Event"
-                                className="rounded-lg md:rounded-xl p-1 md:p-2"
-                              >
-                                <Edit className="w-3 md:w-4 h-3 md:h-4" />
-                              </Button>
-                              {event.status === "published" && (
-                                <>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[600px]">
+                      <thead>
+                        <tr className="border-b border-umma-100 bg-umma-50/50">
+                          <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base">Event</th>
+                          <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base hidden md:table-cell">Date & Time</th>
+                          <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base">Volunteers</th>
+                          <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base">Status</th>
+                          <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {events.map((event: any, index) => {
+                          const stats = getEventStats(event);
+                          return (
+                            <tr key={event.id} className={`border-b border-umma-100 hover:bg-umma-50/30 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white/50' : 'bg-umma-50/20'}`}>
+                              <td className="py-4 md:py-6 px-3 md:px-6">
+                                <div>
+                                  <div className="font-semibold text-umma-800 text-sm md:text-lg mb-1">{event.title}</div>
+                                  <div className="text-umma-600 text-xs md:text-sm">{event.location}</div>
+                                  <div className="md:hidden text-umma-600 text-xs mt-1">
+                                    {new Date(event.start_datetime).toLocaleDateString()}
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-4 md:py-6 px-3 md:px-6 hidden md:table-cell">
+                                <div className="space-y-1">
+                                  <div className="text-umma-800 font-medium text-sm">
+                                    {new Date(event.start_datetime).toLocaleDateString('en-US', { 
+                                      weekday: 'short', 
+                                      month: 'short', 
+                                      day: 'numeric' 
+                                    })}
+                                  </div>
+                                  <div className="text-umma-600 text-xs">
+                                    {new Date(event.start_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-4 md:py-6 px-3 md:px-6">
+                                <div className="space-y-1 md:space-y-2">
+                                  <div className="flex items-center space-x-1 md:space-x-2">
+                                    <div className="text-sm md:text-lg font-semibold text-umma-800">
+                                      {stats.filledSlots} / {stats.totalSlots}
+                                    </div>
+                                  </div>
+                                  <div className="w-full bg-umma-100 rounded-full h-1.5 md:h-2">
+                                    <div 
+                                      className="bg-umma-500 h-1.5 md:h-2 rounded-full transition-all duration-300"
+                                      style={{ width: `${stats.totalSlots > 0 ? (stats.filledSlots / stats.totalSlots) * 100 : 0}%` }}
+                                    ></div>
+                                  </div>
+                                  {stats.openSlots > 0 && (
+                                    <div className="text-umma-600 text-xs">
+                                      {stats.openSlots} open
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="py-4 md:py-6 px-3 md:px-6">
+                                <Badge 
+                                  variant={event.status === "published" ? "default" : "secondary"}
+                                  className={`text-xs ${event.status === "published" 
+                                    ? "bg-green-500 text-white border-none shadow-sm" 
+                                    : "bg-umma-100 text-umma-700 border-umma-200"
+                                  }`}
+                                >
+                                  {event.status === "published" ? "Live" : "Draft"}
+                                </Badge>
+                              </td>
+                              <td className="py-4 md:py-6 px-3 md:px-6">
+                                <div className="flex space-x-1 md:space-x-2">
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    onClick={() => copySignupLink(event.id)}
-                                    title="Copy Link"
-                                    className="hidden md:flex rounded-xl"
+                                    onClick={() => navigate(`/events/${event.id}/roster`)}
+                                    title="View Roster"
+                                    className="rounded-lg md:rounded-xl p-1 md:p-2"
                                   >
-                                    <Copy className="w-4 h-4" />
+                                    <Eye className="w-3 md:w-4 h-3 md:h-4" />
                                   </Button>
                                   <Button
                                     size="sm"
-                                    onClick={() => openSignupLink(event.id)}
-                                    title="Open Signup"
-                                    className="rounded-lg md:rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-xs md:text-sm px-2 md:px-3"
+                                    variant="outline"
+                                    onClick={() => navigate(`/events/${event.id}/edit`)}
+                                    title="Edit Event"
+                                    className="rounded-lg md:rounded-xl p-1 md:p-2"
                                   >
-                                    Share
+                                    <Edit className="w-3 md:w-4 h-3 md:h-4" />
                                   </Button>
-                                </>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                                  {event.status === "published" && (
+                                    <>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => copySignupLink(event.id)}
+                                        title="Copy Link"
+                                        className="hidden md:flex rounded-xl"
+                                      >
+                                        <Copy className="w-4 h-4" />
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        onClick={() => openSignupLink(event.id)}
+                                        title="Open Signup"
+                                        className="rounded-lg md:rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-xs md:text-sm px-2 md:px-3"
+                                      >
+                                        Share
+                                      </Button>
+                                    </>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
             )}
           </CardContent>
         </Card>
