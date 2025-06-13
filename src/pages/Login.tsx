@@ -102,23 +102,23 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-stone-100 flex items-center justify-center p-4">
       {/* Logo */}
       <div className="absolute top-8 left-8 flex items-center space-x-3">
-        <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
+        <div className="w-10 h-10 bg-gradient-to-br from-umma-400 to-umma-600 rounded-xl flex items-center justify-center shadow-lg">
           <Heart className="w-6 h-6 text-white" />
         </div>
-        <h1 className="text-xl font-bold bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">
+        <h1 className="text-xl font-bold bg-gradient-to-r from-umma-600 to-umma-800 bg-clip-text text-transparent">
           EasyEvent
         </h1>
       </div>
 
-      <Card className="w-full max-w-md border-amber-200 bg-white/90 backdrop-blur-sm shadow-xl">
+      <Card className="w-full max-w-md border-umma-200 bg-white/90 backdrop-blur-sm shadow-xl">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl text-amber-800">
+          <CardTitle className="text-2xl text-umma-800">
             {isSignUp ? "Create Account" : "Welcome Back"}
           </CardTitle>
-          <CardDescription className="text-amber-600">
+          <CardDescription className="text-umma-600">
             {isSignUp 
               ? "Sign up to start organizing events" 
               : "Sign in to access your event dashboard"
@@ -130,7 +130,7 @@ const Login = () => {
             {isSignUp && (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="fullName" className="text-amber-800">Full Name</Label>
+                  <Label htmlFor="fullName" className="text-umma-800">Full Name</Label>
                   <Input
                     id="fullName"
                     type="text"
@@ -138,11 +138,11 @@ const Login = () => {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required
-                    className="border-amber-200 focus:border-amber-400"
+                    className="border-umma-200 focus:border-umma-400"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-amber-800">Phone Number</Label>
+                  <Label htmlFor="phone" className="text-umma-800">Phone Number</Label>
                   <Input
                     id="phone"
                     type="tel"
@@ -150,14 +150,14 @@ const Login = () => {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     required
-                    className="border-amber-200 focus:border-amber-400"
+                    className="border-umma-200 focus:border-umma-400"
                   />
                 </div>
               </>
             )}
             
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-amber-800">Email</Label>
+              <Label htmlFor="email" className="text-umma-800">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -165,25 +165,25 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="border-amber-200 focus:border-amber-400"
+                className="border-umma-200 focus:border-umma-400"
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-amber-800">Password</Label>
+              <Label htmlFor="password" className="text-umma-800">Password</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="border-amber-200 focus:border-amber-400"
+                className="border-umma-200 focus:border-umma-400"
               />
             </div>
 
             <Button 
               type="submit" 
-              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-xl"
+              className="w-full bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
               disabled={loading}
             >
               {loading ? "Processing..." : (isSignUp ? "Create Account" : "Sign In")}
@@ -197,7 +197,7 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setIsSignUp(false)}
-                  className="text-amber-600 hover:text-amber-700 hover:underline font-medium"
+                  className="text-umma-600 hover:text-umma-700 hover:underline font-medium"
                 >
                   Sign in here
                 </button>
@@ -208,7 +208,7 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setIsSignUp(true)}
-                  className="text-amber-600 hover:text-amber-700 hover:underline font-medium"
+                  className="text-umma-600 hover:text-umma-700 hover:underline font-medium"
                 >
                   Create an account
                 </button>
