@@ -31,14 +31,23 @@ const Login = () => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('Auth state change:', event, session);
+        
         if (event === 'SIGNED_IN' && session) {
           navigate("/dashboard");
+        }
+        
+        if (event === 'SIGNED_UP') {
+          toast({
+            title: "Check your email",
+            description: "We've sent you a confirmation link to complete your registration.",
+          });
         }
       }
     );
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,6 +68,7 @@ const Login = () => {
         });
 
         if (error) {
+          console.error('Signup error:', error);
           toast({
             title: "Sign Up Error",
             description: error.message,
@@ -66,9 +76,10 @@ const Login = () => {
           });
         } else {
           toast({
-            title: "Account Created",
-            description: "Please check your email to verify your account.",
+            title: "Check your email",
+            description: "We've sent you a confirmation link. Please check your email and click the link to verify your account.",
           });
+          setIsSignUp(false); // Switch back to login view
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -77,6 +88,7 @@ const Login = () => {
         });
 
         if (error) {
+          console.error('Signin error:', error);
           toast({
             title: "Sign In Error",
             description: error.message,
