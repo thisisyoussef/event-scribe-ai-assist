@@ -1,4 +1,5 @@
 
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
 import { Event } from "@/types/database";
@@ -36,7 +37,7 @@ const EventHeader = ({ event }: EventHeaderProps) => {
         <Card className="border-white/20 bg-white/10 backdrop-blur-sm">
           <CardContent className={`${isMobile ? 'p-4' : 'p-6'}`}>
             <div className="text-center">
-              <h1 className={`${isMobile ? 'text-xl' : 'text-2xl sm:text-3xl'} font-bold mb-3`}>
+              <h1 className={`${isMobile ? 'text-xl' : 'text-2xl sm:text-3xl'} font-bold mb-3 text-white`}>
                 {event.title}
               </h1>
               <div className="flex items-center justify-center space-x-2 text-white/90">
@@ -54,3 +55,4 @@ const EventHeader = ({ event }: EventHeaderProps) => {
 };
 
 export default EventHeader;
+
