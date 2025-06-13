@@ -535,7 +535,7 @@ const EventCreation = () => {
                 onPressedChange={setHideTestFeatures}
                 className="data-[state=on]:bg-umma-600 data-[state=on]:text-white"
               >
-                {hideTestFeatures ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />
+                {hideTestFeatures ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
               </Toggle>
             </div>
           </div>
