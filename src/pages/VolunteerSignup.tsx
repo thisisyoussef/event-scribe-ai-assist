@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useParams } from "react-router-dom";
@@ -9,10 +8,12 @@ import { Event, VolunteerRole, Volunteer } from "@/types/database";
 import EventHeader from "@/components/volunteer/EventHeader";
 import VolunteerRoleCard from "@/components/volunteer/VolunteerRoleCard";
 import SignupModal from "@/components/volunteer/SignupModal";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const VolunteerSignup = () => {
   const { eventId } = useParams();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [event, setEvent] = useState<(Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] }) | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<VolunteerRole | null>(null);
@@ -264,7 +265,7 @@ const VolunteerSignup = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100 flex items-center justify-center p-4">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-2 border-amber-600 border-t-transparent rounded-full mx-auto mb-4"></div>
           <p className="text-amber-700">Loading event details...</p>
@@ -275,17 +276,17 @@ const VolunteerSignup = () => {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100 flex items-center justify-center p-4">
         <Card className="w-full max-w-md border-amber-200 bg-white/90 backdrop-blur-sm">
-          <CardContent className="p-8 text-center">
-            <h2 className="text-xl font-semibold mb-2 text-amber-800">Event Not Found</h2>
-            <div className="text-amber-600">
+          <CardContent className="p-6 text-center">
+            <h2 className="text-lg font-semibold mb-2 text-amber-800">Event Not Found</h2>
+            <div className="text-amber-600 text-sm mb-2">
               The event you're looking for doesn't exist, isn't published yet, or has been removed.
             </div>
-            <div className="text-sm text-amber-500 mt-2">
+            <div className="text-xs text-amber-500 mb-4 break-all">
               Event ID: {eventId}
             </div>
-            <div className="text-xs text-amber-400 mt-4">
+            <div className="text-xs text-amber-400">
               Only published events are available for volunteer signup.
             </div>
           </CardContent>
@@ -298,28 +299,28 @@ const VolunteerSignup = () => {
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100">
       <EventHeader event={event} />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className={`container mx-auto px-4 py-6 ${isMobile ? 'max-w-full' : 'max-w-6xl'}`}>
         {event.description && (
-          <Card className="mb-8 border-amber-200 bg-white/90 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-amber-800">About This Event</CardTitle>
+          <Card className="mb-6 border-amber-200 bg-white/90 backdrop-blur-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-amber-800 text-lg">About This Event</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-amber-700">{event.description}</div>
+            <CardContent className="pt-0">
+              <div className="text-amber-700 text-sm leading-relaxed">{event.description}</div>
             </CardContent>
           </Card>
         )}
 
         <Card className="border-amber-200 bg-white/90 backdrop-blur-sm shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-amber-800">Available Volunteer Roles</CardTitle>
-            <CardDescription className="text-amber-700">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-amber-800 text-lg sm:text-xl">Available Volunteer Roles</CardTitle>
+            <CardDescription className="text-amber-700 text-sm leading-relaxed">
               Choose a role that fits your schedule and sign up to help make this event successful!
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             {event.volunteer_roles && event.volunteer_roles.length > 0 ? (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {event.volunteer_roles.map((role: VolunteerRole) => {
                   const volunteers = getVolunteersForRole(role.id);
                   
@@ -339,7 +340,7 @@ const VolunteerSignup = () => {
               <div className="text-center py-8">
                 <Users className="w-12 h-12 text-amber-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-amber-800 mb-2">No Roles Available</h3>
-                <div className="text-amber-600">Volunteer roles for this event haven't been set up yet.</div>
+                <div className="text-amber-600 text-sm">Volunteer roles for this event haven't been set up yet.</div>
               </div>
             )}
           </CardContent>
