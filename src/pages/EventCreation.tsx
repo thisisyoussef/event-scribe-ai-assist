@@ -278,7 +278,7 @@ const EventCreation = () => {
         })) || [];
 
         setFinalRoles(roles);
-        setCurrentStep(roles.length > 0 ? getStepNumber(4) : 1);
+        setCurrentStep(roles.length > 0 ? getStepNumber(5) : 1);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -302,9 +302,9 @@ const EventCreation = () => {
   const getStepNumber = (logicalStep: number) => {
     if (!hideTestFeatures) return logicalStep;
     
-    // When hiding test features: 1 -> 1, 2 -> skip, 3 -> skip, 4 -> 2, 5 -> 3
-    if (logicalStep <= 1) return 1;
-    if (logicalStep >= 4) return logicalStep - 2;
+    // When hiding test features: 1 -> 1, 2 -> 2, 3 -> skip, 4 -> skip, 5 -> 3, 6 -> 4
+    if (logicalStep <= 2) return logicalStep;
+    if (logicalStep >= 5) return logicalStep - 2;
     return logicalStep; // This shouldn't happen when features are hidden
   };
 
@@ -312,24 +312,25 @@ const EventCreation = () => {
   const getLogicalStep = (displayStep: number) => {
     if (!hideTestFeatures) return displayStep;
     
-    // When hiding test features: 1 -> 1, 2 -> 4, 3 -> 5
-    if (displayStep === 1) return 1;
-    if (displayStep === 2) return 4;
+    // When hiding test features: 1 -> 1, 2 -> 2, 3 -> 5, 4 -> 6
+    if (displayStep <= 2) return displayStep;
     if (displayStep === 3) return 5;
+    if (displayStep === 4) return 6;
     return displayStep;
   };
 
   const getVisibleSteps = () => {
     const allSteps = [
       { number: 1, title: "Basic Info", description: "Event details" },
-      { number: 2, title: "Enhanced Details", description: "Itinerary & preferences" },
-      { number: 3, title: "Pre-Event Tasks", description: "Planning & assignments" },
-      { number: 4, title: "Volunteer Slots", description: "AI suggestions & roles" },
-      { number: 5, title: "Review & Publish", description: "Final settings" }
+      { number: 2, title: "Event Itinerary", description: "Timeline & schedule" },
+      { number: 3, title: "Enhanced Details", description: "Preferences & details" },
+      { number: 4, title: "Pre-Event Tasks", description: "Planning & assignments" },
+      { number: 5, title: "Volunteer Slots", description: "AI suggestions & roles" },
+      { number: 6, title: "Review & Publish", description: "Final settings" }
     ];
 
     if (hideTestFeatures) {
-      return allSteps.filter(step => step.number !== 2 && step.number !== 3).map((step, index) => ({
+      return allSteps.filter(step => step.number !== 3 && step.number !== 4).map((step, index) => ({
         ...step,
         number: index + 1
       }));
@@ -631,7 +632,7 @@ const EventCreation = () => {
   const nextStep = () => {
     const maxStep = steps.length;
     
-    // Generate itinerary when moving from step 1 to step 2 (or next step in basic mode)
+    // Generate itinerary when moving from step 1 to step 2
     if (currentStep === 1 && itinerary.length === 0) {
       generateItinerary();
     }
@@ -649,10 +650,12 @@ const EventCreation = () => {
       case 1:
         return eventData.title && eventData.date && eventData.startTime && eventData.endTime && eventData.location;
       case 2:
-        return true; // Enhanced details are optional
+        return true; // Itinerary is optional but encouraged
       case 3:
-        return true; // Pre-event tasks are optional
+        return true; // Enhanced details are optional
       case 4:
+        return true; // Pre-event tasks are optional
+      case 5:
         return finalRoles.every(role => role.roleLabel && role.roleLabel.trim() !== '' && (role.slotsBrother > 0 || role.slotsSister > 0));
       default:
         return true;
@@ -851,12 +854,12 @@ const EventCreation = () => {
               </div>
             )}
 
-            {/* Step 2: Enhanced Details - Only show when hideTestFeatures is false */}
-            {logicalCurrentStep === 2 && !hideTestFeatures && (
+            {/* Step 2: Itinerary - Now always visible as dedicated step */}
+            {logicalCurrentStep === 2 && (
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold mb-4 text-umma-800">Enhanced Event Details</h2>
+                <h2 className="text-xl font-semibold mb-4 text-umma-800">Event Itinerary</h2>
                 <p className="text-gray-600 mb-6">
-                  Add detailed itinerary and preferences to help AI generate more precise volunteer roles and pre-event tasks.
+                  Create a detailed timeline for your event. This helps AI generate more precise volunteer roles and timing in the next steps.
                 </p>
                 
                 <ItineraryEditor
@@ -864,7 +867,43 @@ const EventCreation = () => {
                   onItineraryChange={setItinerary}
                   startTime={eventData.startTime}
                   endTime={eventData.endTime}
+                  isGenerated={itinerary.length > 0}
                 />
+                
+                {itinerary.length === 0 && (
+                  <div className="text-center py-6">
+                    <Button 
+                      onClick={generateItinerary}
+                      className="bg-gradient-to-r from-umma-500 to-umma-700 hover:from-umma-600 hover:to-umma-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                      disabled={!eventData.description || isLoading}
+                    >
+                      {isLoading ? (
+                        <>
+                          <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4 mr-2" />
+                          Generate AI Itinerary
+                        </>
+                      )}
+                    </Button>
+                    {!eventData.description && (
+                      <p className="text-sm text-umma-500 mt-2">Add an event description first to generate AI itinerary</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Step 3: Enhanced Details - Only show when hideTestFeatures is false */}
+            {logicalCurrentStep === 3 && !hideTestFeatures && (
+              <div className="space-y-6">
+                <h2 className="text-xl font-semibold mb-4 text-umma-800">Enhanced Event Details</h2>
+                <p className="text-gray-600 mb-6">
+                  Add additional preferences to help AI generate more precise volunteer roles and pre-event tasks.
+                </p>
                 
                 <AdditionalDetailsWizard
                   details={additionalDetails}
@@ -875,8 +914,8 @@ const EventCreation = () => {
               </div>
             )}
 
-            {/* Step 3: Pre-Event Tasks - Only show when hideTestFeatures is false */}
-            {logicalCurrentStep === 3 && !hideTestFeatures && (
+            {/* Step 4: Pre-Event Tasks - Only show when hideTestFeatures is false */}
+            {logicalCurrentStep === 4 && !hideTestFeatures && (
               <PreEventTasksManager
                 tasks={preEventTasks}
                 onTasksChange={setPreEventTasks}
@@ -886,8 +925,8 @@ const EventCreation = () => {
               />
             )}
 
-            {/* Step 4: Volunteer Slots */}
-            {logicalCurrentStep === 4 && (
+            {/* Step 5: Volunteer Slots */}
+            {logicalCurrentStep === 5 && (
               <div className="space-y-6">
                 <div>
                   <h2 className="text-xl font-semibold mb-4 text-umma-800">Volunteer Role Generation</h2>
@@ -1131,16 +1170,16 @@ const EventCreation = () => {
                                     </Button>
                                   </div>
                                 </div>
-                              </div>
                               
-                              <div className="space-y-2">
-                                <Label className="text-umma-700">Notes (Optional)</Label>
-                                <Input
-                                  value={role.notes}
-                                  onChange={(e) => updateRole(role.id, { notes: e.target.value })}
-                                  placeholder="Special instructions or requirements"
-                                  className="border-umma-200 focus-visible:ring-umma-500"
-                                />
+                                <div className="space-y-2">
+                                  <Label className="text-umma-700">Notes (Optional)</Label>
+                                  <Input
+                                    value={role.notes}
+                                    onChange={(e) => updateRole(role.id, { notes: e.target.value })}
+                                    placeholder="Special instructions or requirements"
+                                    className="border-umma-200 focus-visible:ring-umma-500"
+                                  />
+                                </div>
                               </div>
                             </div>
                           </CardContent>
@@ -1161,8 +1200,8 @@ const EventCreation = () => {
               </div>
             )}
 
-            {/* Step 5: Review & Publish */}
-            {logicalCurrentStep === 5 && (
+            {/* Step 6: Review & Publish */}
+            {logicalCurrentStep === 6 && (
               <div className="space-y-6">
                 {/* Event Summary */}
                 <Card className="mb-6 bg-white border-umma-200">
