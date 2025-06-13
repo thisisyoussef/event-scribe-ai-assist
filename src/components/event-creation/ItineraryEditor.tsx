@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2, Clock } from "lucide-react";
+import { Plus, Trash2, Clock, Sparkles } from "lucide-react";
 
 interface ItineraryItem {
   id: string;
@@ -19,9 +19,10 @@ interface ItineraryEditorProps {
   onItineraryChange: (itinerary: ItineraryItem[]) => void;
   startTime: string;
   endTime: string;
+  isGenerated?: boolean;
 }
 
-const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime }: ItineraryEditorProps) => {
+const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime, isGenerated = false }: ItineraryEditorProps) => {
   const addItineraryItem = () => {
     const newItem: ItineraryItem = {
       id: crypto.randomUUID(),
@@ -48,10 +49,19 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime }: I
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center space-x-2 text-umma-800">
           <Clock className="w-5 h-5" />
-          <span>Event Itinerary (Optional)</span>
+          <span>Event Itinerary</span>
+          {isGenerated && (
+            <div className="flex items-center space-x-1 ml-2">
+              <Sparkles className="w-4 h-4 text-green-600" />
+              <span className="text-sm text-green-600 font-normal">AI Generated</span>
+            </div>
+          )}
         </CardTitle>
         <p className="text-sm text-umma-600">
-          Add a detailed timeline to help AI generate more precise volunteer roles and tasks.
+          {isGenerated 
+            ? "AI has generated a custom itinerary based on your event details. You can edit or add more items."
+            : "Add a detailed timeline to help AI generate more precise volunteer roles and tasks."
+          }
         </p>
       </CardHeader>
       <CardContent className="space-y-4">

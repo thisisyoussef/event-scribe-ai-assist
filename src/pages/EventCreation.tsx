@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Toggle } from "@/components/ui/toggle";
@@ -25,6 +26,9 @@ const EventCreation = () => {
   const [contacts, setContacts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hideTestFeatures, setHideTestFeatures] = useState(true);
+  const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
+  const [newContactData, setNewContactData] = useState({ name: "", phone: "" });
+  const [currentUser, setCurrentUser] = useState(null);
   
   // Event form data
   const [eventData, setEventData] = useState({
@@ -64,6 +68,7 @@ const EventCreation = () => {
         navigate("/login");
         return;
       }
+      setCurrentUser(user);
     };
 
     checkUser();
@@ -77,17 +82,151 @@ const EventCreation = () => {
 
   const loadContacts = async () => {
     try {
-      // For now, we'll use a mock contacts array since we don't have a contacts table yet
-      // In a full implementation, you'd fetch from Supabase
-      const mockContacts = [
-        { id: crypto.randomUUID(), name: "Ahmed Hassan", phone: "+1234567890" },
-        { id: crypto.randomUUID(), name: "Fatima Ali", phone: "+1234567891" },
-        { id: crypto.randomUUID(), name: "Omar Khan", phone: "+1234567892" }
-      ];
-      setContacts(mockContacts);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Load contacts from localStorage for the current user
+      const savedContacts = localStorage.getItem(`contacts_${user.id}`);
+      if (savedContacts) {
+        setContacts(JSON.parse(savedContacts));
+      }
     } catch (error) {
       console.error('Error loading contacts:', error);
     }
+  };
+
+  const saveContacts = (newContacts: any[]) => {
+    if (currentUser) {
+      localStorage.setItem(`contacts_${currentUser.id}`, JSON.stringify(newContacts));
+      setContacts(newContacts);
+    }
+  };
+
+  const addNewContact = () => {
+    if (!newContactData.name || !newContactData.phone) {
+      toast({
+        title: "Error",
+        description: "Please fill in both name and phone number.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newContact = {
+      id: crypto.randomUUID(),
+      name: newContactData.name,
+      phone: newContactData.phone,
+      createdAt: new Date().toISOString(),
+      userId: currentUser?.id,
+    };
+
+    const updatedContacts = [...contacts, newContact];
+    saveContacts(updatedContacts);
+    
+    toast({
+      title: "Contact Added",
+      description: `${newContactData.name} has been added to your contacts.`,
+    });
+
+    setNewContactData({ name: "", phone: "" });
+    setIsContactDialogOpen(false);
+  };
+
+  const generateItinerary = async () => {
+    if (!eventData.title || !eventData.description || !eventData.startTime || !eventData.endTime) {
+      return;
+    }
+
+    setIsLoading(true);
+    
+    // Simulate AI generation with a brief delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const eventDescription = eventData.description.toLowerCase();
+    const startTime = eventData.startTime;
+    const endTime = eventData.endTime;
+    
+    // Parse start and end times
+    const [startHour, startMin] = startTime.split(':').map(Number);
+    const [endHour, endMin] = endTime.split(':').map(Number);
+    const durationHours = endHour - startHour + (endMin - startMin) / 60;
+    
+    let generatedItinerary = [];
+    
+    // Setup time (1 hour before)
+    const setupTime = addTimeMinutes(startTime, -60);
+    generatedItinerary.push({
+      id: crypto.randomUUID(),
+      time: setupTime,
+      title: "Setup & Preparation",
+      description: "Arrange venue, setup equipment, and prepare materials"
+    });
+
+    // Check if it's a food event
+    const hasFood = eventDescription.includes('food') || eventDescription.includes('meal') || 
+                   eventDescription.includes('dinner') || eventDescription.includes('lunch') || 
+                   eventDescription.includes('iftar') || eventDescription.includes('breakfast');
+
+    // Registration/Welcome
+    generatedItinerary.push({
+      id: crypto.randomUUID(),
+      time: addTimeMinutes(startTime, -15),
+      title: "Registration & Welcome",
+      description: "Guest check-in and welcome"
+    });
+
+    // Event start
+    generatedItinerary.push({
+      id: crypto.randomUUID(),
+      time: startTime,
+      title: eventData.title + " Begins",
+      description: "Main event activities commence"
+    });
+
+    // If it's a long event (>2 hours), add mid-event activities
+    if (durationHours > 2) {
+      const midTime = addTimeMinutes(startTime, Math.floor(durationHours * 30));
+      
+      if (hasFood) {
+        generatedItinerary.push({
+          id: crypto.randomUUID(),
+          time: midTime,
+          title: "Meal Service",
+          description: "Serve refreshments or meals to attendees"
+        });
+      } else {
+        generatedItinerary.push({
+          id: crypto.randomUUID(),
+          time: midTime,
+          title: "Break & Networking",
+          description: "Short break for attendees to network and refresh"
+        });
+      }
+    }
+
+    // Event conclusion
+    generatedItinerary.push({
+      id: crypto.randomUUID(),
+      time: addTimeMinutes(endTime, -15),
+      title: "Closing Remarks",
+      description: "Final announcements and thank you"
+    });
+
+    // Cleanup
+    generatedItinerary.push({
+      id: crypto.randomUUID(),
+      time: addTimeMinutes(endTime, 15),
+      title: "Cleanup & Breakdown",
+      description: "Clean venue and pack up equipment"
+    });
+
+    setItinerary(generatedItinerary);
+    setIsLoading(false);
+    
+    toast({
+      title: "Itinerary Generated!",
+      description: "AI has created a custom itinerary based on your event details.",
+    });
   };
 
   const loadEventData = async (id: string) => {
@@ -299,18 +438,24 @@ const EventCreation = () => {
     mockSuggestions = [...standardRoles];
     
     if (itinerary.length > 0) {
-      // Generate additional detailed suggestions based on itinerary
+      // Generate additional roles based on itinerary (but NO coordinators)
       const itineraryRoles = itinerary
-        .filter(item => !item.title.toLowerCase().includes('setup') && !item.title.toLowerCase().includes('cleanup'))
+        .filter(item => 
+          !item.title.toLowerCase().includes('setup') && 
+          !item.title.toLowerCase().includes('cleanup') &&
+          !item.title.toLowerCase().includes('coordinator') &&
+          !item.title.toLowerCase().includes('begins') &&
+          !item.title.toLowerCase().includes('remarks')
+        )
         .map(item => ({
           id: crypto.randomUUID(),
-          roleLabel: `${item.title} Coordinator`,
+          roleLabel: `${item.title} Support`,
           shiftStart: item.time,
           shiftEnd: addTimeMinutes(item.time, 60),
           slotsBrother: 1,
           slotsSister: 1,
           suggestedPOC: null,
-          notes: item.description || `Coordinate and manage ${item.title.toLowerCase()} activities`
+          notes: item.description || `Support activities for ${item.title.toLowerCase()}`
         }));
 
       mockSuggestions = [...mockSuggestions, ...itineraryRoles];
@@ -485,6 +630,12 @@ const EventCreation = () => {
 
   const nextStep = () => {
     const maxStep = steps.length;
+    
+    // Generate itinerary when moving from step 1 to step 2 (or next step in basic mode)
+    if (currentStep === 1 && itinerary.length === 0) {
+      generateItinerary();
+    }
+    
     if (currentStep < maxStep) setCurrentStep(currentStep + 1);
   };
 
@@ -741,13 +892,13 @@ const EventCreation = () => {
                 <div>
                   <h2 className="text-xl font-semibold mb-4 text-umma-800">Volunteer Role Generation</h2>
                   <p className="text-umma-600 mb-6">
-                    AI will analyze your itinerary and event details to generate tailored volunteer roles.
+                    AI will analyze your event details to generate tailored volunteer roles.
                   </p>
                   
                   {itinerary.length > 0 && (
                     <Card className="mb-4 border-green-200 bg-green-50">
                       <CardContent className="p-4">
-                        <h4 className="font-medium text-green-800 mb-2">Itinerary Preview:</h4>
+                        <h4 className="font-medium text-green-800 mb-2">Generated Itinerary Preview:</h4>
                         <div className="space-y-1">
                           {itinerary.slice(0, 3).map((item) => (
                             <div key={item.id} className="text-sm text-green-700">
@@ -897,21 +1048,78 @@ const EventCreation = () => {
                                   <Label className="text-umma-700">Point of Contact</Label>
                                   <div className="flex flex-col sm:flex-row gap-2 items-end">
                                     <div className="flex-1">
-                                      <Select 
-                                        value={role.suggestedPOC || ""} 
-                                        onValueChange={(value) => updateRole(role.id, { suggestedPOC: value })}
-                                      >
-                                        <SelectTrigger className="border-umma-200">
-                                          <SelectValue placeholder="Select POC" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          {contacts.map((contact: any) => (
-                                            <SelectItem key={contact.id} value={contact.id}>
-                                              {contact.name}
-                                            </SelectItem>
-                                          ))}
-                                        </SelectContent>
-                                      </Select>
+                                      <div className="flex gap-2">
+                                        <Select 
+                                          value={role.suggestedPOC || ""} 
+                                          onValueChange={(value) => updateRole(role.id, { suggestedPOC: value })}
+                                        >
+                                          <SelectTrigger className="border-umma-200">
+                                            <SelectValue placeholder="Select POC" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            {contacts.map((contact: any) => (
+                                              <SelectItem key={contact.id} value={contact.id}>
+                                                {contact.name} - {contact.phone}
+                                              </SelectItem>
+                                            ))}
+                                          </SelectContent>
+                                        </Select>
+                                        
+                                        <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
+                                          <DialogTrigger asChild>
+                                            <Button
+                                              size="sm"
+                                              variant="outline"
+                                              className="border-umma-300 text-umma-700 hover:bg-umma-100"
+                                            >
+                                              <Plus className="w-4 h-4" />
+                                            </Button>
+                                          </DialogTrigger>
+                                          <DialogContent className="max-w-md">
+                                            <DialogHeader>
+                                              <DialogTitle>Add New Contact</DialogTitle>
+                                              <DialogDescription>
+                                                Add a new contact to use as Point of Contact for roles.
+                                              </DialogDescription>
+                                            </DialogHeader>
+                                            <div className="space-y-4">
+                                              <div className="space-y-2">
+                                                <Label htmlFor="newContactName">Name</Label>
+                                                <Input
+                                                  id="newContactName"
+                                                  value={newContactData.name}
+                                                  onChange={(e) => setNewContactData(prev => ({ ...prev, name: e.target.value }))}
+                                                  placeholder="Contact name"
+                                                />
+                                              </div>
+                                              <div className="space-y-2">
+                                                <Label htmlFor="newContactPhone">Phone</Label>
+                                                <Input
+                                                  id="newContactPhone"
+                                                  value={newContactData.phone}
+                                                  onChange={(e) => setNewContactData(prev => ({ ...prev, phone: e.target.value }))}
+                                                  placeholder="+1 (555) 123-4567"
+                                                />
+                                              </div>
+                                              <div className="flex gap-2 pt-4">
+                                                <Button
+                                                  variant="outline"
+                                                  onClick={() => setIsContactDialogOpen(false)}
+                                                  className="flex-1"
+                                                >
+                                                  Cancel
+                                                </Button>
+                                                <Button
+                                                  onClick={addNewContact}
+                                                  className="flex-1 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700"
+                                                >
+                                                  Add Contact
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          </DialogContent>
+                                        </Dialog>
+                                      </div>
                                     </div>
                                     <Button
                                       size="sm"
