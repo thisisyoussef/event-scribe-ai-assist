@@ -92,13 +92,13 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100">
+      <div className="min-h-screen bg-white">
         <Navigation />
         <main className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
-              <div className="animate-spin w-12 h-12 border-3 border-amber-400 border-t-transparent rounded-full mx-auto mb-6"></div>
-              <p className="text-amber-700 font-medium text-lg">Loading your events...</p>
+              <div className="animate-spin w-12 h-12 border-3 border-umma-400 border-t-transparent rounded-full mx-auto mb-6"></div>
+              <p className="text-umma-700 font-medium text-lg">Loading your events...</p>
             </div>
           </div>
         </main>
@@ -107,23 +107,23 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100">
+    <div className="min-h-screen bg-white">
       <Navigation />
       
       <main className="container mx-auto px-4 py-4 md:py-8">
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 md:mb-12 space-y-4 lg:space-y-0">
           <div>
-            <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent mb-2">
+            <h1 className="text-2xl md:text-4xl font-bold text-umma-800 mb-2">
               Event Dashboard
             </h1>
-            <p className="text-amber-700 text-base md:text-lg leading-relaxed">
+            <p className="text-umma-700 text-base md:text-lg leading-relaxed">
               Organize events and manage volunteer coordination
             </p>
           </div>
           <Button 
             onClick={() => navigate("/events/create")}
-            className="w-full lg:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 md:px-8 py-3 md:py-4 text-base md:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+            className="w-full lg:w-auto px-6 md:px-8 py-3 md:py-4 text-base md:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
           >
             <Plus className="w-4 md:w-5 h-4 md:h-5 mr-2 md:mr-3" />
             Create Event
@@ -132,89 +132,89 @@ const Dashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-8 md:mb-12">
-          <Card className="bg-white/80 backdrop-blur-sm border-amber-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
-              <CardTitle className="text-xs md:text-sm font-medium text-amber-800">Total Events</CardTitle>
-              <div className="w-8 md:w-12 h-8 md:h-12 bg-gradient-to-br from-amber-400 to-amber-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Total Events</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-umma-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Calendar className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent className="pb-3 md:pb-4">
-              <div className="text-xl md:text-3xl font-bold text-amber-800 mb-1">{events.length}</div>
-              <p className="text-amber-600 text-xs md:text-sm">Events created</p>
+              <div className="text-xl md:text-3xl font-bold text-umma-800 mb-1">{events.length}</div>
+              <p className="text-umma-600 text-xs md:text-sm">Events created</p>
             </CardContent>
           </Card>
           
-          <Card className="bg-white/80 backdrop-blur-sm border-amber-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
-              <CardTitle className="text-xs md:text-sm font-medium text-amber-800">Active Events</CardTitle>
-              <div className="w-8 md:w-12 h-8 md:h-12 bg-gradient-to-br from-amber-400 to-amber-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Active Events</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-umma-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Calendar className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent className="pb-3 md:pb-4">
-              <div className="text-xl md:text-3xl font-bold text-amber-800 mb-1">
+              <div className="text-xl md:text-3xl font-bold text-umma-800 mb-1">
                 {events.filter((event: Event) => event.status === "published").length}
               </div>
-              <p className="text-amber-600 text-xs md:text-sm">Published</p>
+              <p className="text-umma-600 text-xs md:text-sm">Published</p>
             </CardContent>
           </Card>
           
-          <Card className="bg-white/80 backdrop-blur-sm border-amber-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
-              <CardTitle className="text-xs md:text-sm font-medium text-amber-800">Volunteers</CardTitle>
-              <div className="w-8 md:w-12 h-8 md:h-12 bg-gradient-to-br from-amber-400 to-amber-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Volunteers</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-umma-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Users className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent className="pb-3 md:pb-4">
-              <div className="text-xl md:text-3xl font-bold text-amber-800 mb-1">
+              <div className="text-xl md:text-3xl font-bold text-umma-800 mb-1">
                 {events.reduce((total: number, event: any) => total + (event.volunteers?.length || 0), 0)}
               </div>
-              <p className="text-amber-600 text-xs md:text-sm">Signed up</p>
+              <p className="text-umma-600 text-xs md:text-sm">Signed up</p>
             </CardContent>
           </Card>
           
-          <Card className="bg-white/80 backdrop-blur-sm border-amber-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
-              <CardTitle className="text-xs md:text-sm font-medium text-amber-800">Open Spots</CardTitle>
-              <div className="w-8 md:w-12 h-8 md:h-12 bg-gradient-to-br from-amber-400 to-amber-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Open Spots</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-umma-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Users className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent className="pb-3 md:pb-4">
-              <div className="text-xl md:text-3xl font-bold text-amber-800 mb-1">
+              <div className="text-xl md:text-3xl font-bold text-umma-800 mb-1">
                 {events.reduce((total: number, event: any) => {
                   const stats = getEventStats(event);
                   return total + stats.openSlots;
                 }, 0)}
               </div>
-              <p className="text-amber-600 text-xs md:text-sm">Available</p>
+              <p className="text-umma-600 text-xs md:text-sm">Available</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Events Table */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 shadow-xl">
-          <CardHeader className="border-b border-amber-100 bg-gradient-to-r from-amber-50 to-white">
-            <CardTitle className="text-xl md:text-2xl text-amber-800">Your Events</CardTitle>
-            <CardDescription className="text-amber-700 text-base md:text-lg">
+        <Card className="shadow-xl">
+          <CardHeader className="border-b border-umma-100 bg-umma-50">
+            <CardTitle className="text-xl md:text-2xl text-umma-800">Your Events</CardTitle>
+            <CardDescription className="text-umma-700 text-base md:text-lg">
               Manage your events and track volunteer participation
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             {events.length === 0 ? (
               <div className="text-center py-12 md:py-20 px-4 md:px-8">
-                <div className="w-16 md:w-20 h-16 md:h-20 bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg">
+                <div className="w-16 md:w-20 h-16 md:h-20 bg-umma-500 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg">
                   <Calendar className="w-8 md:w-10 h-8 md:h-10 text-white" />
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold text-amber-800 mb-3 md:mb-4">Start Organizing Events</h3>
-                <p className="text-amber-600 mb-6 md:mb-8 max-w-lg mx-auto leading-relaxed text-base md:text-lg">
+                <h3 className="text-xl md:text-2xl font-bold text-umma-800 mb-3 md:mb-4">Start Organizing Events</h3>
+                <p className="text-umma-600 mb-6 md:mb-8 max-w-lg mx-auto leading-relaxed text-base md:text-lg">
                   Create your first event and start coordinating volunteers
                 </p>
                 <Button 
                   onClick={() => navigate("/events/create")}
-                  className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 md:px-8 py-3 md:py-4 text-base md:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="w-full md:w-auto px-6 md:px-8 py-3 md:py-4 text-base md:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   <Plus className="w-4 md:w-5 h-4 md:h-5 mr-2 md:mr-3" />
                   Create Your First Event
@@ -224,38 +224,38 @@ const Dashboard = () => {
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[600px]">
                   <thead>
-                    <tr className="border-b border-amber-100 bg-amber-50/50">
-                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-amber-800 text-sm md:text-base">Event</th>
-                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-amber-800 text-sm md:text-base hidden md:table-cell">Date & Time</th>
-                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-amber-800 text-sm md:text-base">Volunteers</th>
-                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-amber-800 text-sm md:text-base">Status</th>
-                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-amber-800 text-sm md:text-base">Actions</th>
+                    <tr className="border-b border-umma-100 bg-umma-50/50">
+                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base">Event</th>
+                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base hidden md:table-cell">Date & Time</th>
+                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base">Volunteers</th>
+                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base">Status</th>
+                      <th className="text-left py-3 md:py-4 px-3 md:px-6 font-semibold text-umma-800 text-sm md:text-base">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {events.map((event: any, index) => {
                       const stats = getEventStats(event);
                       return (
-                        <tr key={event.id} className={`border-b border-amber-100 hover:bg-amber-50/30 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white/50' : 'bg-amber-50/20'}`}>
+                        <tr key={event.id} className={`border-b border-umma-100 hover:bg-umma-50/30 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white/50' : 'bg-umma-50/20'}`}>
                           <td className="py-4 md:py-6 px-3 md:px-6">
                             <div>
-                              <div className="font-semibold text-amber-800 text-sm md:text-lg mb-1">{event.title}</div>
-                              <div className="text-amber-600 text-xs md:text-sm">{event.location}</div>
-                              <div className="md:hidden text-amber-600 text-xs mt-1">
+                              <div className="font-semibold text-umma-800 text-sm md:text-lg mb-1">{event.title}</div>
+                              <div className="text-umma-600 text-xs md:text-sm">{event.location}</div>
+                              <div className="md:hidden text-umma-600 text-xs mt-1">
                                 {new Date(event.start_datetime).toLocaleDateString()}
                               </div>
                             </div>
                           </td>
                           <td className="py-4 md:py-6 px-3 md:px-6 hidden md:table-cell">
                             <div className="space-y-1">
-                              <div className="text-amber-800 font-medium text-sm">
+                              <div className="text-umma-800 font-medium text-sm">
                                 {new Date(event.start_datetime).toLocaleDateString('en-US', { 
                                   weekday: 'short', 
                                   month: 'short', 
                                   day: 'numeric' 
                                 })}
                               </div>
-                              <div className="text-amber-600 text-xs">
+                              <div className="text-umma-600 text-xs">
                                 {new Date(event.start_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                               </div>
                             </div>
@@ -263,18 +263,18 @@ const Dashboard = () => {
                           <td className="py-4 md:py-6 px-3 md:px-6">
                             <div className="space-y-1 md:space-y-2">
                               <div className="flex items-center space-x-1 md:space-x-2">
-                                <div className="text-sm md:text-lg font-semibold text-amber-800">
+                                <div className="text-sm md:text-lg font-semibold text-umma-800">
                                   {stats.filledSlots} / {stats.totalSlots}
                                 </div>
                               </div>
-                              <div className="w-full bg-amber-100 rounded-full h-1.5 md:h-2">
+                              <div className="w-full bg-umma-100 rounded-full h-1.5 md:h-2">
                                 <div 
-                                  className="bg-gradient-to-r from-amber-400 to-amber-500 h-1.5 md:h-2 rounded-full transition-all duration-300"
+                                  className="bg-umma-500 h-1.5 md:h-2 rounded-full transition-all duration-300"
                                   style={{ width: `${stats.totalSlots > 0 ? (stats.filledSlots / stats.totalSlots) * 100 : 0}%` }}
                                 ></div>
                               </div>
                               {stats.openSlots > 0 && (
-                                <div className="text-amber-600 text-xs">
+                                <div className="text-umma-600 text-xs">
                                   {stats.openSlots} open
                                 </div>
                               )}
@@ -284,8 +284,8 @@ const Dashboard = () => {
                             <Badge 
                               variant={event.status === "published" ? "default" : "secondary"}
                               className={`text-xs ${event.status === "published" 
-                                ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-none shadow-sm" 
-                                : "bg-amber-100 text-amber-700 border-amber-200"
+                                ? "bg-green-500 text-white border-none shadow-sm" 
+                                : "bg-umma-100 text-umma-700 border-umma-200"
                               }`}
                             >
                               {event.status === "published" ? "Live" : "Draft"}
@@ -298,7 +298,7 @@ const Dashboard = () => {
                                 variant="outline"
                                 onClick={() => navigate(`/events/${event.id}/roster`)}
                                 title="View Roster"
-                                className="border-amber-300 text-amber-700 hover:bg-amber-50 hover:border-amber-400 rounded-lg md:rounded-xl p-1 md:p-2"
+                                className="rounded-lg md:rounded-xl p-1 md:p-2"
                               >
                                 <Eye className="w-3 md:w-4 h-3 md:h-4" />
                               </Button>
@@ -307,7 +307,7 @@ const Dashboard = () => {
                                 variant="outline"
                                 onClick={() => navigate(`/events/${event.id}/edit`)}
                                 title="Edit Event"
-                                className="border-amber-300 text-amber-700 hover:bg-amber-50 hover:border-amber-400 rounded-lg md:rounded-xl p-1 md:p-2"
+                                className="rounded-lg md:rounded-xl p-1 md:p-2"
                               >
                                 <Edit className="w-3 md:w-4 h-3 md:h-4" />
                               </Button>
@@ -318,7 +318,7 @@ const Dashboard = () => {
                                     variant="outline"
                                     onClick={() => copySignupLink(event.id)}
                                     title="Copy Link"
-                                    className="hidden md:flex border-amber-300 text-amber-700 hover:bg-amber-50 hover:border-amber-400 rounded-xl"
+                                    className="hidden md:flex rounded-xl"
                                   >
                                     <Copy className="w-4 h-4" />
                                   </Button>
@@ -326,7 +326,7 @@ const Dashboard = () => {
                                     size="sm"
                                     onClick={() => openSignupLink(event.id)}
                                     title="Open Signup"
-                                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-lg md:rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-xs md:text-sm px-2 md:px-3"
+                                    className="rounded-lg md:rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-xs md:text-sm px-2 md:px-3"
                                   >
                                     Share
                                   </Button>

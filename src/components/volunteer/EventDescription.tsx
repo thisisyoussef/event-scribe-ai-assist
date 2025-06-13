@@ -10,12 +10,12 @@ const EventDescription = ({ event }: EventDescriptionProps) => {
   if (!event.description) return null;
 
   return (
-    <Card className="mb-6 border-amber-200 bg-white/90 backdrop-blur-sm">
+    <Card className="mb-6">
       <CardHeader className="pb-3">
-        <CardTitle className="text-amber-800 text-lg">About This Event</CardTitle>
+        <CardTitle className="text-umma-800 text-lg">About This Event</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="text-amber-700 text-sm leading-relaxed">{event.description}</div>
+        <div className="text-umma-700 text-sm leading-relaxed">{event.description}</div>
       </CardContent>
     </Card>
   );
