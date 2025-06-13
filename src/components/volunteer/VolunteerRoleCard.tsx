@@ -15,6 +15,17 @@ interface VolunteerRoleCardProps {
   getRemainingSlots: (role: VolunteerRole, gender?: "brother" | "sister") => number;
 }
 
+const formatTime = (time: string) => {
+  const [hours, minutes] = time.split(':');
+  const date = new Date();
+  date.setHours(parseInt(hours), parseInt(minutes));
+  return date.toLocaleTimeString([], {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+};
+
 const VolunteerRoleCard = ({ 
   role, 
   volunteers, 
@@ -52,7 +63,7 @@ const VolunteerRoleCard = ({
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">
                   <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                  <span>{role.shift_start} - {role.shift_end}</span>
+                  <span>{formatTime(role.shift_start)} - {formatTime(role.shift_end)}</span>
                 </div>
               </div>
               <div className="space-y-1">

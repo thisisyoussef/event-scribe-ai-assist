@@ -25,6 +25,17 @@ interface SignupModalProps {
   isSubmitting: boolean;
 }
 
+const formatTime = (time: string) => {
+  const [hours, minutes] = time.split(':');
+  const date = new Date();
+  date.setHours(parseInt(hours), parseInt(minutes));
+  return date.toLocaleTimeString([], {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+};
+
 const SignupModal = ({
   isOpen,
   onClose,
@@ -135,7 +146,7 @@ const SignupModal = ({
               <h4 className="font-medium mb-2 text-umma-800 text-sm">Role Details:</h4>
               <div className="text-xs text-umma-700 space-y-1">
                 <div className="flex flex-col sm:flex-row sm:gap-4">
-                  <div><strong>Time:</strong> {selectedRole.shift_start} - {selectedRole.shift_end}</div>
+                  <div><strong>Time:</strong> {formatTime(selectedRole.shift_start)} - {formatTime(selectedRole.shift_end)}</div>
                   <div><strong>Date:</strong> {new Date(event?.start_datetime || '').toLocaleDateString()}</div>
                 </div>
                 <div><strong>Location:</strong> {event?.location}</div>

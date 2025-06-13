@@ -6,6 +6,14 @@ interface EventHeaderProps {
   event: Event;
 }
 
+const formatTime = (dateTime: string) => {
+  return new Date(dateTime).toLocaleTimeString([], {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+};
+
 const EventHeader = ({ event }: EventHeaderProps) => {
   return (
     <header className="bg-white/80 backdrop-blur-sm border-b border-umma-200">
@@ -33,8 +41,7 @@ const EventHeader = ({ event }: EventHeaderProps) => {
             <div className="flex items-center space-x-2">
               <Clock className="w-4 h-4" />
               <span>
-                {new Date(event.start_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
-                {new Date(event.end_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                {formatTime(event.start_datetime)} - {formatTime(event.end_datetime)}
               </span>
             </div>
             <div className="flex items-center space-x-2">

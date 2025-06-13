@@ -298,6 +298,17 @@ const EventCreation = () => {
     return `${String(newHours).padStart(2, '0')}:${String(newMins).padStart(2, '0')}`;
   };
 
+  const formatTimeDisplay = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    const date = new Date();
+    date.setHours(parseInt(hours), parseInt(minutes));
+    return date.toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
   // Helper function to get the actual step number based on hideTestFeatures
   const getStepNumber = (logicalStep: number) => {
     if (!hideTestFeatures) return logicalStep;
@@ -988,7 +999,7 @@ const EventCreation = () => {
                                 <div className="text-sm text-umma-600 space-y-1 mt-2">
                                   <div className="flex items-center space-x-2">
                                     <Clock className="w-4 h-4" />
-                                    <span>{suggestion.shiftStart} - {suggestion.shiftEnd}</span>
+                                    <span>{formatTimeDisplay(suggestion.shiftStart)} - {formatTimeDisplay(suggestion.shiftEnd)}</span>
                                   </div>
                                   <div className="flex items-center space-x-2">
                                     <Users className="w-4 h-4" />
