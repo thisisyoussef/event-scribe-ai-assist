@@ -23,10 +23,10 @@ const VolunteerRolesList = ({
   const isMobile = useIsMobile();
 
   return (
-    <Card className="border-amber-200 bg-white/90 backdrop-blur-sm shadow-xl">
+    <Card className="border-umma-200 bg-white/90 backdrop-blur-sm shadow-xl">
       <CardHeader className="pb-4">
-        <CardTitle className="text-amber-800 text-lg sm:text-xl">Available Volunteer Roles</CardTitle>
-        <CardDescription className="text-amber-700 text-sm leading-relaxed">
+        <CardTitle className="text-umma-800 text-lg sm:text-xl">Available Volunteer Roles</CardTitle>
+        <CardDescription className="text-umma-700 text-sm leading-relaxed">
           Choose a role that fits your schedule and sign up to help make this event successful!
         </CardDescription>
       </CardHeader>
@@ -50,9 +50,9 @@ const VolunteerRolesList = ({
           </div>
         ) : (
           <div className="text-center py-8">
-            <Users className="w-12 h-12 text-amber-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-amber-800 mb-2">No Roles Available</h3>
-            <div className="text-amber-600 text-sm">Volunteer roles for this event haven't been set up yet.</div>
+            <Users className="w-12 h-12 text-umma-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-umma-800 mb-2">No Roles Available</h3>
+            <div className="text-umma-600 text-sm">Volunteer roles for this event haven't been set up yet.</div>
           </div>
         )}
       </CardContent>
