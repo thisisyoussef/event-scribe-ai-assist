@@ -7,12 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { Toggle } from "@/components/ui/toggle";
 import Navigation from "@/components/Navigation";
 import ItineraryEditor from "@/components/event-creation/ItineraryEditor";
 import AdditionalDetailsWizard from "@/components/event-creation/AdditionalDetailsWizard";
 import PreEventTasksManager from "@/components/event-creation/PreEventTasksManager";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Sparkles, Plus, Trash2, Clock, Users, MapPin, Calendar, TestTube } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, Plus, Trash2, Clock, Users, MapPin, Calendar, TestTube, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -23,6 +24,7 @@ const EventCreation = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [contacts, setContacts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [hideTestFeatures, setHideTestFeatures] = useState(true);
   
   // Event form data
   const [eventData, setEventData] = useState({
@@ -137,7 +139,7 @@ const EventCreation = () => {
         })) || [];
 
         setFinalRoles(roles);
-        setCurrentStep(roles.length > 0 ? 4 : 1);
+        setCurrentStep(roles.length > 0 ? getStepNumber(4) : 1);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -157,13 +159,47 @@ const EventCreation = () => {
     return `${String(newHours).padStart(2, '0')}:${String(newMins).padStart(2, '0')}`;
   };
 
-  const steps = [
-    { number: 1, title: "Basic Info", description: "Event details" },
-    { number: 2, title: "Enhanced Details", description: "Itinerary & preferences" },
-    { number: 3, title: "Pre-Event Tasks", description: "Planning & assignments" },
-    { number: 4, title: "Volunteer Slots", description: "AI suggestions & roles" },
-    { number: 5, title: "Review & Publish", description: "Final settings" }
-  ];
+  // Helper function to get the actual step number based on hideTestFeatures
+  const getStepNumber = (logicalStep: number) => {
+    if (!hideTestFeatures) return logicalStep;
+    
+    // When hiding test features: 1 -> 1, 2 -> skip, 3 -> skip, 4 -> 2, 5 -> 3
+    if (logicalStep <= 1) return 1;
+    if (logicalStep >= 4) return logicalStep - 2;
+    return logicalStep; // This shouldn't happen when features are hidden
+  };
+
+  // Helper function to get the logical step from display step
+  const getLogicalStep = (displayStep: number) => {
+    if (!hideTestFeatures) return displayStep;
+    
+    // When hiding test features: 1 -> 1, 2 -> 4, 3 -> 5
+    if (displayStep === 1) return 1;
+    if (displayStep === 2) return 4;
+    if (displayStep === 3) return 5;
+    return displayStep;
+  };
+
+  const getVisibleSteps = () => {
+    const allSteps = [
+      { number: 1, title: "Basic Info", description: "Event details" },
+      { number: 2, title: "Enhanced Details", description: "Itinerary & preferences" },
+      { number: 3, title: "Pre-Event Tasks", description: "Planning & assignments" },
+      { number: 4, title: "Volunteer Slots", description: "AI suggestions & roles" },
+      { number: 5, title: "Review & Publish", description: "Final settings" }
+    ];
+
+    if (hideTestFeatures) {
+      return allSteps.filter(step => step.number !== 2 && step.number !== 3).map((step, index) => ({
+        ...step,
+        number: index + 1
+      }));
+    }
+    
+    return allSteps;
+  };
+
+  const steps = getVisibleSteps();
 
   const parseWithAI = async () => {
     setIsLoading(true);
@@ -403,7 +439,8 @@ const EventCreation = () => {
   };
 
   const nextStep = () => {
-    if (currentStep < 5) setCurrentStep(currentStep + 1);
+    const maxStep = steps.length;
+    if (currentStep < maxStep) setCurrentStep(currentStep + 1);
   };
 
   const prevStep = () => {
@@ -411,7 +448,8 @@ const EventCreation = () => {
   };
 
   const canProceed = () => {
-    switch (currentStep) {
+    const logicalStep = getLogicalStep(currentStep);
+    switch (logicalStep) {
       case 1:
         return eventData.title && eventData.date && eventData.startTime && eventData.endTime && eventData.location;
       case 2:
@@ -468,6 +506,8 @@ const EventCreation = () => {
     });
   };
 
+  const logicalCurrentStep = getLogicalStep(currentStep);
+
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
@@ -487,6 +527,17 @@ const EventCreation = () => {
             <h1 className="text-2xl sm:text-3xl font-bold text-umma-900">
               {eventId ? "Edit Event" : "Create New Event"}
             </h1>
+            
+            {/* Test Features Toggle */}
+            <div className="flex items-center space-x-2">
+              <Toggle
+                pressed={hideTestFeatures}
+                onPressedChange={setHideTestFeatures}
+                className="data-[state=on]:bg-umma-600 data-[state=on]:text-white"
+              >
+                {hideTestFeatures ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />
+              </Toggle>
+            </div>
           </div>
           
           {/* Step Indicator */}
@@ -518,7 +569,7 @@ const EventCreation = () => {
         <Card className="bg-white border-umma-200">
           <CardContent className="p-4 sm:p-6">
             {/* Step 1: Basic Info */}
-            {currentStep === 1 && (
+            {logicalCurrentStep === 1 && (
               <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <h2 className="text-xl font-semibold text-umma-800">Event Information</h2>
@@ -604,8 +655,8 @@ const EventCreation = () => {
               </div>
             )}
 
-            {/* Step 2: Enhanced Details */}
-            {currentStep === 2 && (
+            {/* Step 2: Enhanced Details - Only show when hideTestFeatures is false */}
+            {logicalCurrentStep === 2 && !hideTestFeatures && (
               <div className="space-y-6">
                 <h2 className="text-xl font-semibold mb-4 text-umma-800">Enhanced Event Details</h2>
                 <p className="text-gray-600 mb-6">
@@ -628,8 +679,8 @@ const EventCreation = () => {
               </div>
             )}
 
-            {/* Step 3: Pre-Event Tasks */}
-            {currentStep === 3 && (
+            {/* Step 3: Pre-Event Tasks - Only show when hideTestFeatures is false */}
+            {logicalCurrentStep === 3 && !hideTestFeatures && (
               <PreEventTasksManager
                 tasks={preEventTasks}
                 onTasksChange={setPreEventTasks}
@@ -640,7 +691,7 @@ const EventCreation = () => {
             )}
 
             {/* Step 4: Volunteer Slots */}
-            {currentStep === 4 && (
+            {logicalCurrentStep === 4 && (
               <div className="space-y-6">
                 <div>
                   <h2 className="text-xl font-semibold mb-4 text-umma-800">Volunteer Role Generation</h2>
@@ -858,7 +909,7 @@ const EventCreation = () => {
             )}
 
             {/* Step 5: Review & Publish */}
-            {currentStep === 5 && (
+            {logicalCurrentStep === 5 && (
               <div className="space-y-6">
                 {/* Event Summary */}
                 <Card className="mb-6 bg-white border-umma-200">
@@ -971,7 +1022,7 @@ const EventCreation = () => {
           </Button>
           
           <div className="flex w-full sm:w-auto">
-            {currentStep === 5 ? (
+            {currentStep === steps.length ? (
               <Button 
                 onClick={publishEvent}
                 className="w-full bg-gradient-to-r from-umma-500 to-umma-700 hover:from-umma-600 hover:to-umma-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
