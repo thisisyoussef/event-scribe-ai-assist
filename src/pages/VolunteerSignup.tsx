@@ -4,6 +4,7 @@ import SignupModal from "@/components/volunteer/SignupModal";
 import LoadingState from "@/components/volunteer/LoadingState";
 import EventNotFound from "@/components/volunteer/EventNotFound";
 import VolunteerRolesList from "@/components/volunteer/VolunteerRolesList";
+import SignupPageMeta from "@/components/volunteer/SignupPageMeta";
 import { useVolunteerSignup } from "@/hooks/useVolunteerSignup";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -33,29 +34,32 @@ const VolunteerSignup = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100">
-      <EventHeader event={event} />
+    <>
+      <SignupPageMeta event={event} />
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-100">
+        <EventHeader event={event} />
 
-      <main className={`container mx-auto px-4 py-6 ${isMobile ? 'max-w-full' : 'max-w-6xl'}`}>
-        <VolunteerRolesList
-          volunteerRoles={event.volunteer_roles || []}
-          getVolunteersForRole={getVolunteersForRole}
-          onSignUp={openSignupModal}
-          onRemoveVolunteer={removeVolunteer}
-          getRemainingSlots={getRemainingSlots}
-        />
+        <main className={`container mx-auto px-4 py-6 ${isMobile ? 'max-w-full' : 'max-w-6xl'}`}>
+          <VolunteerRolesList
+            volunteerRoles={event.volunteer_roles || []}
+            getVolunteersForRole={getVolunteersForRole}
+            onSignUp={openSignupModal}
+            onRemoveVolunteer={removeVolunteer}
+            getRemainingSlots={getRemainingSlots}
+          />
 
-        <SignupModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          selectedRole={selectedRole}
-          event={event}
-          onSubmit={handleSignupSubmit}
-          getRemainingSlots={getRemainingSlots}
-          isSubmitting={isSubmitting}
-        />
-      </main>
-    </div>
+          <SignupModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            selectedRole={selectedRole}
+            event={event}
+            onSubmit={handleSignupSubmit}
+            getRemainingSlots={getRemainingSlots}
+            isSubmitting={isSubmitting}
+          />
+        </main>
+      </div>
+    </>
   );
 };
 
