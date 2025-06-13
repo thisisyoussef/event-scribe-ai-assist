@@ -43,7 +43,7 @@ const SignupPageMeta = ({ event }: SignupPageMetaProps) => {
     };
 
     // Update page title
-    document.title = `🤝 Volunteer Signup - ${event.title}`;
+    document.title = `🤝 Volunteer for ${event.title} - Sign Up Now`;
 
     // Create or update meta tags
     const updateMetaTag = (property: string, content: string) => {
@@ -65,29 +65,40 @@ const SignupPageMeta = ({ event }: SignupPageMetaProps) => {
 
     const eventDate = formatDate(event.start_datetime);
     const eventTime = formatTime(event.start_datetime);
+    const eventDateTime = formatDateTime(event.start_datetime);
     const description = event.description 
-      ? `${event.description.substring(0, 120)}...` 
-      : `Help make ${event.title} successful by volunteering!`;
+      ? event.description.length > 100 
+        ? `${event.description.substring(0, 100)}...` 
+        : event.description
+      : `Join us as a volunteer and help make ${event.title} a success!`;
+
+    // Enhanced meta description
+    const metaDescription = `🤝 Volunteer Signup for ${event.title} | 📅 ${eventDate} at ${eventTime} | ${event.location || 'TBA'} | Sign up now to help make this event amazing!`;
 
     // Basic meta tags
-    updateMetaTag('description', `🤝 Volunteer Signup for ${event.title} - ${eventDate} at ${eventTime}. Sign up to help make this event successful!`);
+    updateMetaTag('description', metaDescription);
     
     // Open Graph tags for rich link previews
     updateMetaTag('og:title', `🤝 Volunteer Signup: ${event.title}`);
-    updateMetaTag('og:description', `📅 ${eventDate} at ${eventTime}\n\n${description}\n\nSign up now to volunteer and help make this event amazing!`);
+    updateMetaTag('og:description', `📅 ${eventDateTime}\n📍 ${event.location || 'Location TBA'}\n\n${description}\n\n✅ Sign up now to volunteer and be part of something amazing!`);
     updateMetaTag('og:type', 'website');
     updateMetaTag('og:url', window.location.href);
-    updateMetaTag('og:site_name', 'UMMA Events');
+    updateMetaTag('og:site_name', 'UMMA Event Volunteers');
+    updateMetaTag('og:locale', 'en_US');
     
     // Twitter Card tags
     updateMetaTag('twitter:card', 'summary_large_image');
-    updateMetaTag('twitter:title', `🤝 Volunteer Signup: ${event.title}`);
-    updateMetaTag('twitter:description', `📅 ${eventDate} at ${eventTime} - ${description} Sign up to volunteer!`);
+    updateMetaTag('twitter:title', `🤝 Volunteer for ${event.title}`);
+    updateMetaTag('twitter:description', `📅 ${eventDate} at ${eventTime}\n📍 ${event.location || 'Location TBA'}\n\n${description}\n\nSign up to volunteer today!`);
     updateMetaTag('twitter:site', '@umma');
+    updateMetaTag('twitter:creator', '@umma');
 
-    // Additional structured data for better SEO
+    // Additional structured data for better SEO and previews
     updateMetaTag('article:section', 'Volunteer Opportunities');
-    updateMetaTag('article:tag', 'volunteer,community,event,signup');
+    updateMetaTag('article:tag', 'volunteer,community,event,signup,umma');
+    updateMetaTag('event:start_time', event.start_datetime);
+    updateMetaTag('event:location:latitude', '');
+    updateMetaTag('event:location:longitude', '');
 
     // Cleanup function to restore original title
     return () => {

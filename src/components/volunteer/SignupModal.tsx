@@ -68,7 +68,7 @@ const SignupModal = ({
       <DialogContent className={`
         border-umma-200 bg-white/95 backdrop-blur-sm
         ${isMobile 
-          ? 'w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] m-4 p-4 overflow-y-auto' 
+          ? 'w-[90vw] max-w-[90vw] max-h-[85vh] mx-auto p-4 overflow-y-auto' 
           : 'max-w-lg w-full max-h-[90vh] overflow-y-auto'
         }
       `}>
