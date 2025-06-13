@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,6 +27,10 @@ export const useVolunteerSignup = () => {
   const [selectedRole, setSelectedRole] = useState<VolunteerRole | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  
+  // Use refs to track ongoing requests and prevent duplicates
+  const submissionInProgress = useRef(false);
+  const currentSubmissionId = useRef<string | null>(null);
 
   useEffect(() => {
     loadEvent();
@@ -188,46 +192,86 @@ export const useVolunteerSignup = () => {
     gender: "brother" | "sister";
     notes: string;
   }) => {
+    // Prevent duplicate submissions
+    if (submissionInProgress.current || isSubmitting) {
+      console.log('Submission already in progress, ignoring duplicate request');
+      return;
+    }
+
+    // Generate unique submission ID
+    const submissionId = Date.now().toString();
+    currentSubmissionId.current = submissionId;
+    submissionInProgress.current = true;
     setIsSubmitting(true);
 
-    if (!volunteerData.name || !volunteerData.phone) {
-      toast({
-        title: "Missing Information",
-        description: "Please provide your name and phone number.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!selectedRole || !event?.id) {
-      setIsSubmitting(false);
-      return;
-    }
-
-    const remainingForGender = getRemainingSlots(selectedRole, volunteerData.gender);
-    if (remainingForGender <= 0) {
-      toast({
-        title: "Gender Slot Full",
-        description: `The ${volunteerData.gender} slots for this role are full. Please try a different role or gender selection.`,
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
-    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    if (!phoneRegex.test(volunteerData.phone.replace(/[\s\-\(\)]/g, ''))) {
-      toast({
-        title: "Invalid Phone Number",
-        description: "Please enter a valid phone number.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
+    console.log(`Starting signup submission ${submissionId}`);
 
     try {
+      if (!volunteerData.name || !volunteerData.phone) {
+        toast({
+          title: "Missing Information",
+          description: "Please provide your name and phone number.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!selectedRole || !event?.id) {
+        return;
+      }
+
+      // Check if this submission is still current
+      if (currentSubmissionId.current !== submissionId) {
+        console.log('Submission cancelled - newer submission started');
+        return;
+      }
+
+      const remainingForGender = getRemainingSlots(selectedRole, volunteerData.gender);
+      if (remainingForGender <= 0) {
+        toast({
+          title: "Gender Slot Full",
+          description: `The ${volunteerData.gender} slots for this role are full. Please try a different role or gender selection.`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+      if (!phoneRegex.test(volunteerData.phone.replace(/[\s\-\(\)]/g, ''))) {
+        toast({
+          title: "Invalid Phone Number",
+          description: "Please enter a valid phone number.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check for existing volunteer with same phone and event to prevent duplicates
+      const { data: existingVolunteers, error: checkError } = await supabase
+        .from('volunteers')
+        .select('id, name, phone')
+        .eq('event_id', event.id)
+        .eq('phone', volunteerData.phone)
+        .eq('role_id', selectedRole.id);
+
+      if (checkError) {
+        console.error('Error checking for existing volunteers:', checkError);
+      } else if (existingVolunteers && existingVolunteers.length > 0) {
+        toast({
+          title: "Already Registered",
+          description: "This phone number is already registered for this role.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Final check if this submission is still current
+      if (currentSubmissionId.current !== submissionId) {
+        console.log('Submission cancelled before database insert');
+        return;
+      }
+
+      console.log(`Inserting volunteer data for submission ${submissionId}`);
       const { data: newVolunteer, error } = await supabase
         .from('volunteers')
         .insert({
@@ -249,16 +293,16 @@ export const useVolunteerSignup = () => {
           description: "There was an error signing up. Please try again.",
           variant: "destructive",
         });
-        setIsSubmitting(false);
         return;
       }
+
+      console.log(`Successfully inserted volunteer for submission ${submissionId}:`, newVolunteer);
 
       setEvent(prev => prev ? {
         ...prev,
         volunteers: [...(prev.volunteers || []), newVolunteer as Volunteer]
       } : null);
 
-      setIsSubmitting(false);
       setIsModalOpen(false);
       
       toast({
@@ -269,13 +313,20 @@ export const useVolunteerSignup = () => {
       await sendSMS(volunteerData.phone, volunteerData.name, selectedRole.role_label);
 
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error in signup submission:', error);
       toast({
         title: "Signup Failed",
         description: "There was an error signing up. Please try again.",
         variant: "destructive",
       });
-      setIsSubmitting(false);
+    } finally {
+      // Only reset state if this is still the current submission
+      if (currentSubmissionId.current === submissionId) {
+        submissionInProgress.current = false;
+        setIsSubmitting(false);
+        currentSubmissionId.current = null;
+        console.log(`Completed signup submission ${submissionId}`);
+      }
     }
   };
 
