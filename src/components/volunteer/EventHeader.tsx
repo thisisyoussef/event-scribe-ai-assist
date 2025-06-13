@@ -8,11 +8,8 @@ interface EventHeaderProps {
   event: Event;
 }
 
-const formatTime = (time: string) => {
-  const [hours, minutes] = time.split(':');
-  const date = new Date();
-  date.setHours(parseInt(hours), parseInt(minutes));
-  return date.toLocaleTimeString([], {
+const formatTime = (dateTime: string) => {
+  return new Date(dateTime).toLocaleTimeString([], {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true
@@ -51,7 +48,7 @@ const EventHeader = ({ event }: EventHeaderProps) => {
               <div className="flex items-center justify-center space-x-2">
                 <Calendar className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />
                 <span className={`${isMobile ? 'text-sm' : 'text-base'}`}>
-                  {new Date(event.start_datetime).toLocaleDateString()} at {formatTime(event.start_time)}
+                  {new Date(event.start_datetime).toLocaleDateString()} at {formatTime(event.start_datetime)}
                 </span>
               </div>
               <div className="flex items-center justify-center space-x-2">
