@@ -6,19 +6,19 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 shadow-sm hover:shadow-md transform hover:-translate-y-0.5",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-umma-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 shadow-sm hover:shadow-md transform hover:-translate-y-0.5",
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-amber-400 to-amber-500 text-white hover:from-amber-500 hover:to-amber-600 shadow-lg hover:shadow-xl",
+        default: "bg-umma-500 text-white hover:bg-umma-600 shadow-lg hover:shadow-xl",
         destructive:
           "bg-gradient-to-r from-red-400 to-red-500 text-white hover:from-red-500 hover:to-red-600",
         outline:
-          "border-2 border-amber-200 bg-white text-amber-700 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-800",
+          "border-2 border-umma-200 bg-white text-umma-700 hover:bg-umma-50 hover:border-umma-300 hover:text-umma-800",
         secondary:
-          "bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200",
-        ghost: "text-amber-700 hover:bg-amber-50 hover:text-amber-800",
-        link: "text-amber-600 underline-offset-4 hover:underline hover:text-amber-700",
+          "bg-umma-50 text-umma-800 hover:bg-umma-100 border border-umma-200",
+        ghost: "text-umma-700 hover:bg-umma-50 hover:text-umma-800",
+        link: "text-umma-600 underline-offset-4 hover:underline hover:text-umma-700",
       },
       size: {
         default: "h-11 px-6 py-3",

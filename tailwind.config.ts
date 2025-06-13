@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,19 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				umma: {
+					DEFAULT: '#9B9A6D',
+					50: '#F7F7F2',
+					100: '#EEEEE0',
+					200: '#DDDDBE',
+					300: '#CBCB9C',
+					400: '#B9B87A',
+					500: '#9B9A6D',
+					600: '#7C7B55',
+					700: '#5D5C3E',
+					800: '#3E3D27',
+					900: '#1F1E14'
 				}
 			},
 			borderRadius: {

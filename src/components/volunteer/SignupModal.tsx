@@ -54,19 +54,19 @@ const SignupModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className={`border-amber-200 bg-white/95 backdrop-blur-sm ${isMobile ? 'max-w-[95vw] max-h-[95vh] overflow-y-auto' : 'max-w-lg'}`}>
+      <DialogContent className={`border-umma-200 bg-white/95 backdrop-blur-sm ${isMobile ? 'max-w-[95vw] max-h-[95vh] overflow-y-auto' : 'max-w-lg'}`}>
         <DialogHeader className="text-left">
-          <DialogTitle className="text-amber-800 text-lg sm:text-xl">
+          <DialogTitle className="text-umma-800 text-lg sm:text-xl">
             Sign Up for {selectedRole?.role_label}
           </DialogTitle>
-          <DialogDescription className="text-amber-700 text-sm">
+          <DialogDescription className="text-umma-700 text-sm">
             Fill in your information to register for this volunteer role.
           </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-amber-800 text-sm font-medium">Full Name *</Label>
+            <Label htmlFor="name" className="text-umma-800 text-sm font-medium">Full Name *</Label>
             <Input
               id="name"
               type="text"
@@ -74,12 +74,12 @@ const SignupModal = ({
               value={volunteerData.name}
               onChange={(e) => setVolunteerData(prev => ({ ...prev, name: e.target.value }))}
               required
-              className="border-amber-200 focus:border-amber-400 text-base"
+              className="border-umma-200 focus:border-umma-400 text-base"
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="phone" className="text-amber-800 text-sm font-medium">Phone Number *</Label>
+            <Label htmlFor="phone" className="text-umma-800 text-sm font-medium">Phone Number *</Label>
             <Input
               id="phone"
               type="tel"
@@ -87,20 +87,20 @@ const SignupModal = ({
               value={volunteerData.phone}
               onChange={(e) => setVolunteerData(prev => ({ ...prev, phone: e.target.value }))}
               required
-              className="border-amber-200 focus:border-amber-400 text-base"
+              className="border-umma-200 focus:border-umma-400 text-base"
             />
-            <div className="text-xs text-amber-600">
+            <div className="text-xs text-umma-600">
               Used for event reminders and communication
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="gender" className="text-amber-800 text-sm font-medium">Gender *</Label>
+            <Label htmlFor="gender" className="text-umma-800 text-sm font-medium">Gender *</Label>
             <Select 
               value={volunteerData.gender} 
               onValueChange={(value: "brother" | "sister") => setVolunteerData(prev => ({ ...prev, gender: value }))}
             >
-              <SelectTrigger className="border-amber-200 text-base">
+              <SelectTrigger className="border-umma-200 text-base">
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
               <SelectContent>
@@ -109,7 +109,7 @@ const SignupModal = ({
               </SelectContent>
             </Select>
             {selectedRole && (
-              <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+              <div className="text-xs text-umma-600 bg-umma-50 p-2 rounded">
                 <div className="flex flex-col sm:flex-row sm:gap-4 gap-1">
                   <span>Brothers: {getRemainingSlots(selectedRole, 'brother')}/{selectedRole.slots_brother}</span>
                   <span>Sisters: {getRemainingSlots(selectedRole, 'sister')}/{selectedRole.slots_sister}</span>
@@ -119,21 +119,21 @@ const SignupModal = ({
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="notes" className="text-amber-800 text-sm font-medium">Additional Notes (Optional)</Label>
+            <Label htmlFor="notes" className="text-umma-800 text-sm font-medium">Additional Notes (Optional)</Label>
             <Textarea
               id="notes"
               placeholder="Any special requirements, questions, or information..."
               value={volunteerData.notes}
               onChange={(e) => setVolunteerData(prev => ({ ...prev, notes: e.target.value }))}
               rows={3}
-              className="border-amber-200 focus:border-amber-400 text-base resize-none"
+              className="border-umma-200 focus:border-umma-400 text-base resize-none"
             />
           </div>
 
           {selectedRole && (
-            <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
-              <h4 className="font-medium mb-2 text-amber-800 text-sm">Role Details:</h4>
-              <div className="text-xs text-amber-700 space-y-1">
+            <div className="bg-umma-50 p-3 rounded-lg border border-umma-200">
+              <h4 className="font-medium mb-2 text-umma-800 text-sm">Role Details:</h4>
+              <div className="text-xs text-umma-700 space-y-1">
                 <div className="flex flex-col sm:flex-row sm:gap-4">
                   <div><strong>Time:</strong> {selectedRole.shift_start} - {selectedRole.shift_end}</div>
                   <div><strong>Date:</strong> {new Date(event?.start_datetime || '').toLocaleDateString()}</div>
@@ -149,14 +149,14 @@ const SignupModal = ({
               variant="outline"
               onClick={handleClose}
               disabled={isSubmitting}
-              className="border-amber-300 text-amber-700 hover:bg-amber-50 order-2 sm:order-1"
+              className="border-umma-300 text-umma-700 hover:bg-umma-50 order-2 sm:order-1"
             >
               Cancel
             </Button>
             <Button 
               type="submit"
               disabled={isSubmitting}
-              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white order-1 sm:order-2"
+              className="bg-umma-500 hover:bg-umma-600 text-white order-1 sm:order-2"
             >
               {isSubmitting ? (
                 <>
