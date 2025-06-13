@@ -142,7 +142,6 @@ const VolunteerRolesList = ({
                   <VolunteerTable
                     volunteers={volunteers}
                     onRemoveVolunteer={onRemoveVolunteer}
-                    role={role}
                   />
                 </CardContent>
               )}
