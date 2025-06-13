@@ -13,7 +13,7 @@ const VolunteerSignup = () => {
   const {
     event,
     loading,
-    eventId,
+    eventSlug,
     isModalOpen,
     setIsModalOpen,
     selectedRole,
@@ -30,7 +30,7 @@ const VolunteerSignup = () => {
   }
 
   if (!event) {
-    return <EventNotFound eventId={eventId} />;
+    return <EventNotFound eventId={eventSlug} />;
   }
 
   return (

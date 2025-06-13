@@ -5,8 +5,22 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Event, VolunteerRole, Volunteer } from "@/types/database";
 
+// Function to create URL-friendly slug from event title
+const createEventSlug = (title: string, id: string) => {
+  const baseSlug = title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .trim();
+  
+  // Add last 4 characters of ID to handle duplicates
+  const uniqueSuffix = id.slice(-4);
+  return `${baseSlug}-${uniqueSuffix}`;
+};
+
 export const useVolunteerSignup = () => {
-  const { eventId } = useParams();
+  const { eventSlug } = useParams();
   const { toast } = useToast();
   const [event, setEvent] = useState<(Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] }) | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,36 +30,44 @@ export const useVolunteerSignup = () => {
 
   useEffect(() => {
     loadEvent();
-  }, [eventId]);
+  }, [eventSlug]);
 
   const loadEvent = async () => {
-    if (!eventId) return;
+    if (!eventSlug) return;
     
     try {
-      console.log("Loading event with ID:", eventId);
+      console.log("Loading event with slug:", eventSlug);
       
-      const { data: eventData, error } = await supabase
+      // First get all published events
+      const { data: events, error } = await supabase
         .from('events')
         .select(`
           *,
           volunteer_roles(*),
           volunteers(*)
         `)
-        .eq('id', eventId)
-        .eq('status', 'published')
-        .single();
+        .eq('status', 'published');
 
       if (error) {
-        console.error('Error loading event:', error);
-        if (error.code === 'PGRST116') {
-          console.log("Event not found or not published");
-        }
+        console.error('Error loading events:', error);
         setEvent(null);
         return;
       }
 
-      console.log("Found event:", eventData);
-      setEvent(eventData as Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] });
+      // Find the event that matches the slug
+      const matchingEvent = events?.find(event => {
+        const eventSlugGenerated = createEventSlug(event.title, event.id);
+        return eventSlugGenerated === eventSlug;
+      });
+
+      if (!matchingEvent) {
+        console.log("Event not found for slug:", eventSlug);
+        setEvent(null);
+        return;
+      }
+
+      console.log("Found event:", matchingEvent);
+      setEvent(matchingEvent as Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] });
     } catch (error) {
       console.error('Error:', error);
       setEvent(null);
@@ -178,7 +200,7 @@ export const useVolunteerSignup = () => {
       return;
     }
 
-    if (!selectedRole || !eventId) {
+    if (!selectedRole || !event?.id) {
       setIsSubmitting(false);
       return;
     }
@@ -209,7 +231,7 @@ export const useVolunteerSignup = () => {
       const { data: newVolunteer, error } = await supabase
         .from('volunteers')
         .insert({
-          event_id: eventId,
+          event_id: event.id,
           role_id: selectedRole.id,
           name: volunteerData.name,
           phone: volunteerData.phone,
@@ -260,7 +282,7 @@ export const useVolunteerSignup = () => {
   return {
     event,
     loading,
-    eventId,
+    eventSlug,
     isModalOpen,
     setIsModalOpen,
     selectedRole,
