@@ -65,7 +65,13 @@ const SignupModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className={`border-umma-200 bg-white/95 backdrop-blur-sm ${isMobile ? 'max-w-[95vw] max-h-[95vh] overflow-y-auto' : 'max-w-lg'}`}>
+      <DialogContent className={`
+        border-umma-200 bg-white/95 backdrop-blur-sm
+        ${isMobile 
+          ? 'w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] m-4 p-4 overflow-y-auto' 
+          : 'max-w-lg w-full max-h-[90vh] overflow-y-auto'
+        }
+      `}>
         <DialogHeader className="text-left">
           <DialogTitle className="text-umma-800 text-lg sm:text-xl">
             Sign Up for {selectedRole?.role_label}
