@@ -501,8 +501,8 @@ const EventCreation = () => {
                   {step.number}
                 </div>
                 <div className="ml-2 hidden sm:block">
-                  <div className="text-sm font-medium">{step.title}</div>
-                  <div className="text-xs text-gray-500">{step.description}</div>
+                  <div className="text-sm font-medium text-umma-800">{step.title}</div>
+                  <div className="text-xs text-umma-500">{step.description}</div>
                 </div>
                 {index < steps.length - 1 && (
                   <div className={`w-8 h-0.5 mx-4 hidden sm:block ${
@@ -515,7 +515,7 @@ const EventCreation = () => {
         </div>
 
         {/* Step Content */}
-        <Card>
+        <Card className="bg-white border-umma-200">
           <CardContent className="p-4 sm:p-6">
             {/* Step 1: Basic Info */}
             {currentStep === 1 && (
@@ -526,7 +526,7 @@ const EventCreation = () => {
                     <Button 
                       variant="outline" 
                       onClick={prefillTestData}
-                      className="text-sm w-full sm:w-auto"
+                      className="text-sm w-full sm:w-auto bg-gradient-to-r from-umma-400 to-umma-500 hover:from-umma-500 hover:to-umma-600 text-white border-umma-300 shadow-lg hover:shadow-xl transition-all duration-300"
                     >
                       <TestTube className="w-4 h-4 mr-2" />
                       Prefill with Test Data
@@ -644,7 +644,7 @@ const EventCreation = () => {
               <div className="space-y-6">
                 <div>
                   <h2 className="text-xl font-semibold mb-4 text-umma-800">Volunteer Role Generation</h2>
-                  <p className="text-gray-600 mb-6">
+                  <p className="text-umma-600 mb-6">
                     AI will analyze your itinerary and event details to generate tailored volunteer roles.
                   </p>
                   
@@ -671,14 +671,14 @@ const EventCreation = () => {
                       <Sparkles className="w-12 h-12 text-umma-600 mx-auto mb-4" />
                       <Button 
                         onClick={parseWithAI}
-                        className="w-full sm:w-auto"
+                        className="w-full sm:w-auto bg-gradient-to-r from-umma-500 to-umma-700 hover:from-umma-600 hover:to-umma-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                         disabled={!eventData.description}
                       >
                         <Sparkles className="w-4 h-4 mr-2" />
                         Generate AI Role Suggestions
                       </Button>
                       {!eventData.description && (
-                        <p className="text-sm text-gray-500 mt-2">Add an event description first</p>
+                        <p className="text-sm text-umma-500 mt-2">Add an event description first</p>
                       )}
                     </div>
                   )}
@@ -686,7 +686,7 @@ const EventCreation = () => {
                   {isLoading && (
                     <div className="text-center py-8">
                       <div className="animate-spin w-8 h-8 border-2 border-umma-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-                      <p>AI is analyzing your event description...</p>
+                      <p className="text-umma-700">AI is analyzing your event description...</p>
                     </div>
                   )}
 
@@ -694,12 +694,12 @@ const EventCreation = () => {
                     <div className="space-y-4">
                       <h3 className="font-medium text-umma-800">AI Suggestions:</h3>
                       {aiSuggestions.map((suggestion: any) => (
-                        <Card key={suggestion.id}>
+                        <Card key={suggestion.id} className="bg-white border-umma-200">
                           <CardContent className="p-4">
                             <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                               <div className="flex-1">
                                 <h4 className="font-medium text-umma-800">{suggestion.roleLabel}</h4>
-                                <div className="text-sm text-gray-600 space-y-1 mt-2">
+                                <div className="text-sm text-umma-600 space-y-1 mt-2">
                                   <div className="flex items-center space-x-2">
                                     <Clock className="w-4 h-4" />
                                     <span>{suggestion.shiftStart} - {suggestion.shiftEnd}</span>
@@ -711,7 +711,7 @@ const EventCreation = () => {
                                     </span>
                                   </div>
                                   {suggestion.notes && (
-                                    <p className="text-gray-500 mt-2">{suggestion.notes}</p>
+                                    <p className="text-umma-500 mt-2">{suggestion.notes}</p>
                                   )}
                                 </div>
                               </div>
@@ -719,7 +719,7 @@ const EventCreation = () => {
                                 <Button 
                                   size="sm"
                                   onClick={() => acceptSuggestion(suggestion)}
-                                  className="bg-green-600 hover:bg-green-700 w-full sm:w-auto"
+                                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white w-full sm:w-auto shadow-lg hover:shadow-xl transition-all duration-300"
                                 >
                                   Accept
                                 </Button>
@@ -735,31 +735,34 @@ const EventCreation = () => {
                     <div className="mt-6 space-y-4">
                       <h3 className="font-medium text-umma-800">Finalized Roles:</h3>
                       {finalRoles.map((role: any) => (
-                        <Card key={role.id}>
+                        <Card key={role.id} className="bg-white border-umma-200">
                           <CardContent className="p-4">
                             <div className="grid gap-4">
                               <div className="grid md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                  <Label>Role Name</Label>
+                                  <Label className="text-umma-700">Role Name</Label>
                                   <Input
                                     value={role.roleLabel}
                                     onChange={(e) => updateRole(role.id, { roleLabel: e.target.value })}
                                     placeholder="Role name"
+                                    className="border-umma-200 focus-visible:ring-umma-500"
                                   />
                                 </div>
                                 
                                 <div className="space-y-2">
-                                  <Label>Shift Time</Label>
+                                  <Label className="text-umma-700">Shift Time</Label>
                                   <div className="flex flex-col sm:flex-row gap-2">
                                     <Input
                                       type="time"
                                       value={role.shiftStart}
                                       onChange={(e) => updateRole(role.id, { shiftStart: e.target.value })}
+                                      className="border-umma-200 focus-visible:ring-umma-500"
                                     />
                                     <Input
                                       type="time"
                                       value={role.shiftEnd}
                                       onChange={(e) => updateRole(role.id, { shiftEnd: e.target.value })}
+                                      className="border-umma-200 focus-visible:ring-umma-500"
                                     />
                                   </div>
                                 </div>
@@ -767,7 +770,7 @@ const EventCreation = () => {
                               
                               <div className="grid md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                  <Label>Slots Needed</Label>
+                                  <Label className="text-umma-700">Slots Needed</Label>
                                   <div className="grid grid-cols-2 gap-2">
                                     <div>
                                       <Input
@@ -776,8 +779,9 @@ const EventCreation = () => {
                                         value={role.slotsBrother}
                                         onChange={(e) => updateRole(role.id, { slotsBrother: parseInt(e.target.value) || 0 })}
                                         placeholder="Brothers"
+                                        className="border-umma-200 focus-visible:ring-umma-500"
                                       />
-                                      <div className="text-xs text-gray-500 mt-1">Brothers</div>
+                                      <div className="text-xs text-umma-500 mt-1">Brothers</div>
                                     </div>
                                     <div>
                                       <Input
@@ -786,21 +790,22 @@ const EventCreation = () => {
                                         value={role.slotsSister}
                                         onChange={(e) => updateRole(role.id, { slotsSister: parseInt(e.target.value) || 0 })}
                                         placeholder="Sisters"
+                                        className="border-umma-200 focus-visible:ring-umma-500"
                                       />
-                                      <div className="text-xs text-gray-500 mt-1">Sisters</div>
+                                      <div className="text-xs text-umma-500 mt-1">Sisters</div>
                                     </div>
                                   </div>
                                 </div>
                                 
                                 <div className="space-y-2">
-                                  <Label>Point of Contact</Label>
+                                  <Label className="text-umma-700">Point of Contact</Label>
                                   <div className="flex flex-col sm:flex-row gap-2 items-end">
                                     <div className="flex-1">
                                       <Select 
                                         value={role.suggestedPOC || ""} 
                                         onValueChange={(value) => updateRole(role.id, { suggestedPOC: value })}
                                       >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="border-umma-200">
                                           <SelectValue placeholder="Select POC" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -825,11 +830,12 @@ const EventCreation = () => {
                               </div>
                               
                               <div className="space-y-2">
-                                <Label>Notes (Optional)</Label>
+                                <Label className="text-umma-700">Notes (Optional)</Label>
                                 <Input
                                   value={role.notes}
                                   onChange={(e) => updateRole(role.id, { notes: e.target.value })}
                                   placeholder="Special instructions or requirements"
+                                  className="border-umma-200 focus-visible:ring-umma-500"
                                 />
                               </div>
                             </div>
@@ -842,7 +848,7 @@ const EventCreation = () => {
                   <Button 
                     variant="outline" 
                     onClick={addCustomRole}
-                    className="w-full mt-4"
+                    className="w-full mt-4 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white border-umma-300 shadow-lg hover:shadow-xl transition-all duration-300"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Custom Role
@@ -855,7 +861,7 @@ const EventCreation = () => {
             {currentStep === 5 && (
               <div className="space-y-6">
                 {/* Event Summary */}
-                <Card className="mb-6">
+                <Card className="mb-6 bg-white border-umma-200">
                   <CardHeader className="pb-2">
                     <CardTitle className="flex items-center space-x-2 text-umma-800">
                       <Calendar className="w-5 h-5" />
@@ -866,7 +872,7 @@ const EventCreation = () => {
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
                         <h4 className="font-medium text-umma-800">{eventData.title}</h4>
-                        <div className="text-sm text-gray-600 space-y-2 mt-3">
+                        <div className="text-sm text-umma-600 space-y-2 mt-3">
                           <div className="flex items-center space-x-2">
                             <Calendar className="w-4 h-4 text-umma-700" />
                             <span>{new Date(eventData.date).toLocaleDateString()}</span>
@@ -886,14 +892,14 @@ const EventCreation = () => {
                         {finalRoles.length > 0 ? (
                           <div className="space-y-2">
                             {finalRoles.map((role: any) => (
-                              <div key={role.id} className="text-sm text-gray-600 flex items-center gap-2">
+                              <div key={role.id} className="text-sm text-umma-600 flex items-center gap-2">
                                 <Users className="w-3 h-3 text-umma-700 flex-shrink-0" />
                                 <span>{role.roleLabel}: {role.slotsBrother + role.slotsSister} slots</span>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <p className="text-sm text-gray-500">No volunteer roles defined yet</p>
+                          <p className="text-sm text-umma-500">No volunteer roles defined yet</p>
                         )}
                       </div>
                     </div>
@@ -901,18 +907,18 @@ const EventCreation = () => {
                 </Card>
 
                 {/* SMS Settings */}
-                <Card>
+                <Card className="bg-white border-umma-200">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-umma-800">SMS Reminder Settings</CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-umma-600">
                       Configure automatic reminders for volunteers
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                       <div>
-                        <Label>Enable SMS Reminders</Label>
-                        <p className="text-sm text-gray-500">Send automatic reminders to volunteers</p>
+                        <Label className="text-umma-700">Enable SMS Reminders</Label>
+                        <p className="text-sm text-umma-500">Send automatic reminders to volunteers</p>
                       </div>
                       <Switch
                         checked={eventData.smsEnabled}
@@ -923,23 +929,25 @@ const EventCreation = () => {
                     {eventData.smsEnabled && (
                       <div className="grid sm:grid-cols-2 gap-4 pt-4 border-t border-umma-100">
                         <div className="space-y-2">
-                          <Label>Day Before Reminder</Label>
+                          <Label className="text-umma-700">Day Before Reminder</Label>
                           <Input
                             type="time"
                             value={eventData.dayBeforeTime}
                             onChange={(e) => setEventData(prev => ({ ...prev, dayBeforeTime: e.target.value }))}
+                            className="border-umma-200 focus-visible:ring-umma-500"
                           />
-                          <p className="text-xs text-gray-500">Time to send reminder the day before</p>
+                          <p className="text-xs text-umma-500">Time to send reminder the day before</p>
                         </div>
                         
                         <div className="space-y-2">
-                          <Label>Day Of Reminder</Label>
+                          <Label className="text-umma-700">Day Of Reminder</Label>
                           <Input
                             type="time"
                             value={eventData.dayOfTime}
                             onChange={(e) => setEventData(prev => ({ ...prev, dayOfTime: e.target.value }))}
+                            className="border-umma-200 focus-visible:ring-umma-500"
                           />
-                          <p className="text-xs text-gray-500">Time to send reminder on event day</p>
+                          <p className="text-xs text-umma-500">Time to send reminder on event day</p>
                         </div>
                       </div>
                     )}
@@ -956,7 +964,7 @@ const EventCreation = () => {
             variant="outline" 
             onClick={prevStep}
             disabled={currentStep === 1}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto border-umma-300 text-umma-700 hover:bg-umma-100"
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
             Previous
@@ -966,7 +974,7 @@ const EventCreation = () => {
             {currentStep === 5 ? (
               <Button 
                 onClick={publishEvent}
-                className="w-full"
+                className="w-full bg-gradient-to-r from-umma-500 to-umma-700 hover:from-umma-600 hover:to-umma-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                 disabled={!canProceed()}
               >
                 {eventId ? "Update Event" : "Publish Event"}
@@ -975,7 +983,7 @@ const EventCreation = () => {
               <Button 
                 onClick={nextStep}
                 disabled={!canProceed()}
-                className="w-full"
+                className="w-full bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Next
                 <ChevronRight className="w-4 h-4 ml-2" />

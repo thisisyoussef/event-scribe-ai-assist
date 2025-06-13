@@ -44,22 +44,22 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime }: I
   };
 
   return (
-    <Card className="border-amber-200">
+    <Card className="border-umma-200 bg-white">
       <CardHeader className="pb-2">
-        <CardTitle className="flex items-center space-x-2 text-amber-800">
+        <CardTitle className="flex items-center space-x-2 text-umma-800">
           <Clock className="w-5 h-5" />
           <span>Event Itinerary (Optional)</span>
         </CardTitle>
-        <p className="text-sm text-amber-600">
+        <p className="text-sm text-umma-600">
           Add a detailed timeline to help AI generate more precise volunteer roles and tasks.
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
         {itinerary.length === 0 ? (
-          <div className="text-center py-6 bg-amber-50 rounded-lg border border-amber-200">
-            <Clock className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-            <p className="text-amber-600 mb-4">No itinerary items yet</p>
-            <Button onClick={addItineraryItem} variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-100">
+          <div className="text-center py-6 bg-umma-50 rounded-lg border border-umma-200">
+            <Clock className="w-8 h-8 text-umma-400 mx-auto mb-2" />
+            <p className="text-umma-600 mb-4">No itinerary items yet</p>
+            <Button onClick={addItineraryItem} variant="outline" className="border-umma-300 text-umma-700 hover:bg-umma-100 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300">
               <Plus className="w-4 h-4 mr-2" />
               Add First Item
             </Button>
@@ -68,32 +68,32 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime }: I
           <>
             <div className="space-y-3">
               {itinerary.map((item, index) => (
-                <div key={item.id} className="grid grid-cols-1 lg:grid-cols-4 gap-3 p-3 sm:p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <div key={item.id} className="grid grid-cols-1 lg:grid-cols-4 gap-3 p-3 sm:p-4 bg-umma-50 rounded-lg border border-umma-200">
                   <div className="space-y-2">
-                    <Label className="text-xs text-amber-700">Time</Label>
+                    <Label className="text-xs text-umma-700">Time</Label>
                     <Input
                       type="time"
                       value={item.time}
                       onChange={(e) => updateItineraryItem(item.id, 'time', e.target.value)}
                       min={startTime}
                       max={endTime}
-                      className="text-sm border-amber-200 focus-visible:ring-amber-500"
+                      className="text-sm border-umma-200 focus-visible:ring-umma-500"
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-xs text-amber-700">Activity Title</Label>
+                    <Label className="text-xs text-umma-700">Activity Title</Label>
                     <Input
                       value={item.title}
                       onChange={(e) => updateItineraryItem(item.id, 'title', e.target.value)}
                       placeholder="e.g., Doors Open"
-                      className="text-sm border-amber-200 focus-visible:ring-amber-500"
+                      className="text-sm border-umma-200 focus-visible:ring-umma-500"
                     />
                   </div>
                   
                   <div className="space-y-2 lg:col-span-2">
                     <div className="flex justify-between items-center">
-                      <Label className="text-xs text-amber-700">Description</Label>
+                      <Label className="text-xs text-umma-700">Description</Label>
                       <Button
                         size="sm"
                         variant="ghost"
@@ -108,14 +108,14 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime }: I
                       onChange={(e) => updateItineraryItem(item.id, 'description', e.target.value)}
                       placeholder="Describe what happens during this time"
                       rows={2}
-                      className="text-sm resize-none border-amber-200 focus-visible:ring-amber-500"
+                      className="text-sm resize-none border-umma-200 focus-visible:ring-umma-500"
                     />
                   </div>
                 </div>
               ))}
             </div>
             
-            <Button onClick={addItineraryItem} variant="outline" className="w-full border-amber-300 text-amber-700 hover:bg-amber-100">
+            <Button onClick={addItineraryItem} variant="outline" className="w-full border-umma-300 text-umma-700 hover:bg-umma-100 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300">
               <Plus className="w-4 h-4 mr-2" />
               Add Another Item
             </Button>

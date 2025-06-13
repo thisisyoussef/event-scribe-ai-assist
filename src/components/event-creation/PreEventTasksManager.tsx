@@ -145,7 +145,7 @@ const PreEventTasksManager = ({
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-amber-100 text-amber-800';
+      case 'medium': return 'bg-umma-100 text-umma-800';
       case 'low': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -155,15 +155,15 @@ const PreEventTasksManager = ({
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h3 className="text-lg font-semibold">Pre-Event Task Planning</h3>
-          <p className="text-gray-600 text-sm">Generate and assign tasks needed before your event</p>
+          <h3 className="text-lg font-semibold text-umma-800">Pre-Event Task Planning</h3>
+          <p className="text-umma-600 text-sm">Generate and assign tasks needed before your event</p>
         </div>
         
         {tasks.length === 0 && (
           <Button 
             onClick={generateAITasks}
             disabled={isGenerating}
-            className="bg-gradient-to-r from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-white w-full sm:w-auto"
+            className="bg-gradient-to-r from-umma-500 to-umma-700 hover:from-umma-600 hover:to-umma-800 text-white w-full sm:w-auto shadow-lg hover:shadow-xl transition-all duration-300"
           >
             {isGenerating ? (
               <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
@@ -176,10 +176,10 @@ const PreEventTasksManager = ({
       </div>
 
       {isGenerating && (
-        <Card className="border-amber-200">
+        <Card className="border-umma-200 bg-white">
           <CardContent className="p-6 text-center">
-            <div className="animate-spin w-8 h-8 border-2 border-amber-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p>AI is analyzing your event and generating recommended tasks...</p>
+            <div className="animate-spin w-8 h-8 border-2 border-umma-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p className="text-umma-700">AI is analyzing your event and generating recommended tasks...</p>
           </CardContent>
         </Card>
       )}
@@ -187,27 +187,27 @@ const PreEventTasksManager = ({
       {tasks.length > 0 && (
         <div className="space-y-4">
           {tasks.map((task) => (
-            <Card key={task.id} className="overflow-hidden">
+            <Card key={task.id} className="overflow-hidden bg-white border-umma-200">
               <CardContent className="p-4">
                 <div className="grid gap-4">
                   <div className="space-y-2">
-                    <Label>Task Title</Label>
+                    <Label className="text-umma-700">Task Title</Label>
                     <Input
                       value={task.title}
                       onChange={(e) => updateTask(task.id, { title: e.target.value })}
                       placeholder="Task title"
-                      className="w-full"
+                      className="w-full border-umma-200 focus-visible:ring-umma-500"
                     />
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label>Category</Label>
+                      <Label className="text-umma-700">Category</Label>
                       <Select 
                         value={task.category} 
                         onValueChange={(value) => updateTask(task.id, { category: value as Task['category'] })}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="border-umma-200">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -224,21 +224,22 @@ const PreEventTasksManager = ({
                     </div>
                     
                     <div className="space-y-2">
-                      <Label>Due Date</Label>
+                      <Label className="text-umma-700">Due Date</Label>
                       <Input
                         type="date"
                         value={task.dueDate}
                         onChange={(e) => updateTask(task.id, { dueDate: e.target.value })}
+                        className="border-umma-200 focus-visible:ring-umma-500"
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label>Priority</Label>
+                      <Label className="text-umma-700">Priority</Label>
                       <Select 
                         value={task.priority} 
                         onValueChange={(value) => updateTask(task.id, { priority: value as Task['priority'] })}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="border-umma-200">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -252,12 +253,12 @@ const PreEventTasksManager = ({
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Assignee (Optional)</Label>
+                      <Label className="text-umma-700">Assignee (Optional)</Label>
                       <Select 
                         value={task.assigneeId || ""} 
                         onValueChange={(value) => updateTask(task.id, { assigneeId: value })}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="border-umma-200">
                           <SelectValue placeholder="Select assignee" />
                         </SelectTrigger>
                         <SelectContent>
@@ -289,12 +290,13 @@ const PreEventTasksManager = ({
                   </div>
                   
                   <div className="space-y-2">
-                    <Label>Description</Label>
+                    <Label className="text-umma-700">Description</Label>
                     <Textarea
                       value={task.description}
                       onChange={(e) => updateTask(task.id, { description: e.target.value })}
                       placeholder="Task description and requirements"
                       rows={2}
+                      className="border-umma-200 focus-visible:ring-umma-500"
                     />
                   </div>
                 </div>
@@ -307,36 +309,36 @@ const PreEventTasksManager = ({
       <Button 
         variant="outline" 
         onClick={addCustomTask}
-        className="w-full border-amber-200 text-amber-800 hover:bg-amber-50"
+        className="w-full border-umma-200 text-umma-800 hover:bg-umma-50 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
       >
         <Plus className="w-4 h-4 mr-2" />
         Add Custom Task
       </Button>
 
       {tasks.length > 0 && (
-        <Card className="bg-amber-50">
+        <Card className="bg-umma-50 border-umma-200">
           <CardContent className="p-4">
-            <h4 className="font-medium mb-2">Task Summary</h4>
+            <h4 className="font-medium mb-2 text-umma-800">Task Summary</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <span className="text-gray-600">Total Tasks:</span>
-                <div className="font-semibold">{tasks.length}</div>
+                <span className="text-umma-600">Total Tasks:</span>
+                <div className="font-semibold text-umma-800">{tasks.length}</div>
               </div>
               <div>
-                <span className="text-gray-600">High Priority:</span>
+                <span className="text-umma-600">High Priority:</span>
                 <div className="font-semibold text-red-600">
                   {tasks.filter(t => t.priority === 'high').length}
                 </div>
               </div>
               <div>
-                <span className="text-gray-600">Assigned:</span>
+                <span className="text-umma-600">Assigned:</span>
                 <div className="font-semibold text-green-600">
                   {tasks.filter(t => t.assigneeId).length}
                 </div>
               </div>
               <div>
-                <span className="text-gray-600">Categories:</span>
-                <div className="font-semibold">
+                <span className="text-umma-600">Categories:</span>
+                <div className="font-semibold text-umma-800">
                   {new Set(tasks.map(t => t.category)).size}
                 </div>
               </div>
