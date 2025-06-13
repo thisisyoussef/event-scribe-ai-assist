@@ -3,7 +3,6 @@ import EventHeader from "@/components/volunteer/EventHeader";
 import SignupModal from "@/components/volunteer/SignupModal";
 import LoadingState from "@/components/volunteer/LoadingState";
 import EventNotFound from "@/components/volunteer/EventNotFound";
-import EventDescription from "@/components/volunteer/EventDescription";
 import VolunteerRolesList from "@/components/volunteer/VolunteerRolesList";
 import { useVolunteerSignup } from "@/hooks/useVolunteerSignup";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -38,8 +37,6 @@ const VolunteerSignup = () => {
       <EventHeader event={event} />
 
       <main className={`container mx-auto px-4 py-6 ${isMobile ? 'max-w-full' : 'max-w-6xl'}`}>
-        <EventDescription event={event} />
-
         <VolunteerRolesList
           volunteerRoles={event.volunteer_roles || []}
           getVolunteersForRole={getVolunteersForRole}
