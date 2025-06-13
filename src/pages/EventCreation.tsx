@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -150,6 +149,14 @@ const EventCreation = () => {
     }
   };
 
+  const addTimeMinutes = (time: string, minutes: number): string => {
+    const [hours, mins] = time.split(':').map(Number);
+    const totalMinutes = hours * 60 + mins + minutes;
+    const newHours = Math.floor(totalMinutes / 60) % 24;
+    const newMins = totalMinutes % 60;
+    return `${String(newHours).padStart(2, '0')}:${String(newMins).padStart(2, '0')}`;
+  };
+
   const steps = [
     { number: 1, title: "Basic Info", description: "Event details" },
     { number: 2, title: "Enhanced Details", description: "Itinerary & preferences" },
@@ -172,7 +179,7 @@ const EventCreation = () => {
         id: crypto.randomUUID(),
         roleLabel: item.title,
         shiftStart: item.time,
-        shiftEnd: item.time.slice(0, 3) + String(Math.min(parseInt(item.time.slice(3)) + 60, 59)).padStart(2, '0'),
+        shiftEnd: addTimeMinutes(item.time, 60),
         slotsBrother: additionalDetails.expectedAttendance > 100 ? 3 : 2,
         slotsSister: additionalDetails.expectedAttendance > 100 ? 3 : 2,
         suggestedPOC: null,
@@ -193,13 +200,13 @@ const EventCreation = () => {
         });
       }
     } else {
-      // Fallback to original simple suggestions with better role names
+      // Fallback to original simple suggestions with better role names and fixed time calculations
       mockSuggestions = [
         {
           id: crypto.randomUUID(),
           roleLabel: "Setup Team",
           shiftStart: eventData.startTime,
-          shiftEnd: eventData.startTime.slice(0, 3) + String(parseInt(eventData.startTime.slice(3)) + 30).padStart(2, '0'),
+          shiftEnd: addTimeMinutes(eventData.startTime, 30),
           slotsBrother: 4,
           slotsSister: 2,
           suggestedPOC: null,
@@ -218,8 +225,8 @@ const EventCreation = () => {
         {
           id: crypto.randomUUID(),
           roleLabel: "Cleanup Team",
-          shiftStart: eventData.endTime.slice(0, 3) + String(Math.max(parseInt(eventData.endTime.slice(3)) - 30, 0)).padStart(2, '0'),
-          shiftEnd: eventData.endTime.slice(0, 3) + String(parseInt(eventData.endTime.slice(3)) + 30).padStart(2, '0'),
+          shiftStart: addTimeMinutes(eventData.endTime, -30),
+          shiftEnd: addTimeMinutes(eventData.endTime, 30),
           slotsBrother: 3,
           slotsSister: 2,
           suggestedPOC: null,
