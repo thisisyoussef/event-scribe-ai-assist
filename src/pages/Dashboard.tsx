@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +16,20 @@ const Dashboard = () => {
   const isMobile = useIsMobile();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Function to create URL-friendly slug from event title
+  const createEventSlug = (title: string, id: string) => {
+    const baseSlug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .trim();
+    
+    // Add last 4 characters of ID to handle duplicates
+    const uniqueSuffix = id.slice(-4);
+    return `${baseSlug}-${uniqueSuffix}`;
+  };
 
   useEffect(() => {
     // Check if user is logged in
@@ -78,8 +91,9 @@ const Dashboard = () => {
     };
   };
 
-  const copySignupLink = (eventId: string) => {
-    const link = `${window.location.origin}/event/${eventId}/signup`;
+  const copySignupLink = (event: Event) => {
+    const eventSlug = createEventSlug(event.title, event.id);
+    const link = `${window.location.origin}/${eventSlug}/volunteer`;
     navigator.clipboard.writeText(link);
     toast({
       title: "Link Copied",
@@ -87,8 +101,9 @@ const Dashboard = () => {
     });
   };
 
-  const openSignupLink = (eventId: string) => {
-    const link = `/event/${eventId}/signup`;
+  const openSignupLink = (event: Event) => {
+    const eventSlug = createEventSlug(event.title, event.id);
+    const link = `/${eventSlug}/volunteer`;
     window.open(link, '_blank');
   };
 
@@ -298,7 +313,7 @@ const Dashboard = () => {
                             {event.status === "published" && (
                               <Button
                                 size="sm"
-                                onClick={() => openSignupLink(event.id)}
+                                onClick={() => openSignupLink(event)}
                                 className="flex-1 text-xs"
                               >
                                 Share
@@ -405,7 +420,7 @@ const Dashboard = () => {
                                       <Button
                                         size="sm"
                                         variant="outline"
-                                        onClick={() => copySignupLink(event.id)}
+                                        onClick={() => copySignupLink(event)}
                                         title="Copy Link"
                                         className="hidden md:flex rounded-xl"
                                       >
@@ -413,7 +428,7 @@ const Dashboard = () => {
                                       </Button>
                                       <Button
                                         size="sm"
-                                        onClick={() => openSignupLink(event.id)}
+                                        onClick={() => openSignupLink(event)}
                                         title="Open Signup"
                                         className="rounded-lg md:rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-xs md:text-sm px-2 md:px-3"
                                       >
