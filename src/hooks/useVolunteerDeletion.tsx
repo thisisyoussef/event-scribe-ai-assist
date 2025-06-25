@@ -48,7 +48,10 @@ export const useVolunteerDeletion = () => {
         return false;
       }
 
-      if (data?.error) {
+      console.log(`[DELETION] Edge Function response:`, data);
+
+      // Check if the response indicates an error
+      if (data && data.error) {
         console.error(`[DELETION] Edge Function returned error:`, data.error);
         toast({
           title: "Deletion Failed",
@@ -58,14 +61,28 @@ export const useVolunteerDeletion = () => {
         return false;
       }
 
-      console.log(`[DELETION] SUCCESS: Edge Function response:`, data);
-      
-      toast({
-        title: "Volunteer Removed",
-        description: data?.message || `${volunteerName} has been successfully removed from the event.`,
-      });
+      // Success case - the response should have success: true
+      if (data && data.success) {
+        console.log(`[DELETION] SUCCESS: ${data.message || `${volunteerName} has been successfully removed`}`);
+        
+        toast({
+          title: "Volunteer Removed",
+          description: data.message || `${volunteerName} has been successfully removed from the event.`,
+        });
 
-      return true;
+        return true;
+      }
+
+      // If we get here, something unexpected happened
+      console.error(`[DELETION] Unexpected response format:`, data);
+      toast({
+        title: "Unexpected Response",
+        description: "The deletion may have succeeded, but we received an unexpected response.",
+        variant: "destructive",
+      });
+      
+      // Return false to be safe, even though deletion might have worked
+      return false;
 
     } catch (error) {
       console.error(`[DELETION] Unexpected error during deletion:`, error);
