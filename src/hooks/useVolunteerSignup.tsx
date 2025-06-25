@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Event, VolunteerRole, Volunteer } from "@/types/database";
-import { useVolunteerDeletion } from "./useVolunteerDeletion";
 
 // Function to create URL-friendly slug from event title
 const createEventSlug = (title: string, id: string) => {
@@ -23,7 +22,6 @@ const createEventSlug = (title: string, id: string) => {
 export const useVolunteerSignup = () => {
   const { eventSlug } = useParams();
   const { toast } = useToast();
-  const { deleteVolunteer } = useVolunteerDeletion();
   const [event, setEvent] = useState<(Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] }) | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<VolunteerRole | null>(null);
@@ -114,29 +112,18 @@ export const useVolunteerSignup = () => {
     setIsModalOpen(true);
   };
 
-  const removeVolunteer = async (volunteerId: string, volunteerName: string, password?: string) => {
-    try {
-      const success = await deleteVolunteer(volunteerId, volunteerName, password);
+  // Function to update local volunteers state (used after successful deletion)
+  const updateLocalVolunteers = (volunteerId: string) => {
+    setEvent(prev => {
+      if (!prev) return null;
       
-      if (success) {
-        // Update local state to remove the volunteer
-        setEvent(prev => {
-          if (!prev) return null;
-          
-          const updatedVolunteers = prev.volunteers?.filter(v => v.id !== volunteerId) || [];
-          console.log(`Updated local state - removed volunteer ${volunteerId} from UI`);
-          return {
-            ...prev,
-            volunteers: updatedVolunteers
-          };
-        });
-      }
-      
-      return success;
-    } catch (error) {
-      console.error('Error in removeVolunteer:', error);
-      throw error;
-    }
+      const updatedVolunteers = prev.volunteers?.filter(v => v.id !== volunteerId) || [];
+      console.log(`[SIGNUP] Updated local state - removed volunteer ${volunteerId} from UI`);
+      return {
+        ...prev,
+        volunteers: updatedVolunteers
+      };
+    });
   };
 
   const sendSMS = async (phone: string, name: string, roleLabel: string) => {
@@ -332,7 +319,7 @@ export const useVolunteerSignup = () => {
     getVolunteersForRole,
     getRemainingSlots,
     openSignupModal,
-    removeVolunteer,
-    handleSignupSubmit
+    handleSignupSubmit,
+    updateLocalVolunteers
   };
 };

@@ -21,17 +21,14 @@ const VolunteerSignup = () => {
     getVolunteersForRole,
     getRemainingSlots,
     openSignupModal,
-    removeVolunteer,
-    handleSignupSubmit
+    handleSignupSubmit,
+    updateLocalVolunteers
   } = useVolunteerSignup();
 
-  // Create wrapper function that matches the expected signature
+  // This function only updates the local state - the actual deletion is handled by VolunteerTable
   const handleVolunteerDeleted = (volunteerId: string) => {
-    // Find the volunteer to get their name
-    const volunteer = event?.volunteers?.find(v => v.id === volunteerId);
-    if (volunteer) {
-      removeVolunteer(volunteerId, volunteer.name);
-    }
+    console.log(`[SIGNUP] Updating local state to remove volunteer ${volunteerId}`);
+    updateLocalVolunteers(volunteerId);
   };
 
   if (loading) {
