@@ -25,6 +25,15 @@ const VolunteerSignup = () => {
     handleSignupSubmit
   } = useVolunteerSignup();
 
+  // Create wrapper function that matches the expected signature
+  const handleVolunteerDeleted = (volunteerId: string) => {
+    // Find the volunteer to get their name
+    const volunteer = event?.volunteers?.find(v => v.id === volunteerId);
+    if (volunteer) {
+      removeVolunteer(volunteerId, volunteer.name);
+    }
+  };
+
   if (loading) {
     return <LoadingState />;
   }
@@ -44,7 +53,7 @@ const VolunteerSignup = () => {
             volunteerRoles={event.volunteer_roles || []}
             getVolunteersForRole={getVolunteersForRole}
             onSignUp={openSignupModal}
-            onVolunteerDeleted={removeVolunteer}
+            onVolunteerDeleted={handleVolunteerDeleted}
             getRemainingSlots={getRemainingSlots}
           />
 
