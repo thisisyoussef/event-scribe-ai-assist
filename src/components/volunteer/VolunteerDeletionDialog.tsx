@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import {
   AlertDialog,
@@ -44,18 +45,17 @@ const VolunteerDeletionDialog = ({
     
     try {
       await onConfirm(password);
-      console.log(`[DIALOG] Deletion completed, closing dialog`);
-      handleClose();
+      console.log(`[DIALOG] Deletion completed successfully`);
+      // Don't close dialog here - let the parent component handle it after successful deletion
     } catch (error) {
       console.error(`[DIALOG] Error during deletion:`, error);
-    } finally {
-      setIsProcessing(false);
+      setIsProcessing(false); // Only reset processing state on error
     }
   };
 
   const handleClose = () => {
     if (isProcessing || isDeleting) {
-      console.log(`[DIALOG] Cannot close while processing`);
+      console.log(`[DIALOG] Cannot close while processing (processing: ${isProcessing}, deleting: ${isDeleting})`);
       return;
     }
     
@@ -65,6 +65,11 @@ const VolunteerDeletionDialog = ({
     setIsProcessing(false);
     onClose();
   };
+
+  // Reset processing state when dialog closes (from parent)
+  if (!isOpen && isProcessing) {
+    setIsProcessing(false);
+  }
 
   if (!volunteer) return null;
 
@@ -78,14 +83,14 @@ const VolunteerDeletionDialog = ({
             Remove Volunteer?
           </AlertDialogTitle>
           <AlertDialogDescription className="text-left space-y-3">
-            <p className="text-gray-600">
+            <div className="text-gray-600">
               Are you sure you want to remove <strong>{volunteer.name}</strong> from this volunteer role?
-            </p>
+            </div>
             
             <div className="bg-red-50 p-3 rounded-lg border border-red-200">
-              <p className="text-red-700 text-sm">
+              <div className="text-red-700 text-sm">
                 This action cannot be undone. The volunteer will need to sign up again if they want to participate.
-              </p>
+              </div>
             </div>
 
             {!showContactInfo ? (
@@ -127,12 +132,12 @@ const VolunteerDeletionDialog = ({
                   <Mail className="w-5 h-5 text-blue-600 mt-0.5" />
                   <div>
                     <h4 className="font-medium text-blue-800 mb-2">Contact Event Organizers</h4>
-                    <p className="text-blue-700 text-sm mb-3">
+                    <div className="text-blue-700 text-sm mb-3">
                       Please reach out to the event organizers or administrators to remove this volunteer from the list.
-                    </p>
-                    <p className="text-blue-600 text-sm">
+                    </div>
+                    <div className="text-blue-600 text-sm">
                       Include the volunteer's name (<strong>{volunteer.name}</strong>) and phone number in your request.
-                    </p>
+                    </div>
                   </div>
                 </div>
                 <div className="mt-3 text-center">

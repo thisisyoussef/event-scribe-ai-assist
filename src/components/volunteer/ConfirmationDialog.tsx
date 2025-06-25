@@ -56,9 +56,9 @@ const ConfirmationDialog = ({
             Confirm Your Volunteer Registration
           </AlertDialogTitle>
           <AlertDialogDescription className="text-left space-y-3">
-            <p className="text-umma-600">
+            <div className="text-umma-600">
               Please confirm your volunteer registration details:
-            </p>
+            </div>
             
             <div className="bg-umma-50 p-4 rounded-lg space-y-2 text-sm">
               <div className="font-semibold text-umma-800">{role.role_label}</div>
@@ -88,9 +88,9 @@ const ConfirmationDialog = ({
               )}
             </div>
             
-            <p className="text-umma-600 text-sm">
+            <div className="text-umma-600 text-sm">
               You will receive a confirmation SMS with event details.
-            </p>
+            </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

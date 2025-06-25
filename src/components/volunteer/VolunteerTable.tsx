@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -51,10 +52,11 @@ const VolunteerTable = ({ volunteers, onVolunteerDeleted }: VolunteerTableProps)
       console.log(`[TABLE] Successfully deleted volunteer, calling onVolunteerDeleted`);
       onVolunteerDeleted(deleteDialog.volunteer.id);
       
-      // Close dialog immediately after successful deletion
+      // Close dialog after successful deletion
+      console.log(`[TABLE] Closing dialog after successful deletion`);
       setDeleteDialog({ isOpen: false, volunteer: null });
     }
-    // If deletion failed, dialog will remain open for user to retry
+    // If deletion failed, dialog remains open for user to retry
   };
 
   const handleDeleteCancel = () => {
