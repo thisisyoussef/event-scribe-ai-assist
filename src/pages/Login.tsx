@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,13 +35,6 @@ const Login = () => {
         
         if (event === 'SIGNED_IN' && session) {
           navigate("/dashboard");
-        }
-        
-        if (event === 'SIGNED_UP') {
-          toast({
-            title: "Check your email",
-            description: "We've sent you a confirmation link to complete your registration.",
-          });
         }
       }
     );
