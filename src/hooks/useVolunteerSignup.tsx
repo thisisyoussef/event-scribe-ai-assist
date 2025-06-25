@@ -129,36 +129,55 @@ export const useVolunteerSignup = () => {
         }
       }
 
-      // Perform the deletion with explicit logging (no auth required)
+      // First check if the volunteer exists before attempting deletion
+      const { data: existingVolunteer, error: checkError } = await supabase
+        .from('volunteers')
+        .select('id, name')
+        .eq('id', volunteerId)
+        .single();
+
+      if (checkError || !existingVolunteer) {
+        console.log('Volunteer not found in database, may have already been removed');
+        
+        // Update local state to remove the volunteer since it's not in the database
+        setEvent(prev => {
+          if (!prev) return null;
+          
+          const updatedVolunteers = prev.volunteers?.filter(v => v.id !== volunteerId) || [];
+          console.log(`Updated local state - removed volunteer ${volunteerId} from UI`);
+          return {
+            ...prev,
+            volunteers: updatedVolunteers
+          };
+        });
+
+        toast({
+          title: "Volunteer Already Removed",
+          description: `${volunteerName} was already removed from the event.`,
+        });
+        return;
+      }
+
+      console.log('Proceeding with deletion for existing volunteer:', existingVolunteer);
+
+      // Perform the deletion
       const { data: deletedData, error } = await supabase
         .from('volunteers')
         .delete()
         .eq('id', volunteerId)
-        .select(); // Add select to see what was deleted
+        .select();
 
       if (error) {
         console.error('Database error removing volunteer:', error);
         toast({
-          title: "Database Error",
+          title: "Database Error", 
           description: `Failed to remove volunteer: ${error.message}`,
           variant: "destructive",
         });
         throw error;
       }
 
-      console.log('Deletion result:', deletedData);
-
-      if (!deletedData || deletedData.length === 0) {
-        console.warn('No volunteer was deleted - possibly already removed');
-        toast({
-          title: "Volunteer Not Found",
-          description: "The volunteer may have already been removed.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      console.log(`Successfully removed volunteer ${volunteerId} from database`);
+      console.log('Deletion successful:', deletedData);
 
       // Update local state immediately for better UX
       setEvent(prev => {
