@@ -1,15 +1,14 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Phone, Trash2, User } from "lucide-react";
 import { Volunteer } from "@/types/database";
 import { useIsMobile } from "@/hooks/use-mobile";
-import DeleteVolunteerDialog from "./DeleteVolunteerDialog";
+import PasswordProtectedDeleteDialog from "./PasswordProtectedDeleteDialog";
 
 interface VolunteerTableProps {
   volunteers: Volunteer[];
-  onRemoveVolunteer: (volunteerId: string, volunteerName: string) => void;
+  onRemoveVolunteer: (volunteerId: string, volunteerName: string, password?: string) => void;
 }
 
 const VolunteerTable = ({ volunteers, onRemoveVolunteer }: VolunteerTableProps) => {
@@ -32,13 +31,13 @@ const VolunteerTable = ({ volunteers, onRemoveVolunteer }: VolunteerTableProps) 
     });
   };
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = async (password: string) => {
     if (!deleteDialog.volunteer) return;
     
     setDeleteDialog(prev => ({ ...prev, isDeleting: true }));
     
     try {
-      await onRemoveVolunteer(deleteDialog.volunteer.id, deleteDialog.volunteer.name);
+      await onRemoveVolunteer(deleteDialog.volunteer.id, deleteDialog.volunteer.name, password);
       setDeleteDialog({ isOpen: false, volunteer: null, isDeleting: false });
     } catch (error) {
       console.error('Error removing volunteer:', error);
@@ -97,7 +96,7 @@ const VolunteerTable = ({ volunteers, onRemoveVolunteer }: VolunteerTableProps) 
           </div>
         </div>
 
-        <DeleteVolunteerDialog
+        <PasswordProtectedDeleteDialog
           isOpen={deleteDialog.isOpen}
           onClose={handleDeleteCancel}
           onConfirm={handleDeleteConfirm}
@@ -156,7 +155,7 @@ const VolunteerTable = ({ volunteers, onRemoveVolunteer }: VolunteerTableProps) 
         </div>
       </div>
 
-      <DeleteVolunteerDialog
+      <PasswordProtectedDeleteDialog
         isOpen={deleteDialog.isOpen}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}

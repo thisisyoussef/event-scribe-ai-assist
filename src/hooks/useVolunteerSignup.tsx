@@ -111,36 +111,25 @@ export const useVolunteerSignup = () => {
     setIsModalOpen(true);
   };
 
-  const removeVolunteer = async (volunteerId: string, volunteerName: string) => {
+  const removeVolunteer = async (volunteerId: string, volunteerName: string, password?: string) => {
     try {
       console.log(`Attempting to remove volunteer ${volunteerId} (${volunteerName})`);
       
-      // First, get the current user to check if they're authenticated
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
-      if (authError) {
-        console.error('Auth error:', authError);
-        toast({
-          title: "Authentication Error",
-          description: "You must be logged in to remove volunteers.",
-          variant: "destructive",
-        });
-        throw authError;
+      // Check if password is provided for admin access
+      if (password) {
+        // Simple password check - in production, this should be more secure
+        const adminPassword = "admin123"; // This should be configurable
+        if (password !== adminPassword) {
+          toast({
+            title: "Incorrect Password",
+            description: "The admin password you entered is incorrect.",
+            variant: "destructive",
+          });
+          throw new Error('Incorrect password');
+        }
       }
 
-      if (!user) {
-        console.error('No authenticated user found');
-        toast({
-          title: "Authentication Required",
-          description: "You must be logged in to remove volunteers.",
-          variant: "destructive",
-        });
-        throw new Error('No authenticated user');
-      }
-
-      console.log('User authenticated, proceeding with deletion');
-
-      // Perform the deletion with explicit logging
+      // Perform the deletion with explicit logging (no auth required)
       const { data: deletedData, error } = await supabase
         .from('volunteers')
         .delete()
@@ -160,10 +149,10 @@ export const useVolunteerSignup = () => {
       console.log('Deletion result:', deletedData);
 
       if (!deletedData || deletedData.length === 0) {
-        console.warn('No volunteer was deleted - possibly already removed or permission issue');
+        console.warn('No volunteer was deleted - possibly already removed');
         toast({
           title: "Volunteer Not Found",
-          description: "The volunteer may have already been removed or you don't have permission to remove them.",
+          description: "The volunteer may have already been removed.",
           variant: "destructive",
         });
         return;

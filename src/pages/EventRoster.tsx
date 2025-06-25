@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import DeleteVolunteerDialog from "@/components/volunteer/DeleteVolunteerDialog";
+import PasswordProtectedDeleteDialog from "@/components/volunteer/PasswordProtectedDeleteDialog";
 
 const EventRoster = () => {
   const { eventId } = useParams();
@@ -89,13 +90,13 @@ const EventRoster = () => {
     });
   };
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = async (password: string) => {
     if (!deleteDialog.volunteer) return;
     
     setDeleteDialog(prev => ({ ...prev, isDeleting: true }));
     
     try {
-      await removeVolunteer(deleteDialog.volunteer.id, deleteDialog.volunteer.name);
+      await removeVolunteer(deleteDialog.volunteer.id, deleteDialog.volunteer.name, password);
       setDeleteDialog({ isOpen: false, volunteer: null, isDeleting: false });
     } catch (error) {
       console.error('Error removing volunteer:', error);
@@ -109,26 +110,27 @@ const EventRoster = () => {
     }
   };
 
-  const removeVolunteer = async (volunteerId: string, volunteerName: string) => {
+  const removeVolunteer = async (volunteerId: string, volunteerName: string, password?: string) => {
     try {
       console.log(`Attempting to remove volunteer ${volunteerId} (${volunteerName})`);
       
-      // First, get the current user to check if they're authenticated
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
-      if (authError || !user) {
-        console.error('Authentication error or no user:', authError);
-        toast({
-          title: "Authentication Required",
-          description: "You must be logged in to remove volunteers.",
-          variant: "destructive",
-        });
-        throw authError || new Error('No authenticated user');
+      // Check if password is provided for admin access
+      if (password) {
+        // Simple password check - in production, this should be more secure
+        const adminPassword = "admin123"; // This should be configurable
+        if (password !== adminPassword) {
+          toast({
+            title: "Incorrect Password",
+            description: "The admin password you entered is incorrect.",
+            variant: "destructive",
+          });
+          throw new Error('Incorrect password');
+        }
       }
 
-      console.log('User authenticated, proceeding with deletion');
+      console.log('Proceeding with deletion');
 
-      // Perform the deletion with explicit logging
+      // Perform the deletion with explicit logging (no auth required)
       const { data: deletedData, error } = await supabase
         .from('volunteers')
         .delete()
@@ -148,10 +150,10 @@ const EventRoster = () => {
       console.log('Deletion result:', deletedData);
 
       if (!deletedData || deletedData.length === 0) {
-        console.warn('No volunteer was deleted - possibly already removed or permission issue');
+        console.warn('No volunteer was deleted - possibly already removed');
         toast({
           title: "Volunteer Not Found",
-          description: "The volunteer may have already been removed or you don't have permission to remove them.",
+          description: "The volunteer may have already been removed.",
           variant: "destructive",
         });
         return;
@@ -377,7 +379,7 @@ const EventRoster = () => {
           </CardContent>
         </Card>
 
-        <DeleteVolunteerDialog
+        <PasswordProtectedDeleteDialog
           isOpen={deleteDialog.isOpen}
           onClose={handleDeleteCancel}
           onConfirm={handleDeleteConfirm}
