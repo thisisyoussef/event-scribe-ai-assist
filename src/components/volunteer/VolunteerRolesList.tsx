@@ -12,7 +12,7 @@ interface VolunteerRolesListProps {
   volunteerRoles: VolunteerRole[];
   getVolunteersForRole: (roleId: string) => Volunteer[];
   onSignUp: (role: VolunteerRole) => void;
-  onRemoveVolunteer: (volunteerId: string, volunteerName: string) => void;
+  onVolunteerDeleted: (volunteerId: string) => void;
   getRemainingSlots: (role: VolunteerRole, gender?: "brother" | "sister") => number;
 }
 
@@ -31,7 +31,7 @@ const VolunteerRolesList = ({
   volunteerRoles,
   getVolunteersForRole,
   onSignUp,
-  onRemoveVolunteer,
+  onVolunteerDeleted,
   getRemainingSlots
 }: VolunteerRolesListProps) => {
   const { toast } = useToast();
@@ -141,7 +141,7 @@ const VolunteerRolesList = ({
                 <CardContent className="pt-0">
                   <VolunteerTable
                     volunteers={volunteers}
-                    onRemoveVolunteer={onRemoveVolunteer}
+                    onVolunteerDeleted={onVolunteerDeleted}
                   />
                 </CardContent>
               )}

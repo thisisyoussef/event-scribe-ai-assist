@@ -34,6 +34,8 @@ const VolunteerTable = ({ volunteers, onVolunteerDeleted }: VolunteerTableProps)
   const handleDeleteConfirm = async (password: string) => {
     if (!deleteDialog.volunteer) return;
     
+    console.log(`Attempting to delete volunteer: ${deleteDialog.volunteer.id} (${deleteDialog.volunteer.name})`);
+    
     const success = await deleteVolunteer(
       deleteDialog.volunteer.id, 
       deleteDialog.volunteer.name, 
@@ -41,6 +43,7 @@ const VolunteerTable = ({ volunteers, onVolunteerDeleted }: VolunteerTableProps)
     );
     
     if (success) {
+      console.log(`Successfully deleted volunteer ${deleteDialog.volunteer.id}, calling onVolunteerDeleted`);
       onVolunteerDeleted(deleteDialog.volunteer.id);
       setDeleteDialog({ isOpen: false, volunteer: null });
     }

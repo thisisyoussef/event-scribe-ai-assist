@@ -11,7 +11,7 @@ interface VolunteerRoleCardProps {
   role: VolunteerRole;
   volunteers: Volunteer[];
   onSignUp: (role: VolunteerRole) => void;
-  onRemoveVolunteer: (volunteerId: string, volunteerName: string) => void;
+  onVolunteerDeleted: (volunteerId: string) => void;
   getRemainingSlots: (role: VolunteerRole, gender?: "brother" | "sister") => number;
 }
 
@@ -30,7 +30,7 @@ const VolunteerRoleCard = ({
   role, 
   volunteers, 
   onSignUp, 
-  onRemoveVolunteer, 
+  onVolunteerDeleted, 
   getRemainingSlots 
 }: VolunteerRoleCardProps) => {
   const isMobile = useIsMobile();
@@ -94,7 +94,7 @@ const VolunteerRoleCard = ({
 
         <VolunteerTable 
           volunteers={volunteers} 
-          onRemoveVolunteer={onRemoveVolunteer} 
+          onVolunteerDeleted={onVolunteerDeleted} 
         />
       </CardContent>
     </Card>
