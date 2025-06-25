@@ -44,7 +44,7 @@ const VolunteerSignup = () => {
             volunteerRoles={event.volunteer_roles || []}
             getVolunteersForRole={getVolunteersForRole}
             onSignUp={openSignupModal}
-            onRemoveVolunteer={removeVolunteer}
+            onVolunteerDeleted={removeVolunteer}
             getRemainingSlots={getRemainingSlots}
           />
 
