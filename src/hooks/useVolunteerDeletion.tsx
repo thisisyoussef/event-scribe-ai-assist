@@ -24,6 +24,7 @@ export const useVolunteerDeletion = () => {
           description: "Please enter the admin password to delete volunteers.",
           variant: "destructive",
         });
+        setIsDeleting(false);
         return false;
       }
 
@@ -40,18 +41,19 @@ export const useVolunteerDeletion = () => {
 
       console.log(`[DELETION] Raw Edge Function response:`, { data, error });
 
+      // Handle network/connection errors first
       if (error) {
         console.error(`[DELETION] Edge Function error:`, error);
         toast({
-          title: "Deletion Failed",
+          title: "Deletion Failed", 
           description: error.message || "Failed to delete volunteer.",
           variant: "destructive",
         });
         return false;
       }
 
-      // The Edge Function returns a successful response with success: true
-      if (data?.success === true) {
+      // Handle successful deletion - Edge Function returns {success: true, message: "..."}
+      if (data && data.success === true) {
         console.log(`[DELETION] SUCCESS: ${data.message || `${volunteerName} has been successfully removed`}`);
         
         toast({
@@ -62,8 +64,8 @@ export const useVolunteerDeletion = () => {
         return true;
       }
 
-      // Handle error cases from the Edge Function
-      if (data?.error) {
+      // Handle Edge Function errors - when Edge Function returns {error: "..."}
+      if (data && data.error) {
         console.error(`[DELETION] Edge Function returned error:`, data.error);
         toast({
           title: "Deletion Failed",
@@ -73,7 +75,7 @@ export const useVolunteerDeletion = () => {
         return false;
       }
 
-      // If we get here, the response format is unexpected
+      // Fallback for unexpected response format
       console.error(`[DELETION] Unexpected response format:`, data);
       toast({
         title: "Unexpected Response",
