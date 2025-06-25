@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +24,7 @@ const VolunteerTable = ({ volunteers, onVolunteerDeleted }: VolunteerTableProps)
   });
 
   const handleDeleteClick = (volunteer: Volunteer) => {
+    console.log(`[TABLE] Opening delete dialog for volunteer: ${volunteer.id} (${volunteer.name})`);
     setDeleteDialog({
       isOpen: true,
       volunteer,
@@ -32,9 +32,12 @@ const VolunteerTable = ({ volunteers, onVolunteerDeleted }: VolunteerTableProps)
   };
 
   const handleDeleteConfirm = async (password: string) => {
-    if (!deleteDialog.volunteer) return;
+    if (!deleteDialog.volunteer) {
+      console.error(`[TABLE] No volunteer selected for deletion`);
+      return;
+    }
     
-    console.log(`Attempting to delete volunteer: ${deleteDialog.volunteer.id} (${deleteDialog.volunteer.name})`);
+    console.log(`[TABLE] Attempting to delete volunteer: ${deleteDialog.volunteer.id} (${deleteDialog.volunteer.name})`);
     
     const success = await deleteVolunteer(
       deleteDialog.volunteer.id, 
@@ -42,17 +45,26 @@ const VolunteerTable = ({ volunteers, onVolunteerDeleted }: VolunteerTableProps)
       password
     );
     
+    console.log(`[TABLE] Deletion result: ${success}`);
+    
     if (success) {
-      console.log(`Successfully deleted volunteer ${deleteDialog.volunteer.id}, calling onVolunteerDeleted`);
+      console.log(`[TABLE] Successfully deleted volunteer, calling onVolunteerDeleted`);
       onVolunteerDeleted(deleteDialog.volunteer.id);
+      
+      // Close dialog immediately after successful deletion
       setDeleteDialog({ isOpen: false, volunteer: null });
     }
+    // If deletion failed, dialog will remain open for user to retry
   };
 
   const handleDeleteCancel = () => {
-    if (!isDeleting) {
-      setDeleteDialog({ isOpen: false, volunteer: null });
+    if (isDeleting) {
+      console.log(`[TABLE] Cannot close dialog while deleting`);
+      return;
     }
+    
+    console.log(`[TABLE] Closing delete dialog`);
+    setDeleteDialog({ isOpen: false, volunteer: null });
   };
 
   if (volunteers.length === 0) {

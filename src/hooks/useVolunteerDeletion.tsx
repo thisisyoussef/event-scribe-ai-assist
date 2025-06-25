@@ -12,6 +12,11 @@ export const useVolunteerDeletion = () => {
     volunteerName: string, 
     adminPassword?: string
   ): Promise<boolean> => {
+    if (isDeleting) {
+      console.log(`[DELETION] Already deleting, ignoring request`);
+      return false;
+    }
+
     setIsDeleting(true);
     
     try {
@@ -24,11 +29,10 @@ export const useVolunteerDeletion = () => {
           description: "Please enter the admin password to delete volunteers.",
           variant: "destructive",
         });
-        setIsDeleting(false);
         return false;
       }
 
-      console.log(`[DELETION] Calling Edge Function to delete volunteer`);
+      console.log(`[DELETION] Calling Edge Function with password`);
       
       // Call the Edge Function to delete the volunteer
       const { data, error } = await supabase.functions.invoke('delete-volunteer', {
@@ -39,22 +43,22 @@ export const useVolunteerDeletion = () => {
         }
       });
 
-      console.log(`[DELETION] Raw Edge Function response:`, { data, error });
+      console.log(`[DELETION] Edge Function response received:`, { data, error });
 
-      // Handle network/connection errors first
+      // Handle connection/network errors
       if (error) {
-        console.error(`[DELETION] Edge Function error:`, error);
+        console.error(`[DELETION] Network/Connection error:`, error);
         toast({
-          title: "Deletion Failed", 
-          description: error.message || "Failed to delete volunteer.",
+          title: "Connection Error", 
+          description: error.message || "Failed to connect to server.",
           variant: "destructive",
         });
         return false;
       }
 
-      // Handle successful deletion - Edge Function returns {success: true, message: "..."}
-      if (data && data.success === true) {
-        console.log(`[DELETION] SUCCESS: ${data.message || `${volunteerName} has been successfully removed`}`);
+      // Handle successful deletion
+      if (data?.success === true) {
+        console.log(`[DELETION] ✅ SUCCESS: Volunteer deleted successfully`);
         
         toast({
           title: "Volunteer Removed",
@@ -64,9 +68,9 @@ export const useVolunteerDeletion = () => {
         return true;
       }
 
-      // Handle Edge Function errors - when Edge Function returns {error: "..."}
-      if (data && data.error) {
-        console.error(`[DELETION] Edge Function returned error:`, data.error);
+      // Handle server-side errors (wrong password, volunteer not found, etc.)
+      if (data?.error) {
+        console.error(`[DELETION] ❌ Server error:`, data.error);
         toast({
           title: "Deletion Failed",
           description: data.error,
@@ -75,25 +79,26 @@ export const useVolunteerDeletion = () => {
         return false;
       }
 
-      // Fallback for unexpected response format
-      console.error(`[DELETION] Unexpected response format:`, data);
+      // Unexpected response format
+      console.error(`[DELETION] ❌ Unexpected response:`, data);
       toast({
-        title: "Unexpected Response",
-        description: "The deletion request completed but the response format was unexpected.",
+        title: "Unexpected Error",
+        description: "Received unexpected response from server.",
         variant: "destructive",
       });
       
       return false;
 
     } catch (error) {
-      console.error(`[DELETION] Unexpected error during deletion:`, error);
+      console.error(`[DELETION] ❌ Unexpected exception:`, error);
       toast({
-        title: "Unexpected Error",
+        title: "Deletion Failed",
         description: "An unexpected error occurred while deleting the volunteer.",
         variant: "destructive",
       });
       return false;
     } finally {
+      console.log(`[DELETION] Setting isDeleting to false`);
       setIsDeleting(false);
     }
   };

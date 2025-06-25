@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   AlertDialog,
@@ -33,22 +32,43 @@ const VolunteerDeletionDialog = ({
 }: VolunteerDeletionDialogProps) => {
   const [password, setPassword] = useState("");
   const [showContactInfo, setShowContactInfo] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleConfirm = async () => {
-    if (password.trim()) {
+    if (!password.trim() || isProcessing || isDeleting) {
+      return;
+    }
+
+    console.log(`[DIALOG] Confirming deletion with password`);
+    setIsProcessing(true);
+    
+    try {
       await onConfirm(password);
-      setPassword("");
-      setShowContactInfo(false);
+      console.log(`[DIALOG] Deletion completed, closing dialog`);
+      handleClose();
+    } catch (error) {
+      console.error(`[DIALOG] Error during deletion:`, error);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   const handleClose = () => {
+    if (isProcessing || isDeleting) {
+      console.log(`[DIALOG] Cannot close while processing`);
+      return;
+    }
+    
+    console.log(`[DIALOG] Closing dialog and resetting state`);
     setPassword("");
     setShowContactInfo(false);
+    setIsProcessing(false);
     onClose();
   };
 
   if (!volunteer) return null;
+
+  const canInteract = !isProcessing && !isDeleting;
 
   return (
     <AlertDialog open={isOpen} onOpenChange={handleClose}>
@@ -81,9 +101,9 @@ const VolunteerDeletionDialog = ({
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Admin password"
                     className="mt-1"
-                    disabled={isDeleting}
+                    disabled={!canInteract}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' && password.trim()) {
+                      if (e.key === 'Enter' && password.trim() && canInteract) {
                         handleConfirm();
                       }
                     }}
@@ -95,6 +115,7 @@ const VolunteerDeletionDialog = ({
                     variant="link"
                     onClick={() => setShowContactInfo(true)}
                     className="text-sm text-blue-600 hover:text-blue-800 p-0"
+                    disabled={!canInteract}
                   >
                     Don't have the password? Contact an admin
                   </Button>
@@ -119,6 +140,7 @@ const VolunteerDeletionDialog = ({
                     variant="link"
                     onClick={() => setShowContactInfo(false)}
                     className="text-sm text-blue-600 hover:text-blue-800 p-0"
+                    disabled={!canInteract}
                   >
                     ← Back to password entry
                   </Button>
@@ -128,16 +150,19 @@ const VolunteerDeletionDialog = ({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting} onClick={handleClose}>
+          <AlertDialogCancel 
+            disabled={!canInteract} 
+            onClick={handleClose}
+          >
             Cancel
           </AlertDialogCancel>
           {!showContactInfo && (
             <AlertDialogAction 
               onClick={handleConfirm}
-              disabled={isDeleting || !password.trim()}
+              disabled={!canInteract || !password.trim()}
               className="bg-red-500 hover:bg-red-600"
             >
-              {isDeleting ? "Removing..." : "Yes, Remove"}
+              {isProcessing || isDeleting ? "Removing..." : "Yes, Remove"}
             </AlertDialogAction>
           )}
         </AlertDialogFooter>
