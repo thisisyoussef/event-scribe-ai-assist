@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,22 +18,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import PasswordProtectedDeleteDialog from "@/components/volunteer/PasswordProtectedDeleteDialog";
+import { useVolunteerDeletion } from "@/hooks/useVolunteerDeletion";
+import VolunteerDeletionDialog from "@/components/volunteer/VolunteerDeletionDialog";
 
 const EventRoster = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { deleteVolunteer, isDeleting } = useVolunteerDeletion();
   const [event, setEvent] = useState<(Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] }) | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleteDialog, setDeleteDialog] = useState<{
     isOpen: boolean;
     volunteer: Volunteer | null;
-    isDeleting: boolean;
   }>({
     isOpen: false,
     volunteer: null,
-    isDeleting: false
   });
 
   useEffect(() => {
@@ -85,120 +86,32 @@ const EventRoster = () => {
     setDeleteDialog({
       isOpen: true,
       volunteer,
-      isDeleting: false
     });
   };
 
   const handleDeleteConfirm = async (password: string) => {
     if (!deleteDialog.volunteer) return;
     
-    setDeleteDialog(prev => ({ ...prev, isDeleting: true }));
+    const success = await deleteVolunteer(
+      deleteDialog.volunteer.id, 
+      deleteDialog.volunteer.name, 
+      password
+    );
     
-    try {
-      await removeVolunteer(deleteDialog.volunteer.id, deleteDialog.volunteer.name, password);
-      setDeleteDialog({ isOpen: false, volunteer: null, isDeleting: false });
-    } catch (error) {
-      console.error('Error removing volunteer:', error);
-      setDeleteDialog(prev => ({ ...prev, isDeleting: false }));
+    if (success) {
+      // Update local state to remove the volunteer
+      setEvent(prev => prev ? {
+        ...prev,
+        volunteers: prev.volunteers?.filter(v => v.id !== deleteDialog.volunteer!.id) || []
+      } : null);
+      
+      setDeleteDialog({ isOpen: false, volunteer: null });
     }
   };
 
   const handleDeleteCancel = () => {
-    if (!deleteDialog.isDeleting) {
-      setDeleteDialog({ isOpen: false, volunteer: null, isDeleting: false });
-    }
-  };
-
-  const removeVolunteer = async (volunteerId: string, volunteerName: string, password?: string) => {
-    try {
-      console.log(`Attempting to remove volunteer ${volunteerId} (${volunteerName})`);
-      
-      // Check if password is provided for admin access
-      if (password) {
-        // Simple password check - in production, this should be more secure
-        const adminPassword = "admin123"; // This should be configurable
-        if (password !== adminPassword) {
-          toast({
-            title: "Incorrect Password",
-            description: "The admin password you entered is incorrect.",
-            variant: "destructive",
-          });
-          throw new Error('Incorrect password');
-        }
-      }
-
-      // Use a more robust deletion approach with explicit transaction handling
-      console.log('Starting deletion transaction for volunteer:', volunteerId);
-      
-      const { data: deletedData, error } = await supabase
-        .from('volunteers')
-        .delete()
-        .eq('id', volunteerId)
-        .select('*');
-
-      if (error) {
-        console.error('Database error removing volunteer:', error);
-        toast({
-          title: "Database Error",
-          description: `Failed to remove volunteer: ${error.message}`,
-          variant: "destructive",
-        });
-        throw error;
-      }
-
-      // Check if deletion actually happened
-      if (!deletedData || deletedData.length === 0) {
-        console.log('No rows were deleted - volunteer may not exist');
-        
-        // Update local state to remove from UI anyway
-        setEvent(prev => prev ? {
-          ...prev,
-          volunteers: prev.volunteers?.filter(v => v.id !== volunteerId) || []
-        } : null);
-
-        toast({
-          title: "Volunteer Not Found",
-          description: `${volunteerName} may have already been removed from the event.`,
-        });
-        return;
-      }
-
-      console.log('Successfully deleted volunteer from database:', deletedData);
-
-      // Verify deletion by attempting to fetch the volunteer
-      const { data: verifyData, error: verifyError } = await supabase
-        .from('volunteers')
-        .select('id')
-        .eq('id', volunteerId)
-        .maybeSingle();
-
-      if (verifyData) {
-        console.error('Volunteer still exists after deletion attempt!');
-        toast({
-          title: "Deletion Failed",
-          description: "The volunteer could not be removed. Please try again.",
-          variant: "destructive",
-        });
-        throw new Error('Deletion verification failed');
-      }
-
-      console.log('Deletion verified - volunteer no longer exists in database');
-
-      // Update local state
-      setEvent(prev => prev ? {
-        ...prev,
-        volunteers: prev.volunteers?.filter(v => v.id !== volunteerId) || []
-      } : null);
-
-      toast({
-        title: "Volunteer Removed",
-        description: `${volunteerName} has been removed from the event.`,
-      });
-
-      console.log(`Completed removal of volunteer ${volunteerId}`);
-    } catch (error) {
-      console.error('Error in removeVolunteer:', error);
-      throw error; // Re-throw to let the calling component handle it
+    if (!isDeleting) {
+      setDeleteDialog({ isOpen: false, volunteer: null });
     }
   };
 
@@ -374,6 +287,7 @@ const EventRoster = () => {
                                       variant="outline"
                                       onClick={() => handleDeleteClick(volunteer)}
                                       className="text-red-600 hover:text-red-700"
+                                      disabled={isDeleting}
                                     >
                                       <Trash2 className="w-4 h-4" />
                                     </Button>
@@ -402,12 +316,12 @@ const EventRoster = () => {
           </CardContent>
         </Card>
 
-        <PasswordProtectedDeleteDialog
+        <VolunteerDeletionDialog
           isOpen={deleteDialog.isOpen}
           onClose={handleDeleteCancel}
           onConfirm={handleDeleteConfirm}
           volunteer={deleteDialog.volunteer}
-          isDeleting={deleteDialog.isDeleting}
+          isDeleting={isDeleting}
         />
       </main>
     </div>

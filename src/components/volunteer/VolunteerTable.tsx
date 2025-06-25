@@ -1,53 +1,54 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Phone, Trash2, User } from "lucide-react";
 import { Volunteer } from "@/types/database";
 import { useIsMobile } from "@/hooks/use-mobile";
-import PasswordProtectedDeleteDialog from "./PasswordProtectedDeleteDialog";
+import { useVolunteerDeletion } from "@/hooks/useVolunteerDeletion";
+import VolunteerDeletionDialog from "./VolunteerDeletionDialog";
 
 interface VolunteerTableProps {
   volunteers: Volunteer[];
-  onRemoveVolunteer: (volunteerId: string, volunteerName: string, password?: string) => void;
+  onVolunteerDeleted: (volunteerId: string) => void;
 }
 
-const VolunteerTable = ({ volunteers, onRemoveVolunteer }: VolunteerTableProps) => {
+const VolunteerTable = ({ volunteers, onVolunteerDeleted }: VolunteerTableProps) => {
   const isMobile = useIsMobile();
+  const { deleteVolunteer, isDeleting } = useVolunteerDeletion();
   const [deleteDialog, setDeleteDialog] = useState<{
     isOpen: boolean;
     volunteer: Volunteer | null;
-    isDeleting: boolean;
   }>({
     isOpen: false,
     volunteer: null,
-    isDeleting: false
   });
 
   const handleDeleteClick = (volunteer: Volunteer) => {
     setDeleteDialog({
       isOpen: true,
       volunteer,
-      isDeleting: false
     });
   };
 
   const handleDeleteConfirm = async (password: string) => {
     if (!deleteDialog.volunteer) return;
     
-    setDeleteDialog(prev => ({ ...prev, isDeleting: true }));
+    const success = await deleteVolunteer(
+      deleteDialog.volunteer.id, 
+      deleteDialog.volunteer.name, 
+      password
+    );
     
-    try {
-      await onRemoveVolunteer(deleteDialog.volunteer.id, deleteDialog.volunteer.name, password);
-      setDeleteDialog({ isOpen: false, volunteer: null, isDeleting: false });
-    } catch (error) {
-      console.error('Error removing volunteer:', error);
-      setDeleteDialog(prev => ({ ...prev, isDeleting: false }));
+    if (success) {
+      onVolunteerDeleted(deleteDialog.volunteer.id);
+      setDeleteDialog({ isOpen: false, volunteer: null });
     }
   };
 
   const handleDeleteCancel = () => {
-    if (!deleteDialog.isDeleting) {
-      setDeleteDialog({ isOpen: false, volunteer: null, isDeleting: false });
+    if (!isDeleting) {
+      setDeleteDialog({ isOpen: false, volunteer: null });
     }
   };
 
@@ -73,6 +74,7 @@ const VolunteerTable = ({ volunteers, onRemoveVolunteer }: VolunteerTableProps) 
                     variant="outline"
                     onClick={() => handleDeleteClick(volunteer)}
                     className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 h-7 w-7 p-0"
+                    disabled={isDeleting}
                   >
                     <Trash2 className="w-3 h-3" />
                   </Button>
@@ -96,12 +98,12 @@ const VolunteerTable = ({ volunteers, onRemoveVolunteer }: VolunteerTableProps) 
           </div>
         </div>
 
-        <PasswordProtectedDeleteDialog
+        <VolunteerDeletionDialog
           isOpen={deleteDialog.isOpen}
           onClose={handleDeleteCancel}
           onConfirm={handleDeleteConfirm}
           volunteer={deleteDialog.volunteer}
-          isDeleting={deleteDialog.isDeleting}
+          isDeleting={isDeleting}
         />
       </>
     );
@@ -144,6 +146,7 @@ const VolunteerTable = ({ volunteers, onRemoveVolunteer }: VolunteerTableProps) 
                       variant="outline"
                       onClick={() => handleDeleteClick(volunteer)}
                       className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+                      disabled={isDeleting}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -155,12 +158,12 @@ const VolunteerTable = ({ volunteers, onRemoveVolunteer }: VolunteerTableProps) 
         </div>
       </div>
 
-      <PasswordProtectedDeleteDialog
+      <VolunteerDeletionDialog
         isOpen={deleteDialog.isOpen}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
         volunteer={deleteDialog.volunteer}
-        isDeleting={deleteDialog.isDeleting}
+        isDeleting={isDeleting}
       />
     </>
   );

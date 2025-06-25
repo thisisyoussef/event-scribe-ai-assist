@@ -1,8 +1,10 @@
+
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Event, VolunteerRole, Volunteer } from "@/types/database";
+import { useVolunteerDeletion } from "./useVolunteerDeletion";
 
 // Function to create URL-friendly slug from event title
 const createEventSlug = (title: string, id: string) => {
@@ -21,6 +23,7 @@ const createEventSlug = (title: string, id: string) => {
 export const useVolunteerSignup = () => {
   const { eventSlug } = useParams();
   const { toast } = useToast();
+  const { deleteVolunteer } = useVolunteerDeletion();
   const [event, setEvent] = useState<(Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] }) | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<VolunteerRole | null>(null);
@@ -113,46 +116,10 @@ export const useVolunteerSignup = () => {
 
   const removeVolunteer = async (volunteerId: string, volunteerName: string, password?: string) => {
     try {
-      console.log(`Attempting to remove volunteer ${volunteerId} (${volunteerName})`);
+      const success = await deleteVolunteer(volunteerId, volunteerName, password);
       
-      // Check if password is provided for admin access
-      if (password) {
-        // Simple password check - in production, this should be more secure
-        const adminPassword = "admin123"; // This should be configurable
-        if (password !== adminPassword) {
-          toast({
-            title: "Incorrect Password",
-            description: "The admin password you entered is incorrect.",
-            variant: "destructive",
-          });
-          throw new Error('Incorrect password');
-        }
-      }
-
-      // Use a more robust deletion approach with explicit transaction handling
-      console.log('Starting deletion transaction for volunteer:', volunteerId);
-      
-      const { data: deletedData, error, count } = await supabase
-        .from('volunteers')
-        .delete()
-        .eq('id', volunteerId)
-        .select('*');
-
-      if (error) {
-        console.error('Database error removing volunteer:', error);
-        toast({
-          title: "Database Error", 
-          description: `Failed to remove volunteer: ${error.message}`,
-          variant: "destructive",
-        });
-        throw error;
-      }
-
-      // Check if deletion actually happened
-      if (!deletedData || deletedData.length === 0) {
-        console.log('No rows were deleted - volunteer may not exist');
-        
-        // Update local state to remove from UI anyway
+      if (success) {
+        // Update local state to remove the volunteer
         setEvent(prev => {
           if (!prev) return null;
           
@@ -163,56 +130,12 @@ export const useVolunteerSignup = () => {
             volunteers: updatedVolunteers
           };
         });
-
-        toast({
-          title: "Volunteer Not Found",
-          description: `${volunteerName} may have already been removed from the event.`,
-        });
-        return;
       }
-
-      console.log('Successfully deleted volunteer from database:', deletedData);
-
-      // Verify deletion by attempting to fetch the volunteer
-      const { data: verifyData, error: verifyError } = await supabase
-        .from('volunteers')
-        .select('id')
-        .eq('id', volunteerId)
-        .maybeSingle();
-
-      if (verifyData) {
-        console.error('Volunteer still exists after deletion attempt!');
-        toast({
-          title: "Deletion Failed",
-          description: "The volunteer could not be removed. Please try again.",
-          variant: "destructive",
-        });
-        throw new Error('Deletion verification failed');
-      }
-
-      console.log('Deletion verified - volunteer no longer exists in database');
-
-      // Update local state immediately for better UX
-      setEvent(prev => {
-        if (!prev) return null;
-        
-        const updatedVolunteers = prev.volunteers?.filter(v => v.id !== volunteerId) || [];
-        console.log(`Updated local state - removed volunteer ${volunteerId}. Remaining volunteers:`, updatedVolunteers.length);
-        return {
-          ...prev,
-          volunteers: updatedVolunteers
-        };
-      });
-
-      toast({
-        title: "Volunteer Removed",
-        description: `${volunteerName} has been successfully removed from the event.`,
-      });
-
-      console.log(`Completed removal of volunteer ${volunteerId}`);
+      
+      return success;
     } catch (error) {
       console.error('Error in removeVolunteer:', error);
-      throw error; // Re-throw to let the calling component handle it
+      throw error;
     }
   };
 
