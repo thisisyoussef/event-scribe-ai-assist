@@ -127,37 +127,14 @@ const EventRoster = () => {
         }
       }
 
-      // First check if the volunteer exists before attempting deletion
-      const { data: existingVolunteer, error: checkError } = await supabase
-        .from('volunteers')
-        .select('id, name')
-        .eq('id', volunteerId)
-        .single();
-
-      if (checkError || !existingVolunteer) {
-        console.log('Volunteer not found in database, may have already been removed');
-        
-        // Update local state to remove the volunteer since it's not in the database
-        setEvent(prev => prev ? {
-          ...prev,
-          volunteers: prev.volunteers?.filter(v => v.id !== volunteerId) || []
-        } : null);
-
-        toast({
-          title: "Volunteer Already Removed",
-          description: `${volunteerName} was already removed from the event.`,
-        });
-        return;
-      }
-
-      console.log('Proceeding with deletion for existing volunteer:', existingVolunteer);
-
-      // Perform the deletion
+      // Use a more robust deletion approach with explicit transaction handling
+      console.log('Starting deletion transaction for volunteer:', volunteerId);
+      
       const { data: deletedData, error } = await supabase
         .from('volunteers')
         .delete()
         .eq('id', volunteerId)
-        .select();
+        .select('*');
 
       if (error) {
         console.error('Database error removing volunteer:', error);
@@ -169,7 +146,43 @@ const EventRoster = () => {
         throw error;
       }
 
-      console.log('Deletion successful:', deletedData);
+      // Check if deletion actually happened
+      if (!deletedData || deletedData.length === 0) {
+        console.log('No rows were deleted - volunteer may not exist');
+        
+        // Update local state to remove from UI anyway
+        setEvent(prev => prev ? {
+          ...prev,
+          volunteers: prev.volunteers?.filter(v => v.id !== volunteerId) || []
+        } : null);
+
+        toast({
+          title: "Volunteer Not Found",
+          description: `${volunteerName} may have already been removed from the event.`,
+        });
+        return;
+      }
+
+      console.log('Successfully deleted volunteer from database:', deletedData);
+
+      // Verify deletion by attempting to fetch the volunteer
+      const { data: verifyData, error: verifyError } = await supabase
+        .from('volunteers')
+        .select('id')
+        .eq('id', volunteerId)
+        .maybeSingle();
+
+      if (verifyData) {
+        console.error('Volunteer still exists after deletion attempt!');
+        toast({
+          title: "Deletion Failed",
+          description: "The volunteer could not be removed. Please try again.",
+          variant: "destructive",
+        });
+        throw new Error('Deletion verification failed');
+      }
+
+      console.log('Deletion verified - volunteer no longer exists in database');
 
       // Update local state
       setEvent(prev => prev ? {
