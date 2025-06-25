@@ -9,6 +9,7 @@ import { Calendar, Clock, MapPin, Users, ArrowLeft, Phone, Trash2 } from "lucide
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Event, VolunteerRole, Volunteer } from "@/types/database";
+import { formatDateInMichigan, formatTimeInMichigan } from "@/utils/timezoneUtils";
 import {
   Table,
   TableBody,
@@ -170,13 +171,12 @@ const EventRoster = () => {
             <div className="flex flex-wrap items-center gap-4 text-gray-600 mt-2">
               <div className="flex items-center space-x-2">
                 <Calendar className="w-4 h-4" />
-                <span>{new Date(event.start_datetime).toLocaleDateString()}</span>
+                <span>{formatDateInMichigan(event.start_datetime)}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Clock className="w-4 h-4" />
                 <span>
-                  {new Date(event.start_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
-                  {new Date(event.end_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                  {formatTimeInMichigan(event.start_datetime)} - {formatTimeInMichigan(event.end_datetime)} (Michigan Time)
                 </span>
               </div>
               <div className="flex items-center space-x-2">
@@ -224,7 +224,7 @@ const EventRoster = () => {
                           <div className="flex items-center space-x-4 text-sm text-gray-600 mt-2">
                             <div className="flex items-center space-x-2">
                               <Clock className="w-4 h-4" />
-                              <span>{role.shift_start} - {role.shift_end}</span>
+                              <span>{role.shift_start} - {role.shift_end} (Michigan Time)</span>
                             </div>
                             <div className="flex items-center space-x-2">
                               <Users className="w-4 h-4" />
@@ -272,7 +272,7 @@ const EventRoster = () => {
                                     </Badge>
                                   </TableCell>
                                   <TableCell>
-                                    {volunteer.signup_date ? new Date(volunteer.signup_date).toLocaleDateString() : 'N/A'}
+                                    {volunteer.signup_date ? formatDateInMichigan(volunteer.signup_date) : 'N/A'}
                                   </TableCell>
                                   <TableCell>{volunteer.notes || '-'}</TableCell>
                                   <TableCell>
