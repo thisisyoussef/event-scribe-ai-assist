@@ -38,6 +38,8 @@ export const useVolunteerDeletion = () => {
         }
       });
 
+      console.log(`[DELETION] Raw Edge Function response:`, { data, error });
+
       if (error) {
         console.error(`[DELETION] Edge Function error:`, error);
         toast({
@@ -48,21 +50,8 @@ export const useVolunteerDeletion = () => {
         return false;
       }
 
-      console.log(`[DELETION] Edge Function response:`, data);
-
-      // Check if the response indicates an error
-      if (data && data.error) {
-        console.error(`[DELETION] Edge Function returned error:`, data.error);
-        toast({
-          title: "Deletion Failed",
-          description: data.error,
-          variant: "destructive",
-        });
-        return false;
-      }
-
-      // Success case - the response should have success: true
-      if (data && data.success) {
+      // The Edge Function returns a successful response with success: true
+      if (data?.success === true) {
         console.log(`[DELETION] SUCCESS: ${data.message || `${volunteerName} has been successfully removed`}`);
         
         toast({
@@ -73,15 +62,25 @@ export const useVolunteerDeletion = () => {
         return true;
       }
 
-      // If we get here, something unexpected happened
+      // Handle error cases from the Edge Function
+      if (data?.error) {
+        console.error(`[DELETION] Edge Function returned error:`, data.error);
+        toast({
+          title: "Deletion Failed",
+          description: data.error,
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      // If we get here, the response format is unexpected
       console.error(`[DELETION] Unexpected response format:`, data);
       toast({
         title: "Unexpected Response",
-        description: "The deletion may have succeeded, but we received an unexpected response.",
+        description: "The deletion request completed but the response format was unexpected.",
         variant: "destructive",
       });
       
-      // Return false to be safe, even though deletion might have worked
       return false;
 
     } catch (error) {
