@@ -1,6 +1,7 @@
 
 // Timezone utilities for handling Michigan Time (Eastern Time)
-import { format, parseISO, toZonedTime, fromZonedTime } from 'date-fns-tz';
+import { parseISO } from 'date-fns';
+import { format, toZonedTime, fromZonedTime } from 'date-fns-tz';
 
 // Michigan is in Eastern Time Zone
 export const MICHIGAN_TIMEZONE = 'America/Detroit';
