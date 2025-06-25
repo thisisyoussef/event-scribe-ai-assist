@@ -69,6 +69,14 @@ const VolunteerTable = ({ volunteers, onVolunteerDeleted }: VolunteerTableProps)
     setDeleteDialog({ isOpen: false, volunteer: null });
   };
 
+  // Only close dialog when explicitly called, not on state changes
+  const handleDialogClose = () => {
+    console.log(`[TABLE] Dialog close requested`);
+    if (!isDeleting) {
+      setDeleteDialog({ isOpen: false, volunteer: null });
+    }
+  };
+
   if (volunteers.length === 0) {
     return null;
   }
@@ -117,7 +125,7 @@ const VolunteerTable = ({ volunteers, onVolunteerDeleted }: VolunteerTableProps)
 
         <VolunteerDeletionDialog
           isOpen={deleteDialog.isOpen}
-          onClose={handleDeleteCancel}
+          onClose={handleDialogClose}
           onConfirm={handleDeleteConfirm}
           volunteer={deleteDialog.volunteer}
           isDeleting={isDeleting}
@@ -177,7 +185,7 @@ const VolunteerTable = ({ volunteers, onVolunteerDeleted }: VolunteerTableProps)
 
       <VolunteerDeletionDialog
         isOpen={deleteDialog.isOpen}
-        onClose={handleDeleteCancel}
+        onClose={handleDialogClose}
         onConfirm={handleDeleteConfirm}
         volunteer={deleteDialog.volunteer}
         isDeleting={isDeleting}

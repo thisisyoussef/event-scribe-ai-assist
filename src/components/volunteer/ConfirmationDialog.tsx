@@ -55,44 +55,45 @@ const ConfirmationDialog = ({
           <AlertDialogTitle className="text-umma-800">
             Confirm Your Volunteer Registration
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-left space-y-3">
-            <div className="text-umma-600">
-              Please confirm your volunteer registration details:
-            </div>
-            
-            <div className="bg-umma-50 p-4 rounded-lg space-y-2 text-sm">
-              <div className="font-semibold text-umma-800">{role.role_label}</div>
-              
-              <div className="flex items-center gap-2 text-umma-700">
-                <Calendar className="w-4 h-4" />
-                <span>{eventDate.toLocaleDateString()}</span>
-              </div>
-              
-              <div className="flex items-center gap-2 text-umma-700">
-                <Clock className="w-4 h-4" />
-                <span>{formatTime(role.shift_start)} - {formatTime(role.shift_end)}</span>
-              </div>
-              
-              <div className="flex items-center gap-2 text-umma-700">
-                <MapPin className="w-4 h-4" />
-                <span>{event.location}</span>
-              </div>
-            </div>
-            
-            <div className="space-y-1 text-sm">
-              <div><strong>Name:</strong> {volunteerData.name}</div>
-              <div><strong>Phone:</strong> {volunteerData.phone}</div>
-              <div><strong>Gender:</strong> {volunteerData.gender}</div>
-              {volunteerData.notes && (
-                <div><strong>Notes:</strong> {volunteerData.notes}</div>
-              )}
-            </div>
-            
-            <div className="text-umma-600 text-sm">
-              You will receive a confirmation SMS with event details.
-            </div>
+          <AlertDialogDescription>
+            Please confirm your volunteer registration details:
           </AlertDialogDescription>
         </AlertDialogHeader>
+        
+        <div className="space-y-4">
+          <div className="bg-umma-50 p-4 rounded-lg space-y-2 text-sm">
+            <div className="font-semibold text-umma-800">{role.role_label}</div>
+            
+            <div className="flex items-center gap-2 text-umma-700">
+              <Calendar className="w-4 h-4" />
+              <span>{eventDate.toLocaleDateString()}</span>
+            </div>
+            
+            <div className="flex items-center gap-2 text-umma-700">
+              <Clock className="w-4 h-4" />
+              <span>{formatTime(role.shift_start)} - {formatTime(role.shift_end)}</span>
+            </div>
+            
+            <div className="flex items-center gap-2 text-umma-700">
+              <MapPin className="w-4 h-4" />
+              <span>{event.location}</span>
+            </div>
+          </div>
+          
+          <div className="space-y-1 text-sm">
+            <div><strong>Name:</strong> {volunteerData.name}</div>
+            <div><strong>Phone:</strong> {volunteerData.phone}</div>
+            <div><strong>Gender:</strong> {volunteerData.gender}</div>
+            {volunteerData.notes && (
+              <div><strong>Notes:</strong> {volunteerData.notes}</div>
+            )}
+          </div>
+          
+          <div className="text-umma-600 text-sm">
+            You will receive a confirmation SMS with event details.
+          </div>
+        </div>
+
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction 
