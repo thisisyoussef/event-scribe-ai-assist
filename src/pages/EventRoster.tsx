@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import DeleteVolunteerDialog from "@/components/volunteer/DeleteVolunteerDialog";
 
 const EventRoster = () => {
   const { eventId } = useParams();
@@ -25,6 +25,15 @@ const EventRoster = () => {
   const { toast } = useToast();
   const [event, setEvent] = useState<(Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] }) | null>(null);
   const [loading, setLoading] = useState(true);
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    volunteer: Volunteer | null;
+    isDeleting: boolean;
+  }>({
+    isOpen: false,
+    volunteer: null,
+    isDeleting: false
+  });
 
   useEffect(() => {
     // Check if user is logged in
@@ -72,22 +81,83 @@ const EventRoster = () => {
     }
   };
 
-  const removeVolunteer = async (volunteerId: string) => {
+  const handleDeleteClick = (volunteer: Volunteer) => {
+    setDeleteDialog({
+      isOpen: true,
+      volunteer,
+      isDeleting: false
+    });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteDialog.volunteer) return;
+    
+    setDeleteDialog(prev => ({ ...prev, isDeleting: true }));
+    
     try {
-      const { error } = await supabase
+      await removeVolunteer(deleteDialog.volunteer.id, deleteDialog.volunteer.name);
+      setDeleteDialog({ isOpen: false, volunteer: null, isDeleting: false });
+    } catch (error) {
+      console.error('Error removing volunteer:', error);
+      setDeleteDialog(prev => ({ ...prev, isDeleting: false }));
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    if (!deleteDialog.isDeleting) {
+      setDeleteDialog({ isOpen: false, volunteer: null, isDeleting: false });
+    }
+  };
+
+  const removeVolunteer = async (volunteerId: string, volunteerName: string) => {
+    try {
+      console.log(`Attempting to remove volunteer ${volunteerId} (${volunteerName})`);
+      
+      // First, get the current user to check if they're authenticated
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        console.error('Authentication error or no user:', authError);
+        toast({
+          title: "Authentication Required",
+          description: "You must be logged in to remove volunteers.",
+          variant: "destructive",
+        });
+        throw authError || new Error('No authenticated user');
+      }
+
+      console.log('User authenticated, proceeding with deletion');
+
+      // Perform the deletion with explicit logging
+      const { data: deletedData, error } = await supabase
         .from('volunteers')
         .delete()
-        .eq('id', volunteerId);
+        .eq('id', volunteerId)
+        .select(); // Add select to see what was deleted
 
       if (error) {
-        console.error('Error removing volunteer:', error);
+        console.error('Database error removing volunteer:', error);
         toast({
-          title: "Error",
-          description: "Failed to remove volunteer.",
+          title: "Database Error",
+          description: `Failed to remove volunteer: ${error.message}`,
+          variant: "destructive",
+        });
+        throw error;
+      }
+
+      console.log('Deletion result:', deletedData);
+
+      if (!deletedData || deletedData.length === 0) {
+        console.warn('No volunteer was deleted - possibly already removed or permission issue');
+        toast({
+          title: "Volunteer Not Found",
+          description: "The volunteer may have already been removed or you don't have permission to remove them.",
           variant: "destructive",
         });
         return;
       }
+
+      console.log(`Successfully removed volunteer ${volunteerId} from database`);
 
       // Update local state
       setEvent(prev => prev ? {
@@ -97,15 +167,13 @@ const EventRoster = () => {
 
       toast({
         title: "Volunteer Removed",
-        description: "The volunteer has been removed from the event.",
+        description: `${volunteerName} has been removed from the event.`,
       });
+
+      console.log(`Completed removal of volunteer ${volunteerId}`);
     } catch (error) {
-      console.error('Error:', error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred.",
-        variant: "destructive",
-      });
+      console.error('Error in removeVolunteer:', error);
+      throw error; // Re-throw to let the calling component handle it
     }
   };
 
@@ -279,7 +347,7 @@ const EventRoster = () => {
                                     <Button
                                       size="sm"
                                       variant="outline"
-                                      onClick={() => removeVolunteer(volunteer.id)}
+                                      onClick={() => handleDeleteClick(volunteer)}
                                       className="text-red-600 hover:text-red-700"
                                     >
                                       <Trash2 className="w-4 h-4" />
@@ -308,6 +376,14 @@ const EventRoster = () => {
             )}
           </CardContent>
         </Card>
+
+        <DeleteVolunteerDialog
+          isOpen={deleteDialog.isOpen}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          volunteer={deleteDialog.volunteer}
+          isDeleting={deleteDialog.isDeleting}
+        />
       </main>
     </div>
   );

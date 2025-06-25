@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -116,19 +115,58 @@ export const useVolunteerSignup = () => {
     try {
       console.log(`Attempting to remove volunteer ${volunteerId} (${volunteerName})`);
       
-      const { error } = await supabase
+      // First, get the current user to check if they're authenticated
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) {
+        console.error('Auth error:', authError);
+        toast({
+          title: "Authentication Error",
+          description: "You must be logged in to remove volunteers.",
+          variant: "destructive",
+        });
+        throw authError;
+      }
+
+      if (!user) {
+        console.error('No authenticated user found');
+        toast({
+          title: "Authentication Required",
+          description: "You must be logged in to remove volunteers.",
+          variant: "destructive",
+        });
+        throw new Error('No authenticated user');
+      }
+
+      console.log('User authenticated, proceeding with deletion');
+
+      // Perform the deletion with explicit logging
+      const { data: deletedData, error } = await supabase
         .from('volunteers')
         .delete()
-        .eq('id', volunteerId);
+        .eq('id', volunteerId)
+        .select(); // Add select to see what was deleted
 
       if (error) {
-        console.error('Error removing volunteer:', error);
+        console.error('Database error removing volunteer:', error);
         toast({
-          title: "Error",
-          description: "Failed to remove volunteer from event. Please try again.",
+          title: "Database Error",
+          description: `Failed to remove volunteer: ${error.message}`,
           variant: "destructive",
         });
         throw error;
+      }
+
+      console.log('Deletion result:', deletedData);
+
+      if (!deletedData || deletedData.length === 0) {
+        console.warn('No volunteer was deleted - possibly already removed or permission issue');
+        toast({
+          title: "Volunteer Not Found",
+          description: "The volunteer may have already been removed or you don't have permission to remove them.",
+          variant: "destructive",
+        });
+        return;
       }
 
       console.log(`Successfully removed volunteer ${volunteerId} from database`);
@@ -138,6 +176,7 @@ export const useVolunteerSignup = () => {
         if (!prev) return null;
         
         const updatedVolunteers = prev.volunteers?.filter(v => v.id !== volunteerId) || [];
+        console.log(`Updated local state - removed volunteer ${volunteerId}. Remaining volunteers:`, updatedVolunteers.length);
         return {
           ...prev,
           volunteers: updatedVolunteers
@@ -149,7 +188,7 @@ export const useVolunteerSignup = () => {
         description: `${volunteerName} has been successfully removed from the event.`,
       });
 
-      console.log(`Local state updated - removed volunteer ${volunteerId}`);
+      console.log(`Completed removal of volunteer ${volunteerId}`);
     } catch (error) {
       console.error('Error in removeVolunteer:', error);
       throw error; // Re-throw to let the calling component handle it
