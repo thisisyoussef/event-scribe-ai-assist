@@ -114,6 +114,8 @@ export const useVolunteerSignup = () => {
 
   const removeVolunteer = async (volunteerId: string, volunteerName: string) => {
     try {
+      console.log(`Attempting to remove volunteer ${volunteerId} (${volunteerName})`);
+      
       const { error } = await supabase
         .from('volunteers')
         .delete()
@@ -123,28 +125,34 @@ export const useVolunteerSignup = () => {
         console.error('Error removing volunteer:', error);
         toast({
           title: "Error",
-          description: "Failed to remove from event.",
+          description: "Failed to remove volunteer from event. Please try again.",
           variant: "destructive",
         });
-        return;
+        throw error;
       }
 
-      setEvent(prev => prev ? {
-        ...prev,
-        volunteers: prev.volunteers?.filter(v => v.id !== volunteerId) || []
-      } : null);
+      console.log(`Successfully removed volunteer ${volunteerId} from database`);
+
+      // Update local state immediately for better UX
+      setEvent(prev => {
+        if (!prev) return null;
+        
+        const updatedVolunteers = prev.volunteers?.filter(v => v.id !== volunteerId) || [];
+        return {
+          ...prev,
+          volunteers: updatedVolunteers
+        };
+      });
 
       toast({
-        title: "Successfully Removed",
-        description: `${volunteerName} has been removed from the event.`,
+        title: "Volunteer Removed",
+        description: `${volunteerName} has been successfully removed from the event.`,
       });
+
+      console.log(`Local state updated - removed volunteer ${volunteerId}`);
     } catch (error) {
-      console.error('Error:', error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred.",
-        variant: "destructive",
-      });
+      console.error('Error in removeVolunteer:', error);
+      throw error; // Re-throw to let the calling component handle it
     }
   };
 

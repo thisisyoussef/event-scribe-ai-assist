@@ -2,8 +2,22 @@
 import { Event, VolunteerRole } from "@/types/database";
 
 export const generateCalendarEvent = (event: Event, role: VolunteerRole) => {
-  const startDate = new Date(event.start_datetime);
-  const endDate = new Date(event.end_datetime);
+  const eventDate = new Date(event.start_datetime);
+  
+  // Create start and end times using the event date and role shift times
+  const [startHours, startMinutes] = role.shift_start.split(':').map(Number);
+  const [endHours, endMinutes] = role.shift_end.split(':').map(Number);
+  
+  const startDate = new Date(eventDate);
+  startDate.setHours(startHours, startMinutes, 0, 0);
+  
+  const endDate = new Date(eventDate);
+  endDate.setHours(endHours, endMinutes, 0, 0);
+  
+  // Handle shifts that cross midnight
+  if (endDate <= startDate) {
+    endDate.setDate(endDate.getDate() + 1);
+  }
   
   // Format dates for calendar (YYYYMMDDTHHMMSSZ)
   const formatCalendarDate = (date: Date) => {
