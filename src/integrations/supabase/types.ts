@@ -481,9 +481,77 @@ export type Database = {
           },
         ]
       }
+      volunteers_backup: {
+        Row: {
+          changed_by: string | null
+          event_id: string | null
+          gender: string
+          id: string
+          name: string
+          new_data: Json | null
+          notes: string | null
+          old_data: Json | null
+          operation_timestamp: string
+          operation_type: string
+          original_volunteer_id: string
+          phone: string
+          role_id: string | null
+          signup_date: string | null
+          status: string | null
+        }
+        Insert: {
+          changed_by?: string | null
+          event_id?: string | null
+          gender: string
+          id?: string
+          name: string
+          new_data?: Json | null
+          notes?: string | null
+          old_data?: Json | null
+          operation_timestamp?: string
+          operation_type: string
+          original_volunteer_id: string
+          phone: string
+          role_id?: string | null
+          signup_date?: string | null
+          status?: string | null
+        }
+        Update: {
+          changed_by?: string | null
+          event_id?: string | null
+          gender?: string
+          id?: string
+          name?: string
+          new_data?: Json | null
+          notes?: string | null
+          old_data?: Json | null
+          operation_timestamp?: string
+          operation_type?: string
+          original_volunteer_id?: string
+          phone?: string
+          role_id?: string | null
+          signup_date?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      volunteer_activity_log: {
+        Row: {
+          backup_id: string | null
+          event_title: string | null
+          name: string | null
+          new_data: Json | null
+          old_data: Json | null
+          operation_timestamp: string | null
+          operation_type: string | null
+          original_volunteer_id: string | null
+          phone: string | null
+          role_label: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
