@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,13 +36,19 @@ const VolunteerTable = ({ volunteers, onVolunteerDeleted }: VolunteerTableProps)
       console.error(`[TABLE] No volunteer selected for deletion`);
       return;
     }
+
+    // CRITICAL: Validate password before proceeding
+    if (!password || password.trim() === '') {
+      console.error(`[TABLE] No password provided for deletion`);
+      return;
+    }
     
     console.log(`[TABLE] Attempting to delete volunteer: ${deleteDialog.volunteer.id} (${deleteDialog.volunteer.name})`);
     
     const success = await deleteVolunteer(
       deleteDialog.volunteer.id, 
       deleteDialog.volunteer.name, 
-      password
+      password.trim()
     );
     
     console.log(`[TABLE] Deletion result: ${success}`);

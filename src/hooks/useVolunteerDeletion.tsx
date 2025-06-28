@@ -17,29 +17,33 @@ export const useVolunteerDeletion = () => {
       return false;
     }
 
+    // CRITICAL: Validate inputs before proceeding
+    if (!volunteerId || !volunteerName) {
+      console.error(`[DELETION] Invalid inputs - volunteerId: ${volunteerId}, volunteerName: ${volunteerName}`);
+      return false;
+    }
+
+    if (!adminPassword || adminPassword.trim() === '') {
+      console.error(`[DELETION] No admin password provided - this should never happen`);
+      toast({
+        title: "Admin Password Required",
+        description: "Please enter the admin password to delete volunteers.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     setIsDeleting(true);
     
     try {
-      console.log(`[DELETION] Starting deletion process for volunteer ${volunteerId} (${volunteerName})`);
-      
-      if (!adminPassword) {
-        console.log(`[DELETION] No admin password provided`);
-        toast({
-          title: "Admin Password Required",
-          description: "Please enter the admin password to delete volunteers.",
-          variant: "destructive",
-        });
-        return false;
-      }
-
-      console.log(`[DELETION] Calling Edge Function with password`);
+      console.log(`[DELETION] Starting deletion process for volunteer ${volunteerId} (${volunteerName}) with password`);
       
       // Call the Edge Function to delete the volunteer
       const { data, error } = await supabase.functions.invoke('delete-volunteer', {
         body: {
           volunteerId,
           volunteerName,
-          adminPassword
+          adminPassword: adminPassword.trim() // Ensure we trim the password
         }
       });
 
