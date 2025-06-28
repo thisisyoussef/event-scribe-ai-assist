@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,10 +15,12 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import VolunteerBackupViewer from "@/components/volunteer/VolunteerBackupViewer";
+import { useAuth } from "@/hooks/useAuth";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
+  const { isAdmin } = useAuth();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -30,14 +31,16 @@ const Dashboard = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="volunteers">Volunteers</TabsTrigger>
-            <TabsTrigger value="backup">
-              <Activity className="w-4 h-4 mr-2" />
-              Activity Monitor
-            </TabsTrigger>
+            {isAdmin && (
+              <TabsTrigger value="backup">
+                <Activity className="w-4 h-4 mr-2" />
+                Activity Monitor
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -103,7 +106,7 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <Button 
-                    onClick={() => navigate('/create-event')} 
+                    onClick={() => navigate('/events/create')} 
                     className="w-full justify-start"
                   >
                     <Plus className="mr-2 h-4 w-4" />
@@ -117,14 +120,16 @@ const Dashboard = () => {
                     <Settings className="mr-2 h-4 w-4" />
                     Event Settings
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setActiveTab('backup')} 
-                    className="w-full justify-start"
-                  >
-                    <Database className="mr-2 h-4 w-4" />
-                    View Activity Monitor
-                  </Button>
+                  {isAdmin && (
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setActiveTab('backup')} 
+                      className="w-full justify-start"
+                    >
+                      <Database className="mr-2 h-4 w-4" />
+                      View Activity Monitor
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
 
@@ -145,7 +150,7 @@ const Dashboard = () => {
           <TabsContent value="events" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Events</h2>
-              <Button onClick={() => navigate('/create-event')}>
+              <Button onClick={() => navigate('/events/create')}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create Event
               </Button>
@@ -160,7 +165,7 @@ const Dashboard = () => {
                     Get started by creating your first event.
                   </p>
                   <div className="mt-6">
-                    <Button onClick={() => navigate('/create-event')}>
+                    <Button onClick={() => navigate('/events/create')}>
                       <Plus className="mr-2 h-4 w-4" />
                       Create Event
                     </Button>
@@ -186,9 +191,11 @@ const Dashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="backup" className="space-y-6">
-            <VolunteerBackupViewer />
-          </TabsContent>
+          {isAdmin && (
+            <TabsContent value="backup" className="space-y-6">
+              <VolunteerBackupViewer />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     </div>
