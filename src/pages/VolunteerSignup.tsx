@@ -8,6 +8,8 @@ import SignupPageMeta from "@/components/volunteer/SignupPageMeta";
 import { useVolunteerSignup } from "@/hooks/useVolunteerSignup";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+import { useMemo } from "react";
+
 const VolunteerSignup = () => {
   const isMobile = useIsMobile();
   const {
@@ -39,6 +41,16 @@ const VolunteerSignup = () => {
     return <EventNotFound eventId={eventSlug} />;
   }
 
+  const sortedRoles = useMemo(() => {
+    const roles = [...(event.volunteer_roles || [])];
+    return roles.sort((a, b) => {
+      const remainingA = getRemainingSlots(a);
+      const remainingB = getRemainingSlots(b);
+      if (remainingA !== remainingB) return remainingB - remainingA; // more empty first
+      return (a.shift_start || '').localeCompare(b.shift_start || ''); // stable tiebreaker
+    });
+  }, [event?.volunteer_roles, getRemainingSlots]);
+
   return (
     <>
       <SignupPageMeta event={event} />
@@ -47,7 +59,7 @@ const VolunteerSignup = () => {
 
         <main className={`container mx-auto px-4 py-6 ${isMobile ? 'max-w-full' : 'max-w-6xl'}`}>
           <VolunteerRolesList
-            volunteerRoles={event.volunteer_roles || []}
+            volunteerRoles={sortedRoles}
             getVolunteersForRole={getVolunteersForRole}
             onSignUp={openSignupModal}
             onVolunteerDeleted={handleVolunteerDeleted}
