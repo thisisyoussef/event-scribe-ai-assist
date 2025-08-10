@@ -49,7 +49,7 @@ const VolunteerSignup = () => {
       if (remainingA !== remainingB) return remainingB - remainingA; // more empty first
       return (a.shift_start || '').localeCompare(b.shift_start || ''); // stable tiebreaker
     });
-  }, [event?.volunteer_roles, getRemainingSlots]);
+  }, [event, getRemainingSlots]);
 
   return (
     <>
