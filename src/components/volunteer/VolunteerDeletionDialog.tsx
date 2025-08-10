@@ -36,17 +36,15 @@ const VolunteerDeletionDialog = ({
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleConfirm = async () => {
-    // CRITICAL: Only proceed if password is provided and not empty
     if (!password.trim() || isProcessing || isDeleting) {
-      console.warn(`[DIALOG] Cannot proceed - password: "${password.trim()}", processing: ${isProcessing}, deleting: ${isDeleting}`);
       return;
     }
 
-    console.log(`[DIALOG] Confirming deletion with password for volunteer: ${volunteer?.name}`);
+    console.log(`[DIALOG] Confirming deletion with password`);
     setIsProcessing(true);
     
     try {
-      await onConfirm(password.trim()); // Ensure we pass trimmed password
+      await onConfirm(password);
       console.log(`[DIALOG] Deletion completed successfully`);
       // Don't close dialog here - let the parent component handle it after successful deletion
     } catch (error) {
