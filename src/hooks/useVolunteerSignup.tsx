@@ -58,14 +58,23 @@ export const useVolunteerSignup = () => {
         return;
       }
 
-      // Find the event that matches the slug
-      const matchingEvent = events?.find(event => {
+      // Find the event that matches the slug (support legacy links if title changed)
+      let matchingEvent = events?.find(event => {
         const eventSlugGenerated = createEventSlug(event.title, event.id);
         return eventSlugGenerated === eventSlug;
       });
 
+      // Fallback: match by unique id suffix (last 4 chars) to survive title edits
+      if (!matchingEvent && eventSlug) {
+        const parts = eventSlug.split('-');
+        const suffix = parts[parts.length - 1] || '';
+        if (suffix.length === 4) {
+          matchingEvent = events?.find(e => e.id.endsWith(suffix));
+        }
+      }
+
       if (!matchingEvent) {
-        console.log("Event not found for slug:", eventSlug);
+        console.log("Event not found for slug (including suffix fallback):", eventSlug);
         setEvent(null);
         return;
       }
