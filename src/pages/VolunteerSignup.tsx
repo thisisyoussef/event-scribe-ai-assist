@@ -33,6 +33,16 @@ const VolunteerSignup = () => {
     updateLocalVolunteers(volunteerId);
   };
 
+  const sortedRoles = useMemo(() => {
+    const roles = [...(event?.volunteer_roles || [])];
+    return roles.sort((a, b) => {
+      const remainingA = getRemainingSlots(a);
+      const remainingB = getRemainingSlots(b);
+      if (remainingA !== remainingB) return remainingB - remainingA; // more empty first
+      return (a.shift_start || '').localeCompare(b.shift_start || ''); // stable tiebreaker
+    });
+  }, [event, getRemainingSlots]);
+
   if (loading) {
     return <LoadingState />;
   }
@@ -41,15 +51,7 @@ const VolunteerSignup = () => {
     return <EventNotFound eventId={eventSlug} />;
   }
 
-  const sortedRoles = useMemo(() => {
-    const roles = [...(event.volunteer_roles || [])];
-    return roles.sort((a, b) => {
-      const remainingA = getRemainingSlots(a);
-      const remainingB = getRemainingSlots(b);
-      if (remainingA !== remainingB) return remainingB - remainingA; // more empty first
-      return (a.shift_start || '').localeCompare(b.shift_start || ''); // stable tiebreaker
-    });
-  }, [event, getRemainingSlots]);
+  
 
   return (
     <>
