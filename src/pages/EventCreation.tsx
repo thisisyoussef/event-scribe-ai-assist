@@ -560,15 +560,8 @@ const EventCreation = () => {
           return;
         }
 
-        // Delete existing volunteer roles
-        const { error: deleteRolesError } = await supabase
-          .from('volunteer_roles')
-          .delete()
-          .eq('event_id', eventId);
-
-        if (deleteRolesError) {
-          console.error('Error deleting roles:', deleteRolesError);
-        }
+        // Preserve existing volunteer_roles to avoid breaking volunteer associations
+        // We no longer delete roles on event update.
       } else {
         // Create new event
         const { data: newEvent, error: eventError } = await supabase
@@ -590,11 +583,12 @@ const EventCreation = () => {
         savedEventId = newEvent.id;
       }
 
-      // Insert volunteer roles
+      // Upsert volunteer roles (preserve IDs to keep volunteer signups linked)
       if (finalRoles.length > 0) {
         const rolesPayload = finalRoles
           .filter(role => role.roleLabel && role.roleLabel.trim() !== '')
           .map(role => ({
+            id: role.id, // preserve id so existing volunteers remain linked
             event_id: savedEventId,
             role_label: role.roleLabel,
             shift_start: role.shiftStart,
@@ -605,18 +599,18 @@ const EventCreation = () => {
             notes: role.notes || ""
           }));
 
-        console.log('Inserting roles payload:', rolesPayload);
+        console.log('Upserting roles payload:', rolesPayload);
 
         if (rolesPayload.length > 0) {
           const { error: rolesError } = await supabase
             .from('volunteer_roles')
-            .insert(rolesPayload);
+            .upsert(rolesPayload, { onConflict: 'id' });
 
           if (rolesError) {
-            console.error('Error creating roles:', rolesError);
+            console.error('Error saving roles:', rolesError);
             toast({
               title: "Error",
-              description: "Failed to create volunteer roles.",
+              description: "Failed to save volunteer roles.",
               variant: "destructive",
             });
             return;
