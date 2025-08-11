@@ -19,6 +19,25 @@ const createEventSlug = (title: string, id: string) => {
   return `${baseSlug}-${uniqueSuffix}`;
 };
 
+// Normalize a phone number to E.164 (+15551234567)
+// - Removes spaces, dashes, parentheses
+// - Adds +1 for 10-digit US numbers
+const formatPhoneE164 = (input: string) => {
+  const digits = input.replace(/[^\d+]/g, '');
+  if (digits.startsWith('+')) {
+    return digits;
+  }
+  // If starts with 1 and 11 digits, prefix +
+  if (/^1\d{10}$/.test(digits)) {
+    return `+${digits}`;
+  }
+  // If 10 digits, assume US and prefix +1
+  if (/^\d{10}$/.test(digits)) {
+    return `+1${digits}`;
+  }
+  return `+${digits}`; // fallback: prefix +
+};
+
 export const useVolunteerSignup = () => {
   const { eventSlug } = useParams();
   const { toast } = useToast();
@@ -223,11 +242,12 @@ export const useVolunteerSignup = () => {
         return;
       }
 
-      const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-      if (!phoneRegex.test(volunteerData.phone.replace(/[\s\-\(\)]/g, ''))) {
+      const normalizedPhone = formatPhoneE164(volunteerData.phone);
+      const phoneRegex = /^\+[1-9]\d{7,14}$/;
+      if (!phoneRegex.test(normalizedPhone)) {
         toast({
           title: "Invalid Phone Number",
-          description: "Please enter a valid phone number.",
+          description: "Please enter a valid phone number in international format.",
           variant: "destructive",
         });
         return;
@@ -238,7 +258,7 @@ export const useVolunteerSignup = () => {
         .from('volunteers')
         .select('id, name, phone')
         .eq('event_id', event.id)
-        .eq('phone', volunteerData.phone)
+        .eq('phone', normalizedPhone)
         .eq('role_id', selectedRole.id);
 
       if (checkError) {
@@ -265,7 +285,7 @@ export const useVolunteerSignup = () => {
           event_id: event.id,
           role_id: selectedRole.id,
           name: volunteerData.name,
-          phone: volunteerData.phone,
+          phone: normalizedPhone,
           gender: volunteerData.gender,
           notes: volunteerData.notes,
           status: 'confirmed'
@@ -297,7 +317,7 @@ export const useVolunteerSignup = () => {
         description: `You're now registered for ${selectedRole.role_label}.`,
       });
 
-      await sendSMS(volunteerData.phone, volunteerData.name, selectedRole.role_label);
+      await sendSMS(normalizedPhone, volunteerData.name, selectedRole.role_label);
 
     } catch (error) {
       console.error('Error in signup submission:', error);

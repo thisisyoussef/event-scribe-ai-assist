@@ -1,1 +1,7 @@
 project_id = "spkbyweazhaxjwnokugj"
+
+[functions.send-sms]
+verify_jwt = false
+
+[functions.delete-volunteer]
+verify_jwt = false
