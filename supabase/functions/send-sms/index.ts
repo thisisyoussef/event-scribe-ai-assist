@@ -36,13 +36,33 @@ const handler = async (req: Request): Promise<Response> => {
 
     const accountSid = Deno.env.get('TWILIO_ACCOUNT_SID');
     const authToken = Deno.env.get('TWILIO_AUTH_TOKEN');
-    const fromNumber = Deno.env.get('TWILIO_PHONE_NUMBER');
+    const rawFrom = Deno.env.get('TWILIO_PHONE_NUMBER') || '';
+    const messagingServiceSid = Deno.env.get('TWILIO_MESSAGING_SERVICE_SID') || '';
 
-    if (!accountSid || !authToken || !fromNumber) {
-      console.error('Missing Twilio credentials');
+    // Normalize numbers to E.164
+    const sanitize = (num: string) => {
+      const digits = (num || '').replace(/[^\d+]/g, '');
+      if (digits.startsWith('+')) return digits;
+      if (/^1\d{10}$/.test(digits)) return `+${digits}`;
+      if (/^\d{10}$/.test(digits)) return `+1${digits}`;
+      return digits ? `+${digits}` : '';
+    };
+
+    const toNumber = sanitize(to);
+    const fromNumber = rawFrom ? sanitize(rawFrom) : '';
+
+    if (!accountSid || !authToken || (!fromNumber && !messagingServiceSid)) {
+      console.error('Missing Twilio credentials or sender identity (phone or messaging service SID)');
       return new Response(
         JSON.stringify({ error: 'SMS service not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!toNumber || !/^\+[1-9]\d{7,14}$/.test(toNumber)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid destination phone number' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -51,11 +71,15 @@ const handler = async (req: Request): Promise<Response> => {
     
     // Prepare form data for Twilio API
     const formData = new URLSearchParams();
-    formData.append('To', to);
-    formData.append('From', fromNumber);
+    formData.append('To', toNumber);
+    if (messagingServiceSid) {
+      formData.append('MessagingServiceSid', messagingServiceSid);
+    } else {
+      formData.append('From', fromNumber);
+    }
     formData.append('Body', message);
 
-    console.log(`Sending SMS to ${to}: ${message}`);
+    console.log(`Sending SMS to ${toNumber}: ${message}`);
 
     // Send SMS via Twilio API
     const response = await fetch(
