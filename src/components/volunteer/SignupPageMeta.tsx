@@ -1,6 +1,7 @@
 
 import { useEffect } from 'react';
 import { Event } from '@/types/database';
+import { displayTimeInMichigan } from '@/utils/timezoneUtils';
 
 interface SignupPageMetaProps {
   event: Event | null;
@@ -34,12 +35,7 @@ const SignupPageMeta = ({ event }: SignupPageMetaProps) => {
     };
 
     const formatTime = (dateTime: string) => {
-      const date = new Date(dateTime);
-      return date.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
+      return displayTimeInMichigan(dateTime);
     };
 
     // Update page title

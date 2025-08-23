@@ -20,6 +20,7 @@ interface AdditionalDetailsWizardProps {
   onDetailsChange: (details: AdditionalDetails) => void;
   isExpanded: boolean;
   onToggleExpand: (expanded: boolean) => void;
+  disabled?: boolean;
 }
 
 const ageGroupOptions = [
@@ -34,7 +35,8 @@ const AdditionalDetailsWizard = ({
   details, 
   onDetailsChange, 
   isExpanded, 
-  onToggleExpand 
+  onToggleExpand,
+  disabled = false
 }: AdditionalDetailsWizardProps) => {
   const updateDetails = (field: keyof AdditionalDetails, value: any) => {
     onDetailsChange({ ...details, [field]: value });
@@ -71,6 +73,7 @@ const AdditionalDetailsWizard = ({
               variant="outline" 
               size="sm"
               className="border-blue-300 text-blue-700"
+              disabled={disabled}
             >
               Configure
             </Button>
@@ -93,9 +96,10 @@ const AdditionalDetailsWizard = ({
             variant="ghost" 
             size="sm"
             className="text-blue-600"
+            disabled={disabled}
           >
             Skip for now
-          </Button>
+            </Button>
         </CardTitle>
         <p className="text-sm text-blue-600">
           Answer these optional questions to help AI generate more tailored volunteer roles and marketing suggestions.
@@ -108,7 +112,7 @@ const AdditionalDetailsWizard = ({
             <Megaphone className="w-4 h-4" />
             <span>Marketing Intensity</span>
           </Label>
-          <Select value={details.marketingLevel} onValueChange={(value: 'low' | 'medium' | 'high') => updateDetails('marketingLevel', value)}>
+          <Select value={details.marketingLevel} onValueChange={(value: 'low' | 'medium' | 'high') => updateDetails('marketingLevel', value)} disabled={disabled}>
             <SelectTrigger className="border-blue-200">
               <SelectValue placeholder="How much marketing effort do you want?" />
             </SelectTrigger>
@@ -138,6 +142,7 @@ const AdditionalDetailsWizard = ({
                     ? "bg-blue-600 text-white" 
                     : "border-blue-200 text-blue-700"
                 }`}
+                disabled={disabled}
               >
                 {option.label}
               </Button>
@@ -155,6 +160,7 @@ const AdditionalDetailsWizard = ({
                       size="sm"
                       onClick={() => removeAgeGroup(group)}
                       className="h-auto p-0 ml-1"
+                      disabled={disabled}
                     >
                       <X className="w-3 h-3" />
                     </Button>
@@ -171,7 +177,7 @@ const AdditionalDetailsWizard = ({
             <Target className="w-4 h-4" />
             <span>Event Tone</span>
           </Label>
-          <Select value={details.tone} onValueChange={(value: 'formal' | 'casual' | 'fun') => updateDetails('tone', value)}>
+          <Select value={details.tone} onValueChange={(value: 'formal' | 'casual' | 'fun') => updateDetails('tone', value)} disabled={disabled}>
             <SelectTrigger className="border-blue-200">
               <SelectValue placeholder="What's the atmosphere you're aiming for?" />
             </SelectTrigger>
@@ -196,6 +202,7 @@ const AdditionalDetailsWizard = ({
             min={10}
             step={10}
             className="w-full"
+            disabled={disabled}
           />
           <div className="flex justify-between text-xs text-blue-600">
             <span>10</span>

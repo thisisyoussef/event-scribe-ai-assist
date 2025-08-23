@@ -10,8 +10,10 @@ import EventCreation from "./pages/EventCreation";
 import Contacts from "./pages/Contacts";
 import EventRoster from "./pages/EventRoster";
 import VolunteerSignup from "./pages/VolunteerSignup";
+import SharedEvents from "./pages/SharedEvents";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,11 +27,13 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/events/create" element={<EventCreation />} />
           <Route path="/events/:eventId/edit" element={<EventCreation />} />
           <Route path="/events/:eventId/roster" element={<EventRoster />} />
           <Route path="/:eventSlug/volunteer" element={<VolunteerSignup />} />
+          <Route path="/shared-events" element={<SharedEvents />} />
           <Route path="/contacts" element={<Contacts />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />

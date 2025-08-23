@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Calendar, Phone, Settings, LogOut, Menu, X } from "lucide-react";
+import { Calendar, Phone, Settings, LogOut, Menu, X, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { User } from "@supabase/supabase-js";
@@ -75,6 +75,7 @@ const Navigation = () => {
 
   const navItems = [
     { label: "Events", path: "/dashboard", icon: Calendar },
+    { label: "Shared Events", path: "/shared-events", icon: Share2 },
     { label: "Contacts", path: "/contacts", icon: Phone },
     { label: "Settings", path: "/settings", icon: Settings },
   ];

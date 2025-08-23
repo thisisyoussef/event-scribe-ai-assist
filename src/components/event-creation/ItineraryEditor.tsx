@@ -20,9 +20,10 @@ interface ItineraryEditorProps {
   startTime: string;
   endTime: string;
   isGenerated?: boolean;
+  disabled?: boolean;
 }
 
-const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime, isGenerated = false }: ItineraryEditorProps) => {
+const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime, isGenerated = false, disabled = false }: ItineraryEditorProps) => {
   const addItineraryItem = () => {
     const newItem: ItineraryItem = {
       id: crypto.randomUUID(),
@@ -69,7 +70,7 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime, isG
           <div className="text-center py-6 bg-umma-50 rounded-lg border border-umma-200">
             <Clock className="w-8 h-8 text-umma-400 mx-auto mb-2" />
             <p className="text-umma-600 mb-4">No itinerary items yet</p>
-            <Button onClick={addItineraryItem} variant="outline" className="border-umma-300 text-umma-700 hover:bg-umma-100 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300">
+            <Button onClick={addItineraryItem} variant="outline" className="border-umma-300 text-umma-700 hover:bg-umma-100 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300" disabled={disabled}>
               <Plus className="w-4 h-4 mr-2" />
               Add First Item
             </Button>
@@ -88,6 +89,7 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime, isG
                       min={startTime}
                       max={endTime}
                       className="text-sm border-umma-200 focus-visible:ring-umma-500"
+                      disabled={disabled}
                     />
                   </div>
                   
@@ -98,6 +100,7 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime, isG
                       onChange={(e) => updateItineraryItem(item.id, 'title', e.target.value)}
                       placeholder="e.g., Doors Open"
                       className="text-sm border-umma-200 focus-visible:ring-umma-500"
+                      disabled={disabled}
                     />
                   </div>
                   
@@ -109,6 +112,7 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime, isG
                         variant="ghost"
                         onClick={() => removeItineraryItem(item.id)}
                         className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                        disabled={disabled}
                       >
                         <Trash2 className="w-3 h-3" />
                       </Button>
@@ -119,13 +123,14 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime, isG
                       placeholder="Describe what happens during this time"
                       rows={2}
                       className="text-sm resize-none border-umma-200 focus-visible:ring-umma-500"
+                      disabled={disabled}
                     />
                   </div>
                 </div>
               ))}
             </div>
             
-            <Button onClick={addItineraryItem} variant="outline" className="w-full border-umma-300 text-umma-700 hover:bg-umma-100 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300">
+            <Button onClick={addItineraryItem} variant="outline" className="w-full border-umma-300 text-umma-700 hover:bg-umma-100 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300" disabled={disabled}>
               <Plus className="w-4 h-4 mr-2" />
               Add Another Item
             </Button>

@@ -17,6 +17,14 @@ export const fromMichiganTime = (date: Date): Date => {
   return fromZonedTime(date, MICHIGAN_TIMEZONE);
 };
 
+// Convert local datetime to UTC for storage (fixes the 4-hour offset issue)
+export const localDateTimeToUTC = (dateString: string, timeString: string): string => {
+  // Create a date object in the local timezone
+  const localDate = new Date(`${dateString}T${timeString}:00`);
+  // Convert to UTC for storage (this preserves the local time as UTC)
+  return localDate.toISOString();
+};
+
 // Format a date in Michigan timezone
 export const formatInMichiganTime = (
   date: Date | string, 
@@ -44,4 +52,14 @@ export const formatDateInMichigan = (dateTime: string): string => {
 // Format date and time for display in Michigan timezone
 export const formatDateTimeInMichigan = (dateTime: string): string => {
   return formatInMichiganTime(dateTime, 'MMMM d, yyyy \'at\' h:mm a zzz');
+};
+
+// Helper function to display time in Michigan timezone consistently
+export const displayTimeInMichigan = (dateTime: string): string => {
+  const date = new Date(dateTime);
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: MICHIGAN_TIMEZONE
+  });
 };

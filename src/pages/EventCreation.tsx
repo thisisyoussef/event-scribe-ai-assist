@@ -17,18 +17,21 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Sparkles, Plus, Trash2, Clock, Users, MapPin, Calendar, TestTube, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { localDateTimeToUTC } from "@/utils/timezoneUtils";
+import { Contact, SharedEventDetail } from "@/types/database";
+import { useEventSharing } from "@/hooks/useEventSharing";
 
 const EventCreation = () => {
   const navigate = useNavigate();
   const { eventId } = useParams();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hideTestFeatures, setHideTestFeatures] = useState(true);
   const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
   const [newContactData, setNewContactData] = useState({ name: "", phone: "" });
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   
   // Event form data
   const [eventData, setEventData] = useState({
@@ -59,6 +62,38 @@ const EventCreation = () => {
   // AI suggestions and finalized roles
   const [aiSuggestions, setAiSuggestions] = useState([]);
   const [finalRoles, setFinalRoles] = useState([]);
+  const [hasEditPermission, setHasEditPermission] = useState(true);
+  
+  const { checkEventAccess } = useEventSharing();
+
+  const checkPermissions = async (eventId: string) => {
+    // First check if user has any access to the event
+    const { hasAccess: hasViewAccess, permissionLevel: viewPermission } = await checkEventAccess(eventId, 'view');
+    
+    if (!hasViewAccess) {
+      toast({
+        title: "Access Denied",
+        description: "You don't have permission to view this event.",
+        variant: "destructive",
+      });
+      navigate("/dashboard");
+      return;
+    }
+
+    // Then check if user has edit access
+    const { hasAccess: hasEditAccess, permissionLevel: editPermission } = await checkEventAccess(eventId, 'edit');
+    
+    setHasEditPermission(hasEditAccess && editPermission === 'edit');
+    
+    // If user only has view access, show a message but don't redirect
+    if (!hasEditAccess) {
+      toast({
+        title: "View Only Access",
+        description: "You have view-only access to this event. You can view details but cannot make changes.",
+        variant: "default",
+      });
+    }
+  };
 
   useEffect(() => {
     // Check if user is logged in
@@ -69,40 +104,41 @@ const EventCreation = () => {
         return;
       }
       setCurrentUser(user);
+      await loadContacts(user.id);
+
+      // If editing, load event data from Supabase and check permissions
+      if (eventId) {
+        await checkPermissions(eventId);
+        loadEventData(eventId);
+      }
     };
 
     checkUser();
-    loadContacts();
-
-    // If editing, load event data from Supabase
-    if (eventId) {
-      loadEventData(eventId);
-    }
   }, [navigate, eventId]);
 
-  const loadContacts = async () => {
+  const loadContacts = async (userId: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const { data, error } = await supabase
+        .from('contacts')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
 
-      // Load contacts from localStorage for the current user
-      const savedContacts = localStorage.getItem(`contacts_${user.id}`);
-      if (savedContacts) {
-        setContacts(JSON.parse(savedContacts));
+      if (error) {
+        console.error('Error loading contacts:', error);
+        return;
       }
+
+      setContacts(data?.map(contact => ({
+        ...contact,
+        source: contact.source as 'manual' | 'volunteer_signup'
+      })) || []);
     } catch (error) {
       console.error('Error loading contacts:', error);
     }
   };
 
-  const saveContacts = (newContacts: any[]) => {
-    if (currentUser) {
-      localStorage.setItem(`contacts_${currentUser.id}`, JSON.stringify(newContacts));
-      setContacts(newContacts);
-    }
-  };
-
-  const addNewContact = () => {
+  const addNewContact = async () => {
     if (!newContactData.name || !newContactData.phone) {
       toast({
         title: "Error",
@@ -112,24 +148,68 @@ const EventCreation = () => {
       return;
     }
 
-    const newContact = {
-      id: crypto.randomUUID(),
-      name: newContactData.name,
-      phone: newContactData.phone,
-      createdAt: new Date().toISOString(),
-      userId: currentUser?.id,
-    };
+    try {
+      // Check if a contact with this phone number already exists
+      const { data: existingContact, error: checkError } = await supabase
+        .from('contacts')
+        .select('id, name, source')
+        .eq('user_id', currentUser.id)
+        .eq('phone', newContactData.phone)
+        .single();
 
-    const updatedContacts = [...contacts, newContact];
-    saveContacts(updatedContacts);
-    
-    toast({
-      title: "Contact Added",
-      description: `${newContactData.name} has been added to your contacts.`,
-    });
+      if (checkError && checkError.code !== 'PGRST116') {
+        // PGRST116 means no rows returned, which is expected if no existing contact
+        throw checkError;
+      }
 
-    setNewContactData({ name: "", phone: "" });
-    setIsContactDialogOpen(false);
+      if (existingContact) {
+        // Contact already exists, show appropriate message
+        if (existingContact.source === 'volunteer_signup') {
+          toast({
+            title: "Contact Already Exists",
+            description: `A contact with phone number ${newContactData.phone} already exists from a volunteer signup.`,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Contact Already Exists",
+            description: `A contact with phone number ${newContactData.phone} already exists.`,
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+
+      // Create new contact
+      const { error } = await supabase
+        .from('contacts')
+        .insert({
+          user_id: currentUser.id,
+          name: newContactData.name,
+          phone: newContactData.phone,
+          source: 'manual'
+        });
+
+      if (error) throw error;
+
+      // Reload contacts
+      await loadContacts(currentUser.id);
+      
+      toast({
+        title: "Contact Added",
+        description: `${newContactData.name} has been added to your contacts.`,
+      });
+
+      setNewContactData({ name: "", phone: "" });
+      setIsContactDialogOpen(false);
+    } catch (error) {
+      console.error('Error adding contact:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add contact.",
+        variant: "destructive",
+      });
+    }
   };
 
   const generateItinerary = async () => {
@@ -231,6 +311,48 @@ const EventCreation = () => {
 
   const loadEventData = async (id: string) => {
     try {
+      // First try to load via RPC for shared events
+      const { data: rpcData, error: rpcError } = await supabase
+        .rpc('get_shared_event_detail', { p_event_id: id });
+
+      if (rpcData && rpcData.length > 0) {
+        // This is a shared event, use RPC data
+        const eventData = rpcData[0] as SharedEventDetail;
+        const event = eventData.event;
+        const volunteerRoles = eventData.volunteer_roles || [];
+
+        setEventData({
+          title: event.title,
+          date: event.start_datetime.split('T')[0],
+          startTime: event.start_datetime.split('T')[1].slice(0, 5),
+          endTime: event.end_datetime.split('T')[1].slice(0, 5),
+          location: event.location,
+          description: event.description || "",
+          smsEnabled: event.sms_enabled || true,
+          dayBeforeTime: event.day_before_time || "09:00",
+          dayOfTime: event.day_of_time || "15:00",
+          status: event.status as "draft" | "published"
+        });
+
+        // Convert volunteer_roles to finalRoles format
+        const roles = volunteerRoles.map((role: any) => ({
+          id: role.id,
+          roleLabel: role.role_label,
+          shiftStart: role.shift_start,
+          shiftEnd: role.shift_end,
+          slotsBrother: role.slots_brother || 0,
+          slotsSister: role.slots_sister || 0,
+          suggestedPOC: role.suggested_poc,
+          notes: role.notes || "",
+          status: "accepted"
+        }));
+
+        setFinalRoles(roles);
+        setCurrentStep(1); // Always start at step 1 when editing
+        return;
+      }
+
+      // If RPC didn't work, try direct table query (for owned events)
       const { data: eventData, error } = await supabase
         .from('events')
         .select(`
@@ -278,7 +400,7 @@ const EventCreation = () => {
         })) || [];
 
         setFinalRoles(roles);
-        setCurrentStep(roles.length > 0 ? getStepNumber(5) : 1);
+        setCurrentStep(1); // Always start at step 1 when editing
       }
     } catch (error) {
       console.error('Error:', error);
@@ -512,8 +634,18 @@ const EventCreation = () => {
     setFinalRoles(prev => prev.filter(role => role.id !== roleId));
   };
 
-  const publishEvent = async () => {
+  const saveEvent = async (status: 'draft' | 'published') => {
     try {
+      // Check permissions if editing an existing event
+      if (eventId && !hasEditPermission) {
+        toast({
+          title: "Access Denied",
+          description: "You don't have permission to edit this event.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({
@@ -524,19 +656,22 @@ const EventCreation = () => {
         return;
       }
 
-      console.log('Publishing event with final roles:', finalRoles);
+      console.log(`Saving event as ${status} with final roles:`, finalRoles);
 
       // Create or update the event
+      // FIXED: Timezone issue resolved by converting local time to UTC before saving
+      // This ensures that when an organizer sets 6:00 PM, it displays as 6:00 PM for volunteers
+      // instead of appearing 4 hours behind due to timezone conversion issues
       const eventPayload = {
         title: eventData.title,
         description: eventData.description,
         location: eventData.location,
-        start_datetime: `${eventData.date}T${eventData.startTime}:00`,
-        end_datetime: `${eventData.date}T${eventData.endTime}:00`,
+        start_datetime: localDateTimeToUTC(eventData.date, eventData.startTime),
+        end_datetime: localDateTimeToUTC(eventData.date, eventData.endTime),
         sms_enabled: eventData.smsEnabled,
         day_before_time: eventData.dayBeforeTime,
         day_of_time: eventData.dayOfTime,
-        status: "published",
+        status: status,
         created_by: user.id,
         updated_at: new Date().toISOString()
       };
@@ -591,8 +726,8 @@ const EventCreation = () => {
             id: role.id, // preserve id so existing volunteers remain linked
             event_id: savedEventId,
             role_label: role.roleLabel,
-            shift_start: role.shiftStart,
-            shift_end: role.shiftEnd,
+            shift_start: role.shiftStart, // This is already a TIME string (HH:MM)
+            shift_end: role.shiftEnd,     // This is already a TIME string (HH:MM)
             slots_brother: role.slotsBrother || 0,
             slots_sister: role.slotsSister || 0,
             suggested_poc: null,
@@ -618,12 +753,19 @@ const EventCreation = () => {
         }
       }
 
-      toast({
-        title: "Event Published!",
-        description: `${eventData.title} is now live and accepting volunteer sign-ups.`,
-      });
-      
-      navigate("/dashboard");
+      if (status === 'published') {
+        toast({
+          title: "Event Published!",
+          description: `${eventData.title} is now live and accepting volunteer sign-ups.`,
+        });
+        navigate("/dashboard");
+      } else {
+        toast({
+          title: "Event Saved as Draft!",
+          description: `${eventData.title} has been saved as a draft. You can continue editing or publish it later.`,
+        });
+        // Stay on the same page for drafts
+      }
     } catch (error) {
       console.error('Error publishing event:', error);
       toast({
@@ -728,9 +870,21 @@ const EventCreation = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
-            <h1 className="text-2xl sm:text-3xl font-bold text-umma-900">
-              {eventId ? "Edit Event" : "Create New Event"}
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl sm:text-3xl font-bold text-umma-900">
+                {eventId ? "Edit Event" : "Create New Event"}
+              </h1>
+              {eventId && eventData.status === 'draft' && (
+                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200 text-sm">
+                  Draft
+                </Badge>
+              )}
+              {eventId && eventData.status === 'published' && (
+                <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200 text-sm">
+                  Published
+                </Badge>
+              )}
+            </div>
             
             {/* Test Features Toggle */}
             <div className="flex items-center space-x-2">
@@ -744,20 +898,181 @@ const EventCreation = () => {
             </div>
           </div>
           
+          {/* Draft Event Info */}
+          {eventId && eventData.status === 'draft' && (
+            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-start gap-3">
+                <div className="w-5 h-5 text-yellow-600 mt-0.5">
+                  <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-yellow-800">Draft Event</h3>
+                  <p className="text-sm text-yellow-700 mt-1">
+                    This event is saved as a draft. You can continue editing and save your progress. 
+                    When you're ready, publish the event to make it live and start accepting volunteer sign-ups.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Save Progress Info */}
+          {!eventId && (
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start gap-3">
+                <div className="w-5 h-5 text-blue-600 mt-0.5">
+                  <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-blue-800">Save Your Progress</h3>
+                  <p className="text-sm text-blue-700 mt-1">
+                    You can save your progress as a draft at any step using the "Save as Draft" button. 
+                    This allows you to work on your event incrementally and publish when you're ready.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {/* Step Indicator */}
           <div className="flex flex-wrap items-center gap-4 mb-6 overflow-x-auto pb-2">
             {steps.map((step, index) => (
               <div key={step.number} className="flex items-center flex-shrink-0">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  currentStep >= step.number 
-                    ? "bg-umma-600 text-white" 
-                    : "bg-gray-200 text-gray-600"
-                }`}>
+                <div 
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 ${
+                    currentStep >= step.number 
+                      ? "bg-umma-600 text-white hover:bg-umma-700 hover:shadow-md cursor-pointer" 
+                      : canProceed() && step.number <= currentStep + 1
+                        ? "bg-umma-300 text-white hover:bg-umma-500 hover:shadow-md cursor-pointer"
+                        : "bg-gray-200 text-gray-600"
+                  }`}
+                  onClick={() => {
+                    // Allow navigation to completed steps, current step, or next step if current step is valid
+                    if (currentStep >= step.number) {
+                      setCurrentStep(step.number);
+                    } else if (canProceed() && step.number <= currentStep + 1) {
+                      // Generate itinerary when moving from step 1 to step 2
+                      if (currentStep === 1 && step.number === 2 && itinerary.length === 0) {
+                        generateItinerary();
+                      }
+                      setCurrentStep(step.number);
+                    }
+                  }}
+                  title={
+                    currentStep >= step.number 
+                      ? `Go to ${step.title}` 
+                      : canProceed() && step.number <= currentStep + 1
+                        ? `Continue to ${step.title}`
+                        : "Complete current step first"
+                  }
+                >
                   {step.number}
                 </div>
-                <div className="ml-2 hidden sm:block">
-                  <div className="text-sm font-medium text-umma-800">{step.title}</div>
-                  <div className="text-xs text-umma-500">{step.description}</div>
+                <div 
+                  className={`ml-2 hidden sm:block transition-all duration-200 ${
+                    currentStep >= step.number 
+                      ? "cursor-pointer hover:opacity-80 hover:scale-105 hover:border-b hover:border-umma-300" 
+                      : canProceed() && step.number <= currentStep + 1
+                        ? "cursor-pointer hover:opacity-80 hover:scale-105 hover:border-b hover:border-umma-300"
+                        : "cursor-default"
+                  }`}
+                  onClick={() => {
+                    // Allow navigation to completed steps, current step, or next step if current step is valid
+                    if (currentStep >= step.number) {
+                      setCurrentStep(step.number);
+                    } else if (canProceed() && step.number <= currentStep + 1) {
+                      // Generate itinerary when moving from step 1 to step 2
+                      if (currentStep === 1 && step.number === 2 && itinerary.length === 0) {
+                        generateItinerary();
+                      }
+                      setCurrentStep(step.number);
+                    }
+                  }}
+                  title={
+                    currentStep >= step.number 
+                      ? `Go to ${step.title}` 
+                      : canProceed() && step.number <= currentStep + 1
+                        ? `Continue to ${step.title}`
+                        : "Complete current step first"
+                  }
+                >
+                  <div className={`text-sm font-medium flex items-center gap-1 ${
+                    currentStep >= step.number 
+                      ? "text-umma-800" 
+                      : canProceed() && step.number <= currentStep + 1
+                        ? "text-umma-600"
+                        : "text-gray-400"
+                  }`}>
+                    {step.title}
+                    {(currentStep >= step.number || (canProceed() && step.number <= currentStep + 1)) && (
+                      <ChevronRight className="w-3 h-3 text-umma-600 opacity-60" />
+                    )}
+                  </div>
+                  <div className={`text-xs ${
+                    currentStep >= step.number 
+                      ? "text-umma-500" 
+                      : canProceed() && step.number <= currentStep + 1
+                        ? "text-umma-400"
+                        : "text-gray-300"
+                  }`}>
+                    {step.description}
+                  </div>
+                </div>
+                
+                {/* Mobile step indicator - always clickable */}
+                <div 
+                  className={`ml-2 sm:hidden transition-all duration-200 ${
+                    currentStep >= step.number 
+                      ? "cursor-pointer active:scale-95" 
+                      : canProceed() && step.number <= currentStep + 1
+                        ? "cursor-pointer active:scale-95"
+                        : "cursor-default"
+                  }`}
+                  onClick={() => {
+                    // Allow navigation to completed steps, current step, or next step if current step is valid
+                    if (currentStep >= step.number) {
+                      setCurrentStep(step.number);
+                    } else if (canProceed() && step.number <= currentStep + 1) {
+                      // Generate itinerary when moving from step 1 to step 2
+                      if (currentStep === 1 && step.number === 2 && itinerary.length === 0) {
+                        generateItinerary();
+                      }
+                      setCurrentStep(step.number);
+                    }
+                  }}
+                  title={
+                    currentStep >= step.number 
+                      ? `Go to ${step.title}` 
+                      : canProceed() && step.number <= currentStep + 1
+                        ? `Continue to ${step.title}`
+                        : "Complete current step first"
+                  }
+                >
+                  <div className={`text-sm font-medium flex items-center gap-1 ${
+                    currentStep >= step.number 
+                      ? "text-umma-800" 
+                      : canProceed() && step.number <= currentStep + 1
+                        ? "text-umma-600"
+                        : "text-gray-400"
+                  }`}>
+                    {step.title}
+                    {(currentStep >= step.number || (canProceed() && step.number <= currentStep + 1)) && (
+                      <ChevronRight className="w-3 h-3 text-umma-600 opacity-60" />
+                    )}
+                  </div>
+                  <div className={`text-xs ${
+                    currentStep >= step.number 
+                      ? "text-umma-500" 
+                      : canProceed() && step.number <= currentStep + 1
+                        ? "text-umma-400"
+                        : "text-gray-300"
+                  }`}>
+                    {step.description}
+                  </div>
                 </div>
                 {index < steps.length - 1 && (
                   <div className={`w-8 h-0.5 mx-4 hidden sm:block ${
@@ -775,18 +1090,64 @@ const EventCreation = () => {
             {/* Step 1: Basic Info */}
             {logicalCurrentStep === 1 && (
               <div className="space-y-6">
+                {eventId && !hasEditPermission && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2">
+                      <Eye className="w-5 h-5 text-blue-600" />
+                      <p className="text-blue-800 font-medium">View Only Mode</p>
+                    </div>
+                    <p className="text-blue-700 text-sm mt-1">
+                      You have view-only access to this event. You can see all details but cannot make changes.
+                    </p>
+                  </div>
+                )}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <h2 className="text-xl font-semibold text-umma-800">Event Information</h2>
-                  {!eventId && (
-                    <Button 
-                      variant="outline" 
-                      onClick={prefillTestData}
-                      className="text-sm w-full sm:w-auto bg-gradient-to-r from-umma-400 to-umma-500 hover:from-umma-500 hover:to-umma-600 text-white border-umma-300 shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      <TestTube className="w-4 h-4 mr-2" />
-                      Prefill with Test Data
-                    </Button>
-                  )}
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-xl font-semibold text-umma-800">Event Information</h2>
+                    {eventId && eventData.status === 'draft' && (
+                      <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                        Draft
+                      </Badge>
+                    )}
+                    {eventId && eventData.status === 'published' && (
+                      <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+                        Published
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    {!eventId && (
+                      <Button 
+                        variant="outline" 
+                        onClick={prefillTestData}
+                        className="text-sm bg-gradient-to-r from-umma-400 to-umma-500 hover:from-umma-500 hover:to-umma-600 text-white border-umma-300 shadow-lg hover:shadow-xl transition-all duration-300"
+                        disabled={eventId && !hasEditPermission}
+                      >
+                        <TestTube className="w-4 h-4 mr-2" />
+                        Prefill with Test Data
+                      </Button>
+                    )}
+                    {!eventId && (
+                      <Button 
+                        variant="outline" 
+                        onClick={() => saveEvent('draft')}
+                        className="text-sm border-yellow-300 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-400"
+                        disabled={!canProceed()}
+                      >
+                        Save as Draft
+                      </Button>
+                    )}
+                    {eventId && hasEditPermission && (
+                      <Button 
+                        variant="outline" 
+                        onClick={() => saveEvent('draft')}
+                        className="text-sm border-yellow-300 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-400"
+                        disabled={!canProceed()}
+                      >
+                        {eventData.status === 'draft' ? 'Save Draft' : 'Save as Draft'}
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="grid md:grid-cols-2 gap-6">
@@ -798,6 +1159,7 @@ const EventCreation = () => {
                       onChange={(e) => setEventData(prev => ({ ...prev, title: e.target.value }))}
                       placeholder="Community Iftar 2025"
                       required
+                      disabled={eventId && !hasEditPermission}
                     />
                   </div>
                   
@@ -809,6 +1171,7 @@ const EventCreation = () => {
                       value={eventData.date}
                       onChange={(e) => setEventData(prev => ({ ...prev, date: e.target.value }))}
                       required
+                      disabled={eventId && !hasEditPermission}
                     />
                   </div>
                   
@@ -820,6 +1183,7 @@ const EventCreation = () => {
                       value={eventData.startTime}
                       onChange={(e) => setEventData(prev => ({ ...prev, startTime: e.target.value }))}
                       required
+                      disabled={eventId && !hasEditPermission}
                     />
                   </div>
                   
@@ -831,6 +1195,7 @@ const EventCreation = () => {
                       value={eventData.endTime}
                       onChange={(e) => setEventData(prev => ({ ...prev, endTime: e.target.value }))}
                       required
+                      disabled={eventId && !hasEditPermission}
                     />
                   </div>
                   
@@ -842,6 +1207,7 @@ const EventCreation = () => {
                       onChange={(e) => setEventData(prev => ({ ...prev, location: e.target.value }))}
                       placeholder="Muslim Community Center"
                       required
+                      disabled={eventId && !hasEditPermission}
                     />
                   </div>
                   
@@ -853,9 +1219,27 @@ const EventCreation = () => {
                       onChange={(e) => setEventData(prev => ({ ...prev, description: e.target.value }))}
                       placeholder="Describe your event, mention roles needed, timing requirements, and any specific instructions..."
                       rows={4}
+                      disabled={eventId && !hasEditPermission}
                     />
                   </div>
                 </div>
+                
+                {/* Save Progress Button for Step 1 */}
+                {!eventId && (
+                  <div className="pt-4 border-t border-umma-100">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => saveEvent('draft')}
+                      className="w-full border-yellow-300 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-400"
+                      disabled={!canProceed()}
+                    >
+                      Save Progress as Draft
+                    </Button>
+                    <p className="text-xs text-umma-500 text-center mt-2">
+                      Save your current progress and continue later
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -873,6 +1257,7 @@ const EventCreation = () => {
                   startTime={eventData.startTime}
                   endTime={eventData.endTime}
                   isGenerated={itinerary.length > 0}
+                  disabled={eventId && !hasEditPermission}
                 />
                 
                 {itinerary.length === 0 && (
@@ -880,7 +1265,7 @@ const EventCreation = () => {
                     <Button 
                       onClick={generateItinerary}
                       className="bg-gradient-to-r from-umma-500 to-umma-700 hover:from-umma-600 hover:to-umma-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                      disabled={!eventData.description || isLoading}
+                      disabled={!eventData.description || isLoading || (eventId && !hasEditPermission)}
                     >
                       {isLoading ? (
                         <>
@@ -899,6 +1284,23 @@ const EventCreation = () => {
                     )}
                   </div>
                 )}
+                
+                {/* Save Progress Button for Step 2 */}
+                {!eventId && (
+                  <div className="pt-6 border-t border-umma-100">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => saveEvent('draft')}
+                      className="w-full border-yellow-300 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-400"
+                      disabled={!canProceed()}
+                    >
+                      Save Progress as Draft
+                    </Button>
+                    <p className="text-xs text-umma-500 text-center mt-2">
+                      Save your current progress and continue later
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -915,19 +1317,57 @@ const EventCreation = () => {
                   onDetailsChange={setAdditionalDetails}
                   isExpanded={true}
                   onToggleExpand={() => {}}
+                  disabled={eventId && !hasEditPermission}
                 />
+                
+                {/* Save Progress Button for Step 3 */}
+                {!eventId && (
+                  <div className="pt-6 border-t border-umma-100">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => saveEvent('draft')}
+                      className="w-full border-yellow-300 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-400"
+                      disabled={!canProceed()}
+                    >
+                      Save Progress as Draft
+                    </Button>
+                    <p className="text-xs text-umma-500 text-center mt-2">
+                      Save your current progress and continue later
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
             {/* Step 4: Pre-Event Tasks - Only show when hideTestFeatures is false */}
             {logicalCurrentStep === 4 && !hideTestFeatures && (
-              <PreEventTasksManager
-                tasks={preEventTasks}
-                onTasksChange={setPreEventTasks}
-                contacts={contacts}
-                eventDate={eventData.date}
-                eventDescription={eventData.description}
-              />
+              <div className="space-y-6">
+                <PreEventTasksManager
+                  tasks={preEventTasks}
+                  onTasksChange={setPreEventTasks}
+                  contacts={contacts}
+                  eventDate={eventData.date}
+                  eventDescription={eventData.description}
+                  disabled={eventId && !hasEditPermission}
+                />
+                
+                {/* Save Progress Button for Step 4 */}
+                {!eventId && (
+                  <div className="pt-6 border-t border-umma-100">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => saveEvent('draft')}
+                      className="w-full border-yellow-300 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-400"
+                      disabled={!canProceed()}
+                    >
+                      Save Progress as Draft
+                    </Button>
+                    <p className="text-xs text-umma-500 text-center mt-2">
+                      Save your current progress and continue later
+                    </p>
+                  </div>
+                )}
+              </div>
             )}
 
             {/* Step 5: Volunteer Slots */}
@@ -963,7 +1403,7 @@ const EventCreation = () => {
                       <Button 
                         onClick={parseWithAI}
                         className="w-full sm:w-auto bg-gradient-to-r from-umma-500 to-umma-700 hover:from-umma-600 hover:to-umma-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                        disabled={!eventData.description}
+                        disabled={!eventData.description || (eventId && !hasEditPermission)}
                       >
                         <Sparkles className="w-4 h-4 mr-2" />
                         Generate AI Role Suggestions
@@ -1011,6 +1451,7 @@ const EventCreation = () => {
                                   size="sm"
                                   onClick={() => acceptSuggestion(suggestion)}
                                   className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white w-full sm:w-auto shadow-lg hover:shadow-xl transition-all duration-300"
+                                  disabled={eventId && !hasEditPermission}
                                 >
                                   Accept
                                 </Button>
@@ -1037,6 +1478,7 @@ const EventCreation = () => {
                                     onChange={(e) => updateRole(role.id, { roleLabel: e.target.value })}
                                     placeholder="Role name"
                                     className="border-umma-200 focus-visible:ring-umma-500"
+                                    disabled={eventId && !hasEditPermission}
                                   />
                                 </div>
                                 
@@ -1048,12 +1490,14 @@ const EventCreation = () => {
                                       value={role.shiftStart}
                                       onChange={(e) => updateRole(role.id, { shiftStart: e.target.value })}
                                       className="border-umma-200 focus-visible:ring-umma-500"
+                                      disabled={eventId && !hasEditPermission}
                                     />
                                     <Input
                                       type="time"
                                       value={role.shiftEnd}
                                       onChange={(e) => updateRole(role.id, { shiftEnd: e.target.value })}
                                       className="border-umma-200 focus-visible:ring-umma-500"
+                                      disabled={eventId && !hasEditPermission}
                                     />
                                   </div>
                                 </div>
@@ -1071,6 +1515,7 @@ const EventCreation = () => {
                                         onChange={(e) => updateRole(role.id, { slotsBrother: parseInt(e.target.value) || 0 })}
                                         placeholder="Brothers"
                                         className="border-umma-200 focus-visible:ring-umma-500"
+                                        disabled={eventId && !hasEditPermission}
                                       />
                                       <div className="text-xs text-umma-500 mt-1">Brothers</div>
                                     </div>
@@ -1082,6 +1527,7 @@ const EventCreation = () => {
                                         onChange={(e) => updateRole(role.id, { slotsSister: parseInt(e.target.value) || 0 })}
                                         placeholder="Sisters"
                                         className="border-umma-200 focus-visible:ring-umma-500"
+                                        disabled={eventId && !hasEditPermission}
                                       />
                                       <div className="text-xs text-umma-500 mt-1">Sisters</div>
                                     </div>
@@ -1096,12 +1542,13 @@ const EventCreation = () => {
                                         <Select 
                                           value={role.suggestedPOC || ""} 
                                           onValueChange={(value) => updateRole(role.id, { suggestedPOC: value })}
+                                          disabled={eventId && !hasEditPermission}
                                         >
                                           <SelectTrigger className="border-umma-200">
                                             <SelectValue placeholder="Select POC" />
                                           </SelectTrigger>
                                           <SelectContent>
-                                            {contacts.map((contact: any) => (
+                                            {contacts.map((contact: Contact) => (
                                               <SelectItem key={contact.id} value={contact.id}>
                                                 {contact.name} - {contact.phone}
                                               </SelectItem>
@@ -1115,6 +1562,7 @@ const EventCreation = () => {
                                               size="sm"
                                               variant="outline"
                                               className="border-umma-300 text-umma-700 hover:bg-umma-100"
+                                              disabled={eventId && !hasEditPermission}
                                             >
                                               <Plus className="w-4 h-4" />
                                             </Button>
@@ -1134,6 +1582,7 @@ const EventCreation = () => {
                                                   value={newContactData.name}
                                                   onChange={(e) => setNewContactData(prev => ({ ...prev, name: e.target.value }))}
                                                   placeholder="Contact name"
+                                                  disabled={eventId && !hasEditPermission}
                                                 />
                                               </div>
                                               <div className="space-y-2">
@@ -1143,6 +1592,7 @@ const EventCreation = () => {
                                                   value={newContactData.phone}
                                                   onChange={(e) => setNewContactData(prev => ({ ...prev, phone: e.target.value }))}
                                                   placeholder="+1 (555) 123-4567"
+                                                  disabled={eventId && !hasEditPermission}
                                                 />
                                               </div>
                                               <div className="flex gap-2 pt-4">
@@ -1150,12 +1600,14 @@ const EventCreation = () => {
                                                   variant="outline"
                                                   onClick={() => setIsContactDialogOpen(false)}
                                                   className="flex-1"
+                                                  disabled={eventId && !hasEditPermission}
                                                 >
                                                   Cancel
                                                 </Button>
                                                 <Button
                                                   onClick={addNewContact}
                                                   className="flex-1 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700"
+                                                  disabled={eventId && !hasEditPermission}
                                                 >
                                                   Add Contact
                                                 </Button>
@@ -1170,6 +1622,7 @@ const EventCreation = () => {
                                       variant="outline"
                                       onClick={() => removeRole(role.id)}
                                       className="border-red-200 hover:border-red-300 text-red-600 hover:bg-red-50 w-full sm:w-auto"
+                                      disabled={eventId && !hasEditPermission}
                                     >
                                       <Trash2 className="w-4 h-4" />
                                     </Button>
@@ -1183,6 +1636,7 @@ const EventCreation = () => {
                                     onChange={(e) => updateRole(role.id, { notes: e.target.value })}
                                     placeholder="Special instructions or requirements"
                                     className="border-umma-200 focus-visible:ring-umma-500"
+                                    disabled={eventId && !hasEditPermission}
                                   />
                                 </div>
                               </div>
@@ -1197,10 +1651,28 @@ const EventCreation = () => {
                     variant="outline" 
                     onClick={addCustomRole}
                     className="w-full mt-4 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white border-umma-300 shadow-lg hover:shadow-xl transition-all duration-300"
+                    disabled={eventId && !hasEditPermission}
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Custom Role
                   </Button>
+                  
+                  {/* Save Progress Button for Step 5 */}
+                  {!eventId && (
+                    <div className="pt-6 border-t border-umma-100">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => saveEvent('draft')}
+                        className="w-full border-yellow-300 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-400"
+                        disabled={!canProceed()}
+                      >
+                        Save Progress as Draft
+                      </Button>
+                      <p className="text-xs text-umma-500 text-center mt-2">
+                        Save your current progress and continue later
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -1271,6 +1743,7 @@ const EventCreation = () => {
                       <Switch
                         checked={eventData.smsEnabled}
                         onCheckedChange={(checked) => setEventData(prev => ({ ...prev, smsEnabled: checked }))}
+                        disabled={eventId && !hasEditPermission}
                       />
                     </div>
                     
@@ -1283,6 +1756,7 @@ const EventCreation = () => {
                             value={eventData.dayBeforeTime}
                             onChange={(e) => setEventData(prev => ({ ...prev, dayBeforeTime: e.target.value }))}
                             className="border-umma-200 focus-visible:ring-umma-500"
+                            disabled={eventId && !hasEditPermission}
                           />
                           <p className="text-xs text-umma-500">Time to send reminder the day before</p>
                         </div>
@@ -1294,6 +1768,7 @@ const EventCreation = () => {
                             value={eventData.dayOfTime}
                             onChange={(e) => setEventData(prev => ({ ...prev, dayOfTime: e.target.value }))}
                             className="border-umma-200 focus-visible:ring-umma-500"
+                            disabled={eventId && !hasEditPermission}
                           />
                           <p className="text-xs text-umma-500">Time to send reminder on event day</p>
                         </div>
@@ -1308,29 +1783,43 @@ const EventCreation = () => {
 
         {/* Navigation Buttons */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6">
-          <Button 
-            variant="outline" 
-            onClick={prevStep}
-            disabled={currentStep === 1}
-            className="w-full sm:w-auto border-umma-300 text-umma-700 hover:bg-umma-100"
-          >
-            <ChevronLeft className="w-4 h-4 mr-2" />
-            Previous
-          </Button>
-          
-          <div className="flex w-full sm:w-auto">
-            {currentStep === steps.length ? (
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={prevStep}
+              disabled={currentStep === 1}
+              className="w-full sm:w-auto border-umma-300 text-umma-700 hover:bg-umma-100"
+            >
+              <ChevronLeft className="w-4 h-4 mr-2" />
+              Previous
+            </Button>
+            
+            {/* Persistent Save as Draft Button */}
+            {hasEditPermission && (
               <Button 
-                onClick={publishEvent}
-                className="w-full bg-gradient-to-r from-umma-500 to-umma-700 hover:from-umma-600 hover:to-umma-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                onClick={() => saveEvent('draft')}
+                variant="outline"
+                className="bg-white border-yellow-300 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-400"
                 disabled={!canProceed()}
               >
-                {eventId ? "Update Event" : "Publish Event"}
+                {eventId && eventData.status === 'draft' ? 'Save Draft' : 'Save as Draft'}
+              </Button>
+            )}
+          </div>
+          
+          <div className="flex w-full sm:w-auto gap-2">
+            {currentStep === steps.length ? (
+              <Button 
+                onClick={() => saveEvent('published')}
+                className="w-full bg-gradient-to-r from-umma-500 to-umma-700 hover:from-umma-600 hover:to-umma-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                disabled={!canProceed() || (eventId && !hasEditPermission)}
+              >
+                {eventId ? (hasEditPermission ? "Update & Publish" : "View Only - No Edit Access") : "Publish Event"}
               </Button>
             ) : (
               <Button 
                 onClick={nextStep}
-                disabled={!canProceed()}
+                disabled={!canProceed() || (eventId && !hasEditPermission)}
                 className="w-full bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Next

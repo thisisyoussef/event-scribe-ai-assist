@@ -4,11 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import Navigation from "@/components/Navigation";
 import { useNavigate } from "react-router-dom";
-import { Plus, Calendar, Users, Eye, Edit, Copy, Phone } from "lucide-react";
+import { Plus, Calendar, Users, Eye, Edit, Copy, Phone, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { displayTimeInMichigan } from "@/utils/timezoneUtils";
 import { Event, VolunteerRole, Volunteer } from "@/types/database";
 import { useIsMobile } from "@/hooks/use-mobile";
+import EventSharingDialog from "@/components/event-creation/EventSharingDialog";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -16,6 +18,7 @@ const Dashboard = () => {
   const isMobile = useIsMobile();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [eventFilter, setEventFilter] = useState<'all' | 'published' | 'draft'>('all');
 
   // Function to create URL-friendly slug from event title
   const createEventSlug = (title: string, id: string) => {
@@ -89,6 +92,17 @@ const Dashboard = () => {
       filledSlots,
       openSlots: totalSlots - filledSlots
     };
+  };
+
+  const getFilteredEvents = () => {
+    switch (eventFilter) {
+      case 'published':
+        return events.filter((event: Event) => event.status === 'published');
+      case 'draft':
+        return events.filter((event: Event) => event.status === 'draft');
+      default:
+        return events;
+    }
   };
 
   const copySignupLink = (event: Event) => {
@@ -165,7 +179,7 @@ const Dashboard = () => {
           <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
               <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Active Events</CardTitle>
-              <div className="w-8 md:w-12 h-8 md:h-12 bg-umma-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-green-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Calendar className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>
@@ -174,6 +188,21 @@ const Dashboard = () => {
                 {events.filter((event: Event) => event.status === "published").length}
               </div>
               <p className="text-umma-600 text-xs md:text-sm">Published</p>
+            </CardContent>
+          </Card>
+          
+          <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
+              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Draft Events</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-yellow-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+                <Calendar className="h-4 md:h-6 w-4 md:w-6 text-white" />
+              </div>
+            </CardHeader>
+            <CardContent className="pb-3 md:pb-4">
+              <div className="text-xl md:text-3xl font-bold text-umma-800 mb-1">
+                {events.filter((event: Event) => event.status === "draft").length}
+              </div>
+              <p className="text-umma-600 text-xs md:text-sm">Draft</p>
             </CardContent>
           </Card>
           
@@ -214,13 +243,43 @@ const Dashboard = () => {
         {/* Events Table */}
         <Card className="shadow-xl">
           <CardHeader className={`border-b border-umma-100 bg-umma-50 ${isMobile ? 'p-4' : ''}`}>
-            <CardTitle className="text-xl md:text-2xl text-umma-800">Your Events</CardTitle>
-            <CardDescription className="text-umma-700 text-base md:text-lg">
-              Manage your events and track volunteer participation
-            </CardDescription>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <CardTitle className="text-xl md:text-2xl text-umma-800">Your Events</CardTitle>
+                <CardDescription className="text-umma-700 text-base md:text-lg">
+                  Manage your events and track volunteer participation
+                </CardDescription>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant={eventFilter === 'all' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setEventFilter('all')}
+                  className="text-xs"
+                >
+                  All ({events.length})
+                </Button>
+                <Button
+                  variant={eventFilter === 'published' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setEventFilter('published')}
+                  className="text-xs"
+                >
+                  Published ({events.filter((event: Event) => event.status === "published").length})
+                </Button>
+                <Button
+                  variant={eventFilter === 'draft' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setEventFilter('draft')}
+                  className="text-xs"
+                >
+                  Drafts ({events.filter((event: Event) => event.status === "draft").length})
+                </Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className={`${isMobile ? 'p-3' : 'p-0'}`}>
-            {events.length === 0 ? (
+            {getFilteredEvents().length === 0 ? (
               <div className="text-center py-12 md:py-20 px-4 md:px-8">
                 <div className="w-16 md:w-20 h-16 md:h-20 bg-umma-500 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg">
                   <Calendar className="w-8 md:w-10 h-8 md:h-10 text-white" />
@@ -241,7 +300,7 @@ const Dashboard = () => {
               <>
                 {isMobile ? (
                   <div className="space-y-3">
-                    {events.map((event: any) => {
+                    {getFilteredEvents().map((event: any) => {
                       const stats = getEventStats(event);
                       return (
                         <div key={event.id} className="bg-umma-50 rounded-lg p-3 border border-umma-200">
@@ -311,13 +370,19 @@ const Dashboard = () => {
                               Edit
                             </Button>
                             {event.status === "published" && (
-                              <Button
-                                size="sm"
-                                onClick={() => openSignupLink(event)}
-                                className="flex-1 text-xs"
-                              >
-                                Share
-                              </Button>
+                              <EventSharingDialog
+                                eventId={event.id}
+                                eventTitle={event.title}
+                                trigger={
+                                  <Button
+                                    size="sm"
+                                    className="flex-1 text-xs"
+                                  >
+                                    <Share2 className="w-3 h-3 mr-1" />
+                                    Share
+                                  </Button>
+                                }
+                              />
                             )}
                           </div>
                         </div>
@@ -337,7 +402,7 @@ const Dashboard = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {events.map((event: any, index) => {
+                        {getFilteredEvents().map((event: any, index) => {
                           const stats = getEventStats(event);
                           return (
                             <tr key={event.id} className={`border-b border-umma-100 hover:bg-umma-50/30 transition-colors duration-200 ${index % 2 === 0 ? 'bg-white/50' : 'bg-umma-50/20'}`}>
@@ -346,7 +411,10 @@ const Dashboard = () => {
                                   <div className="font-semibold text-umma-800 text-sm md:text-lg mb-1">{event.title}</div>
                                   <div className="text-umma-600 text-xs md:text-sm">{event.location}</div>
                                   <div className="md:hidden text-umma-600 text-xs mt-1">
-                                    {new Date(event.start_datetime).toLocaleDateString()}
+                                    {new Date(event.start_datetime).toLocaleDateString('en-US', { 
+                                      month: 'short', 
+                                      day: 'numeric' 
+                                    })}
                                   </div>
                                 </div>
                               </td>
@@ -360,7 +428,7 @@ const Dashboard = () => {
                                     })}
                                   </div>
                                   <div className="text-umma-600 text-xs">
-                                    {new Date(event.start_datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                    {displayTimeInMichigan(event.start_datetime)}
                                   </div>
                                 </div>
                               </td>
@@ -426,14 +494,20 @@ const Dashboard = () => {
                                       >
                                         <Copy className="w-4 h-4" />
                                       </Button>
-                                      <Button
-                                        size="sm"
-                                        onClick={() => openSignupLink(event)}
-                                        title="Open Signup"
-                                        className="rounded-lg md:rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-xs md:text-sm px-2 md:px-3"
-                                      >
-                                        Share
-                                      </Button>
+                                      <EventSharingDialog
+                                        eventId={event.id}
+                                        eventTitle={event.title}
+                                        trigger={
+                                          <Button
+                                            size="sm"
+                                            title="Share Event"
+                                            className="rounded-lg md:rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-xs md:text-sm px-2 md:px-3"
+                                          >
+                                            <Share2 className="w-4 h-4 mr-1" />
+                                            Share
+                                          </Button>
+                                        }
+                                      />
                                     </>
                                   )}
                                 </div>

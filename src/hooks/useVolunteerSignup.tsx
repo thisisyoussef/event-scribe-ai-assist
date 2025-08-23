@@ -305,6 +305,82 @@ export const useVolunteerSignup = () => {
 
       console.log(`Successfully inserted volunteer for submission ${submissionId}:`, newVolunteer);
 
+      // Automatically add volunteer contact to contacts table for the event organizer
+      try {
+        if (event.created_by) {
+          // Check if a contact with this phone number already exists for this user
+          const { data: existingContact, error: checkContactError } = await supabase
+            .from('contacts')
+            .select('id, name, source')
+            .eq('user_id', event.created_by)
+            .eq('phone', normalizedPhone)
+            .single();
+
+          if (checkContactError && checkContactError.code !== 'PGRST116') {
+            // PGRST116 means no rows returned, which is expected if no existing contact
+            console.error('Error checking for existing contact:', checkContactError);
+          }
+
+          if (existingContact) {
+            // Contact already exists, update it with volunteer signup info if it's not already from a signup
+            if (existingContact.source !== 'volunteer_signup') {
+              const { error: updateError } = await supabase
+                .from('contacts')
+                .update({
+                  source: 'volunteer_signup',
+                  event_id: event.id,
+                  role_id: selectedRole.id,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', existingContact.id);
+
+              if (updateError) {
+                console.error('Error updating existing contact:', updateError);
+              } else {
+                console.log('Updated existing contact with volunteer signup information');
+              }
+            } else {
+              // Contact is already from a volunteer signup, just update the event/role info
+              const { error: updateError } = await supabase
+                .from('contacts')
+                .update({
+                  event_id: event.id,
+                  role_id: selectedRole.id,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', existingContact.id);
+
+              if (updateError) {
+                console.error('Error updating existing contact event info:', updateError);
+              } else {
+                console.log('Updated existing volunteer contact with new event information');
+              }
+            }
+          } else {
+            // No existing contact, create a new one
+            const { error: contactError } = await supabase
+              .from('contacts')
+              .insert({
+                user_id: event.created_by,
+                name: volunteerData.name,
+                phone: normalizedPhone,
+                source: 'volunteer_signup',
+                event_id: event.id,
+                role_id: selectedRole.id
+              });
+
+            if (contactError) {
+              console.error('Error adding contact:', contactError);
+            } else {
+              console.log('Successfully added new volunteer contact to contacts table');
+            }
+          }
+        }
+      } catch (contactError) {
+        console.error('Error in contact creation/update:', contactError);
+        // Don't fail the signup if contact creation fails
+      }
+
       setEvent(prev => prev ? {
         ...prev,
         volunteers: [...(prev.volunteers || []), newVolunteer as Volunteer]

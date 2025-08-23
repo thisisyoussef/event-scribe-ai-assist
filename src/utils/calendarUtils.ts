@@ -1,6 +1,6 @@
 
 import { Event, VolunteerRole } from "@/types/database";
-import { formatInMichiganTime, toMichiganTime, MICHIGAN_TIMEZONE } from "./timezoneUtils";
+import { formatInMichiganTime, toMichiganTime, MICHIGAN_TIMEZONE, displayTimeInMichigan } from "./timezoneUtils";
 
 export const generateCalendarEvent = (event: Event, role: VolunteerRole) => {
   // Convert event date to Michigan time first

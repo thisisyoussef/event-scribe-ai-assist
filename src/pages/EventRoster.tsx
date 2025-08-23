@@ -20,14 +20,17 @@ import {
 } from "@/components/ui/table";
 import { useVolunteerDeletion } from "@/hooks/useVolunteerDeletion";
 import VolunteerDeletionDialog from "@/components/volunteer/VolunteerDeletionDialog";
+import { useEventSharing } from "@/hooks/useEventSharing";
 
 const EventRoster = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { deleteVolunteer, isDeleting } = useVolunteerDeletion();
+  const { checkEventAccess } = useEventSharing();
   const [event, setEvent] = useState<(Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] }) | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasEditPermission, setHasEditPermission] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState<{
     isOpen: boolean;
     volunteer: Volunteer | null;
@@ -56,6 +59,7 @@ const EventRoster = () => {
     try {
       console.log("Loading event with ID:", eventId);
       
+      // Try normal fetch first (owner). If 406 or no rows, fallback to RPC for shared recipients
       const { data: eventData, error } = await supabase
         .from('events')
         .select(`
@@ -64,16 +68,51 @@ const EventRoster = () => {
           volunteers(*)
         `)
         .eq('id', eventId)
-        .single();
+        .maybeSingle();
 
-      if (error) {
-        console.error('Error loading event:', error);
-        setEvent(null);
+      if (error || !eventData) {
+        if (error) {
+          console.error('Error loading event:', error);
+        } else {
+          console.log('No event found via direct select; trying RPC');
+        }
+        // Fallback via RPC for shared users
+        const { data: sharedData, error: sharedError } = await supabase
+          .rpc('get_shared_event_detail', { p_event_id: eventId });
+
+        if (sharedError) {
+          console.error('RPC error loading shared event:', sharedError);
+          setEvent(null);
+          return;
+        }
+
+        if (!sharedData || sharedData.length === 0) {
+          console.log('RPC returned no data for shared event');
+          setEvent(null);
+          return;
+        }
+
+        const row = sharedData[0];
+        const merged = {
+          ...(row.event as any),
+          volunteer_roles: (row.volunteer_roles as any[]) || [],
+          volunteers: (row.volunteers as any[]) || [],
+        } as Event & { volunteer_roles?: VolunteerRole[]; volunteers?: Volunteer[] };
+
+        console.log('Loaded shared event via RPC:', merged);
+        setEvent(merged);
+        // Check permissions for this event
+        const { hasAccess, permissionLevel } = await checkEventAccess(eventId, 'edit');
+        setHasEditPermission(hasAccess && permissionLevel === 'edit');
         return;
       }
 
       console.log("Found event:", eventData);
       setEvent(eventData as Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] });
+      
+      // Check permissions for this event
+      const { hasAccess, permissionLevel } = await checkEventAccess(eventId, 'edit');
+      setHasEditPermission(hasAccess && permissionLevel === 'edit');
     } catch (error) {
       console.error('Error:', error);
       setEvent(null);
@@ -230,7 +269,7 @@ const EventRoster = () => {
                           <div className="flex items-center space-x-4 text-sm text-gray-600 mt-2">
                             <div className="flex items-center space-x-2">
                               <Clock className="w-4 h-4" />
-                              <span>{role.shift_start} - {role.shift_end} (Michigan Time)</span>
+                              <span>{role.shift_start} - {role.shift_end}</span>
                             </div>
                             <div className="flex items-center space-x-2">
                               <Users className="w-4 h-4" />
@@ -282,15 +321,17 @@ const EventRoster = () => {
                                   </TableCell>
                                   <TableCell>{volunteer.notes || '-'}</TableCell>
                                   <TableCell>
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      onClick={() => handleDeleteClick(volunteer)}
-                                      className="text-red-600 hover:text-red-700"
-                                      disabled={isDeleting}
-                                    >
-                                      <Trash2 className="w-4 h-4" />
-                                    </Button>
+                                    {hasEditPermission && (
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => handleDeleteClick(volunteer)}
+                                        className="text-red-600 hover:text-red-700"
+                                        disabled={isDeleting}
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </Button>
+                                    )}
                                   </TableCell>
                                 </TableRow>
                               ))}

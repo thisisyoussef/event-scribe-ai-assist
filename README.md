@@ -4,6 +4,25 @@
 
 **URL**: https://lovable.dev/projects/0db57a54-1c86-49b5-b7c7-9df9deccec16
 
+## Authentication Features
+
+This project includes a complete authentication system with the following features:
+
+- **User Registration**: Create new accounts with email, password, full name, and phone number
+- **User Login**: Sign in with existing credentials
+- **Forgot Password**: Reset passwords via email with secure token-based flow
+- **Password Reset**: Secure password update through email verification
+- **Session Management**: Automatic session handling and redirects
+
+### Forgot Password Flow
+
+1. Users click "Forgot your password?" on the login page
+2. Enter their email address
+3. Receive a password reset link via email
+4. Click the link to access the password reset page
+5. Enter and confirm a new password
+6. Successfully update their password and return to login
+
 ## How can I edit this code?
 
 There are several ways of editing your application.

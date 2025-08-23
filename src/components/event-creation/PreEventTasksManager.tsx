@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { CalendarDays, Users, DollarSign, Megaphone, Package, Trash2, Plus, Sparkles } from "lucide-react";
+import { Contact } from "@/types/database";
 
 interface Task {
   id: string;
@@ -23,9 +24,10 @@ interface Task {
 interface PreEventTasksManagerProps {
   tasks: Task[];
   onTasksChange: (tasks: Task[]) => void;
-  contacts: any[];
+  contacts: Contact[];
   eventDate: string;
   eventDescription: string;
+  disabled?: boolean;
 }
 
 const PreEventTasksManager = ({ 
@@ -33,7 +35,8 @@ const PreEventTasksManager = ({
   onTasksChange, 
   contacts, 
   eventDate, 
-  eventDescription 
+  eventDescription,
+  disabled = false
 }: PreEventTasksManagerProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -162,7 +165,7 @@ const PreEventTasksManager = ({
         {tasks.length === 0 && (
           <Button 
             onClick={generateAITasks}
-            disabled={isGenerating}
+            disabled={isGenerating || disabled}
             className="bg-gradient-to-r from-umma-500 to-umma-700 hover:from-umma-600 hover:to-umma-800 text-white w-full sm:w-auto shadow-lg hover:shadow-xl transition-all duration-300"
           >
             {isGenerating ? (
@@ -197,6 +200,7 @@ const PreEventTasksManager = ({
                       onChange={(e) => updateTask(task.id, { title: e.target.value })}
                       placeholder="Task title"
                       className="w-full border-umma-200 focus-visible:ring-umma-500"
+                      disabled={disabled}
                     />
                   </div>
                   
@@ -206,6 +210,7 @@ const PreEventTasksManager = ({
                       <Select 
                         value={task.category} 
                         onValueChange={(value) => updateTask(task.id, { category: value as Task['category'] })}
+                        disabled={disabled}
                       >
                         <SelectTrigger className="border-umma-200">
                           <SelectValue />
@@ -230,6 +235,7 @@ const PreEventTasksManager = ({
                         value={task.dueDate}
                         onChange={(e) => updateTask(task.id, { dueDate: e.target.value })}
                         className="border-umma-200 focus-visible:ring-umma-500"
+                        disabled={disabled}
                       />
                     </div>
                     
@@ -238,6 +244,7 @@ const PreEventTasksManager = ({
                       <Select 
                         value={task.priority} 
                         onValueChange={(value) => updateTask(task.id, { priority: value as Task['priority'] })}
+                        disabled={disabled}
                       >
                         <SelectTrigger className="border-umma-200">
                           <SelectValue />
@@ -257,12 +264,13 @@ const PreEventTasksManager = ({
                       <Select 
                         value={task.assigneeId || ""} 
                         onValueChange={(value) => updateTask(task.id, { assigneeId: value })}
+                        disabled={disabled}
                       >
                         <SelectTrigger className="border-umma-200">
                           <SelectValue placeholder="Select assignee" />
                         </SelectTrigger>
                         <SelectContent>
-                          {contacts.map((contact: any) => (
+                          {contacts.map((contact: Contact) => (
                             <SelectItem key={contact.id} value={contact.id}>
                               {contact.name}
                             </SelectItem>
@@ -283,6 +291,7 @@ const PreEventTasksManager = ({
                         variant="outline"
                         onClick={() => removeTask(task.id)}
                         className="border-red-200 hover:border-red-300 hover:bg-red-50 text-red-600"
+                        disabled={disabled}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -297,6 +306,7 @@ const PreEventTasksManager = ({
                       placeholder="Task description and requirements"
                       rows={2}
                       className="border-umma-200 focus-visible:ring-umma-500"
+                      disabled={disabled}
                     />
                   </div>
                 </div>
@@ -309,7 +319,8 @@ const PreEventTasksManager = ({
       <Button 
         variant="outline" 
         onClick={addCustomTask}
-        className="w-full border-umma-200 text-umma-800 hover:bg-umma-50 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+        className="w-full border-umma-200 text-umma-800 hover:bg-umma-50 bg-gradient-to-r from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+        disabled={disabled}
       >
         <Plus className="w-4 h-4 mr-2" />
         Add Custom Task
