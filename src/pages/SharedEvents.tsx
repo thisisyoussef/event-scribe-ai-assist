@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Eye, Edit, Calendar, MapPin, Users, Clock, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { displayTimeInMichigan } from "@/utils/timezoneUtils";
+import { displayTimeInLocal } from "@/utils/timezoneUtils";
 import { SharedEventAccess } from "@/types/database";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -112,7 +112,7 @@ const SharedEvents = () => {
   };
 
   const formatTime = (dateTimeString: string) => {
-    return displayTimeInMichigan(dateTimeString);
+    return displayTimeInLocal(dateTimeString);
   };
 
   if (loading) {

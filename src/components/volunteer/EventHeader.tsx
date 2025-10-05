@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
 import { Event } from "@/types/database";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { formatTimeInMichigan, formatDateInMichigan, displayTimeInMichigan } from "@/utils/timezoneUtils";
+import { formatTimeInLocal, formatDateInLocal, displayTimeInLocal, getTimezoneAbbreviation } from "@/utils/timezoneUtils";
 
 interface EventHeaderProps {
   event: Event;
@@ -31,7 +31,7 @@ const EventHeader = ({ event }: EventHeaderProps) => {
               <div className="flex items-center justify-center space-x-2 text-white/90">
                 <Calendar className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />
                 <span className={`${isMobile ? 'text-sm' : 'text-base'}`}>
-                  {formatDateInMichigan(event.start_datetime)} at {displayTimeInMichigan(event.start_datetime)} (Michigan Time)
+                  {formatDateInLocal(event.start_datetime)} at {displayTimeInLocal(event.start_datetime)} {getTimezoneAbbreviation()}
                 </span>
               </div>
             </div>

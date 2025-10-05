@@ -7,7 +7,7 @@ import { VolunteerRole, Volunteer } from "@/types/database";
 import VolunteerTable from "./VolunteerTable";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { displayTimeInMichigan } from "@/utils/timezoneUtils";
+import { displayTimeInLocal } from "@/utils/timezoneUtils";
 
 interface VolunteerRolesListProps {
   volunteerRoles: VolunteerRole[];
@@ -18,16 +18,14 @@ interface VolunteerRolesListProps {
 }
 
 const formatTime = (time: string) => {
-  // Since shift_start and shift_end are now TIME fields (HH:MM), 
-  // we can format them directly without timezone conversion
+  // Format TIME fields (HH:MM) for display
   const [hours, minutes] = time.split(':');
   const date = new Date();
   date.setHours(parseInt(hours), parseInt(minutes));
   return date.toLocaleTimeString('en-US', {
     hour: 'numeric',
     minute: '2-digit',
-    hour12: true,
-    timeZone: 'America/Detroit'
+    hour12: true
   });
 };
 

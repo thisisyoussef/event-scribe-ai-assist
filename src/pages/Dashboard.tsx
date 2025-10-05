@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, Calendar, Users, Eye, Edit, Copy, Phone, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { displayTimeInMichigan } from "@/utils/timezoneUtils";
+import { displayTimeInLocal } from "@/utils/timezoneUtils";
 import { Event, VolunteerRole, Volunteer } from "@/types/database";
 import { useIsMobile } from "@/hooks/use-mobile";
 import EventSharingDialog from "@/components/event-creation/EventSharingDialog";
@@ -427,9 +427,9 @@ const Dashboard = () => {
                                       day: 'numeric' 
                                     })}
                                   </div>
-                                  <div className="text-umma-600 text-xs">
-                                    {displayTimeInMichigan(event.start_datetime)}
-                                  </div>
+                  <div className="text-umma-600 text-xs">
+                    {displayTimeInLocal(event.start_datetime)}
+                  </div>
                                 </div>
                               </td>
                               <td className="py-4 md:py-6 px-3 md:px-6">
