@@ -281,11 +281,11 @@ const Dashboard = () => {
           <CardContent className={`${isMobile ? 'p-3' : 'p-0'}`}>
             {getFilteredEvents().length === 0 ? (
               <div className="text-center py-12 md:py-20 px-4 md:px-8">
-                <div className="w-16 md:w-20 h-16 md:h-20 bg-umma-500 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg">
+                <div className="w-16 md:w-20 h-16 md:h-20 bg-primary rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg">
                   <Calendar className="w-8 md:w-10 h-8 md:h-10 text-white" />
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold text-umma-800 mb-3 md:mb-4">Start Organizing Events</h3>
-                <p className="text-umma-600 mb-6 md:mb-8 max-w-lg mx-auto leading-relaxed text-base md:text-lg">
+                <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Start Organizing Events</h3>
+                <p className="text-muted-foreground mb-6 md:mb-8 max-w-lg mx-auto leading-relaxed text-base md:text-lg">
                   Create your first event and start coordinating volunteers
                 </p>
                 <Button 

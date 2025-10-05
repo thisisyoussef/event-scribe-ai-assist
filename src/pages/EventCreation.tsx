@@ -1119,17 +1119,6 @@ const EventCreation = () => {
                     {!eventId && (
                       <Button 
                         variant="outline" 
-                        onClick={prefillTestData}
-                        className="text-sm bg-gradient-to-r from-umma-400 to-umma-500 hover:from-umma-500 hover:to-umma-600 text-white border-umma-300 shadow-lg hover:shadow-xl transition-all duration-300"
-                        disabled={eventId && !hasEditPermission}
-                      >
-                        <TestTube className="w-4 h-4 mr-2" />
-                        Prefill with Test Data
-                      </Button>
-                    )}
-                    {!eventId && (
-                      <Button 
-                        variant="outline" 
                         onClick={() => saveEvent('draft')}
                         className="text-sm border-yellow-300 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-400"
                         disabled={!canProceed()}
@@ -1399,17 +1388,17 @@ const EventCreation = () => {
                   
                   {aiSuggestions.length === 0 && !isLoading && (
                     <div className="text-center py-6 sm:py-8">
-                      <Sparkles className="w-12 h-12 text-umma-600 mx-auto mb-4" />
+                      <Sparkles className="w-12 h-12 text-primary mx-auto mb-4" />
                       <Button 
                         onClick={parseWithAI}
-                        className="w-full sm:w-auto bg-gradient-to-r from-umma-500 to-umma-700 hover:from-umma-600 hover:to-umma-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                        className="w-full sm:w-auto"
                         disabled={!eventData.description || (eventId && !hasEditPermission)}
                       >
                         <Sparkles className="w-4 h-4 mr-2" />
                         Generate AI Role Suggestions
                       </Button>
                       {!eventData.description && (
-                        <p className="text-sm text-umma-500 mt-2">Add an event description first</p>
+                        <p className="text-sm text-muted-foreground mt-2">Add an event description first</p>
                       )}
                     </div>
                   )}
@@ -1450,7 +1439,7 @@ const EventCreation = () => {
                                 <Button 
                                   size="sm"
                                   onClick={() => acceptSuggestion(suggestion)}
-                                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white w-full sm:w-auto shadow-lg hover:shadow-xl transition-all duration-300"
+                                  className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto"
                                   disabled={eventId && !hasEditPermission}
                                 >
                                   Accept
@@ -1650,7 +1639,7 @@ const EventCreation = () => {
                   <Button 
                     variant="outline" 
                     onClick={addCustomRole}
-                    className="w-full mt-4 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white border-umma-300 shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="w-full mt-4"
                     disabled={eventId && !hasEditPermission}
                   >
                     <Plus className="w-4 h-4 mr-2" />
@@ -1733,9 +1722,14 @@ const EventCreation = () => {
                     <CardDescription className="text-umma-600">
                       Configure automatic reminders for volunteers
                     </CardDescription>
+                    <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-sm text-blue-800 font-medium">
+                        📅 Coming Soon: SMS reminders will be available in an upcoming update
+                      </p>
+                    </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 opacity-50">
                       <div>
                         <Label className="text-umma-700">Enable SMS Reminders</Label>
                         <p className="text-sm text-umma-500">Send automatic reminders to volunteers</p>
@@ -1743,12 +1737,12 @@ const EventCreation = () => {
                       <Switch
                         checked={eventData.smsEnabled}
                         onCheckedChange={(checked) => setEventData(prev => ({ ...prev, smsEnabled: checked }))}
-                        disabled={eventId && !hasEditPermission}
+                        disabled={true}
                       />
                     </div>
                     
                     {eventData.smsEnabled && (
-                      <div className="grid sm:grid-cols-2 gap-4 pt-4 border-t border-umma-100">
+                      <div className="grid sm:grid-cols-2 gap-4 pt-4 border-t border-umma-100 opacity-50">
                         <div className="space-y-2">
                           <Label className="text-umma-700">Day Before Reminder</Label>
                           <Input
@@ -1756,7 +1750,7 @@ const EventCreation = () => {
                             value={eventData.dayBeforeTime}
                             onChange={(e) => setEventData(prev => ({ ...prev, dayBeforeTime: e.target.value }))}
                             className="border-umma-200 focus-visible:ring-umma-500"
-                            disabled={eventId && !hasEditPermission}
+                            disabled={true}
                           />
                           <p className="text-xs text-umma-500">Time to send reminder the day before</p>
                         </div>
@@ -1768,7 +1762,7 @@ const EventCreation = () => {
                             value={eventData.dayOfTime}
                             onChange={(e) => setEventData(prev => ({ ...prev, dayOfTime: e.target.value }))}
                             className="border-umma-200 focus-visible:ring-umma-500"
-                            disabled={eventId && !hasEditPermission}
+                            disabled={true}
                           />
                           <p className="text-xs text-umma-500">Time to send reminder on event day</p>
                         </div>
@@ -1811,7 +1805,7 @@ const EventCreation = () => {
             {currentStep === steps.length ? (
               <Button 
                 onClick={() => saveEvent('published')}
-                className="w-full bg-gradient-to-r from-umma-500 to-umma-700 hover:from-umma-600 hover:to-umma-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full"
                 disabled={!canProceed() || (eventId && !hasEditPermission)}
               >
                 {eventId ? (hasEditPermission ? "Update & Publish" : "View Only - No Edit Access") : "Publish Event"}
@@ -1820,7 +1814,7 @@ const EventCreation = () => {
               <Button 
                 onClick={nextStep}
                 disabled={!canProceed() || (eventId && !hasEditPermission)}
-                className="w-full bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full"
               >
                 Next
                 <ChevronRight className="w-4 h-4 ml-2" />

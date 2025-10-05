@@ -166,7 +166,7 @@ const PreEventTasksManager = ({
           <Button 
             onClick={generateAITasks}
             disabled={isGenerating || disabled}
-            className="bg-gradient-to-r from-umma-500 to-umma-700 hover:from-umma-600 hover:to-umma-800 text-white w-full sm:w-auto shadow-lg hover:shadow-xl transition-all duration-300"
+            className="w-full sm:w-auto"
           >
             {isGenerating ? (
               <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
@@ -319,7 +319,7 @@ const PreEventTasksManager = ({
       <Button 
         variant="outline" 
         onClick={addCustomTask}
-        className="w-full border-umma-200 text-umma-800 hover:bg-umma-50 bg-gradient-to-r from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+        className="w-full"
         disabled={disabled}
       >
         <Plus className="w-4 h-4 mr-2" />
