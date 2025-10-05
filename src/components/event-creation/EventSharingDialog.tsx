@@ -74,7 +74,7 @@ export default function EventSharingDialog({ eventId, eventTitle, trigger }: Eve
   };
 
   const handlePermissionChange = async (share: EventShare, newLevel: 'view' | 'edit') => {
-    const email = (share as any)?.shared_with_profile?.email;
+    const email = share.shared_with_user?.email;
     if (!email) {
       toast({
         title: "Email unavailable",
@@ -203,13 +203,8 @@ export default function EventSharingDialog({ eventId, eventTitle, trigger }: Eve
                             <Mail className="w-4 h-4 text-muted-foreground" />
                             <div className="flex flex-col">
                               <span className="font-medium">
-                                {share.shared_with_profile?.email ?? 'Email unavailable'}
+                                {share.shared_with_user?.email ?? 'Email unavailable'}
                               </span>
-                              {share.shared_with_profile?.full_name && (
-                                <span className="text-sm text-muted-foreground">
-                                  {share.shared_with_profile.full_name}
-                                </span>
-                              )}
                             </div>
                           </div>
                           <div className="ml-2">
