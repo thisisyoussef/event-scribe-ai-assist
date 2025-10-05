@@ -165,66 +165,66 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-8 md:mb-12">
           <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
-              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Total Events</CardTitle>
-              <div className="w-8 md:w-12 h-8 md:h-12 bg-umma-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+              <CardTitle className="text-xs md:text-sm font-medium">Total Events</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-primary rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Calendar className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent className="pb-3 md:pb-4">
-              <div className="text-xl md:text-3xl font-bold text-umma-800 mb-1">{events.length}</div>
-              <p className="text-umma-600 text-xs md:text-sm">Events created</p>
+              <div className="text-xl md:text-3xl font-bold mb-1">{events.length}</div>
+              <p className="text-muted-foreground text-xs md:text-sm">Events created</p>
             </CardContent>
           </Card>
           
           <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
-              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Active Events</CardTitle>
+              <CardTitle className="text-xs md:text-sm font-medium">Active Events</CardTitle>
               <div className="w-8 md:w-12 h-8 md:h-12 bg-green-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Calendar className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent className="pb-3 md:pb-4">
-              <div className="text-xl md:text-3xl font-bold text-umma-800 mb-1">
+              <div className="text-xl md:text-3xl font-bold mb-1">
                 {events.filter((event: Event) => event.status === "published").length}
               </div>
-              <p className="text-umma-600 text-xs md:text-sm">Published</p>
+              <p className="text-muted-foreground text-xs md:text-sm">Published</p>
             </CardContent>
           </Card>
           
           <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
-              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Draft Events</CardTitle>
+              <CardTitle className="text-xs md:text-sm font-medium">Draft Events</CardTitle>
               <div className="w-8 md:w-12 h-8 md:h-12 bg-yellow-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Calendar className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent className="pb-3 md:pb-4">
-              <div className="text-xl md:text-3xl font-bold text-umma-800 mb-1">
+              <div className="text-xl md:text-3xl font-bold mb-1">
                 {events.filter((event: Event) => event.status === "draft").length}
               </div>
-              <p className="text-umma-600 text-xs md:text-sm">Draft</p>
+              <p className="text-muted-foreground text-xs md:text-sm">Draft</p>
             </CardContent>
           </Card>
           
           <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
-              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Volunteers</CardTitle>
-              <div className="w-8 md:w-12 h-8 md:h-12 bg-umma-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+              <CardTitle className="text-xs md:text-sm font-medium">Volunteers</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-primary rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Users className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent className="pb-3 md:pb-4">
-              <div className="text-xl md:text-3xl font-bold text-umma-800 mb-1">
+              <div className="text-xl md:text-3xl font-bold mb-1">
                 {events.reduce((total: number, event: any) => total + (event.volunteers?.length || 0), 0)}
               </div>
-              <p className="text-umma-600 text-xs md:text-sm">Signed up</p>
+              <p className="text-muted-foreground text-xs md:text-sm">Signed up</p>
             </CardContent>
           </Card>
           
           <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
-              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Open Spots</CardTitle>
-              <div className="w-8 md:w-12 h-8 md:h-12 bg-umma-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+              <CardTitle className="text-xs md:text-sm font-medium">Open Spots</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-primary rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Users className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>

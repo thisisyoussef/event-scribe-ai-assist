@@ -8,19 +8,19 @@ const Index = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-stone-100">
+    <div className="min-h-screen bg-gradient-to-br from-white via-orange-50 to-orange-100">
       {/* Header */}
-      <header className="border-b border-umma-200 bg-white/90 backdrop-blur-sm">
+      <header className="border-b border-border bg-white/90 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-umma-400 to-umma-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Heart className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Calendar className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-umma-600 to-umma-800 bg-clip-text text-transparent">
-              EasyEvent
+            <h1 className="text-2xl font-bold gradient-text">
+              Easy Event
             </h1>
           </div>
-          <Button onClick={() => navigate("/login")} variant="outline" className="border-umma-300 text-umma-700 hover:bg-umma-50">
+          <Button onClick={() => navigate("/login")} variant="outline">
             Sign In
           </Button>
         </div>
@@ -28,22 +28,21 @@ const Index = () => {
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
-        <h2 className="text-6xl font-bold mb-8 bg-gradient-to-r from-umma-600 to-umma-800 bg-clip-text text-transparent leading-tight">
+        <h2 className="text-6xl font-bold mb-8 gradient-text leading-tight">
           Streamlined Event Planning
         </h2>
-        <p className="text-xl text-stone-700 mb-10 max-w-4xl mx-auto leading-relaxed">
+        <p className="text-xl text-foreground mb-10 max-w-4xl mx-auto leading-relaxed">
           Plan and coordinate events with ease. Connect with your team, manage volunteer schedules, 
           and keep everyone informed with simple, effective tools.
         </p>
         <div className="flex gap-6 justify-center">
           <Button 
             size="lg" 
-            className="bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
             onClick={() => navigate("/login")}
           >
             Get Started
           </Button>
-          <Button size="lg" variant="outline" className="border-umma-300 text-umma-700 hover:bg-umma-50 px-8 py-4 text-lg rounded-xl">
+          <Button size="lg" variant="outline">
             Learn More
           </Button>
         </div>
@@ -51,59 +50,59 @@ const Index = () => {
 
       {/* Features Grid */}
       <section className="container mx-auto px-4 py-20">
-        <h3 className="text-4xl font-bold text-center mb-16 text-stone-800">Why Choose EasyEvent?</h3>
+        <h3 className="text-4xl font-bold text-center mb-16">Why Choose Easy Event?</h3>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <Card className="hover:shadow-xl transition-all duration-300 border-umma-200 bg-white/80 backdrop-blur-sm">
+          <Card className="hover:shadow-xl transition-all duration-300 bg-card">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-umma-400 to-umma-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Star className="w-8 h-8 text-white" />
               </div>
-              <CardTitle className="text-umma-800">Smart Planning</CardTitle>
+              <CardTitle>Smart Planning</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-center text-stone-600 leading-relaxed">
+              <CardDescription className="text-center leading-relaxed">
                 Get helpful suggestions for event structure and volunteer roles. Make planning efficient and organized.
               </CardDescription>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-xl transition-all duration-300 border-umma-200 bg-white/80 backdrop-blur-sm">
+          <Card className="hover:shadow-xl transition-all duration-300 bg-card">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-umma-400 to-umma-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Calendar className="w-8 h-8 text-white" />
               </div>
-              <CardTitle className="text-umma-800">Real-Time Updates</CardTitle>
+              <CardTitle>Real-Time Updates</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-center text-stone-600 leading-relaxed">
+              <CardDescription className="text-center leading-relaxed">
                 Track volunteer signups and availability as they happen. Stay informed about who's participating and what roles need filling.
               </CardDescription>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-xl transition-all duration-300 border-umma-200 bg-white/80 backdrop-blur-sm">
+          <Card className="hover:shadow-xl transition-all duration-300 bg-card">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-umma-400 to-umma-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <MessageSquare className="w-8 h-8 text-white" />
               </div>
-              <CardTitle className="text-umma-800">Automatic Reminders</CardTitle>
+              <CardTitle>Automatic Reminders</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-center text-stone-600 leading-relaxed">
+              <CardDescription className="text-center leading-relaxed">
                 Send timely notifications to keep volunteers informed. Reduce no-shows with well-timed reminders.
               </CardDescription>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-xl transition-all duration-300 border-umma-200 bg-white/80 backdrop-blur-sm">
+          <Card className="hover:shadow-xl transition-all duration-300 bg-card">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-umma-400 to-umma-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Heart className="w-8 h-8 text-white" />
               </div>
-              <CardTitle className="text-umma-800">Easy Sharing</CardTitle>
+              <CardTitle>Easy Sharing</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-center text-stone-600 leading-relaxed">
+              <CardDescription className="text-center leading-relaxed">
                 Share your event with a simple link. No complicated setup required for volunteers to sign up and participate.
               </CardDescription>
             </CardContent>
@@ -112,7 +111,7 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-umma-500 to-umma-600 text-white py-20">
+      <section className="bg-gradient-to-r from-primary to-orange-600 text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <h3 className="text-4xl font-bold mb-6">Ready to Simplify Your Events?</h3>
           <p className="text-xl mb-10 opacity-95 max-w-2xl mx-auto leading-relaxed">
@@ -121,7 +120,6 @@ const Index = () => {
           <Button 
             size="lg" 
             variant="secondary"
-            className="bg-white text-umma-600 hover:bg-umma-50 px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
             onClick={() => navigate("/login")}
           >
             Start Planning Today
@@ -130,9 +128,9 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-umma-50 border-t border-umma-200 py-12">
-        <div className="container mx-auto px-4 text-center text-umma-700">
-          <p className="text-lg">&copy; 2025 EasyEvent. Streamlined event coordination.</p>
+      <footer className="bg-secondary border-t border-border py-12">
+        <div className="container mx-auto px-4 text-center text-foreground">
+          <p className="text-lg">&copy; 2025 Easy Event. Streamlined event coordination.</p>
         </div>
       </footer>
     </div>

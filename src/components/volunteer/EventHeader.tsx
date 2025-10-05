@@ -13,16 +13,12 @@ const EventHeader = ({ event }: EventHeaderProps) => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="bg-gradient-to-r from-umma-600 to-umma-700 text-white">
+    <div className="bg-gradient-to-r from-primary to-orange-600 text-white">
       <div className="container mx-auto px-4 py-4">
         {/* Logo only header */}
         <div className="flex justify-center mb-4">
           <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-lg">
-            <img 
-              src="/lovable-uploads/4d932e1e-7b46-4da9-8bd2-d2956c6271db.png" 
-              alt="UMMA Logo" 
-              className="w-12 h-12 object-contain"
-            />
+            <Calendar className="w-12 h-12 text-primary" />
           </div>
         </div>
 
