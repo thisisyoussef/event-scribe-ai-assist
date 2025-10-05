@@ -49,7 +49,7 @@ const Login = () => {
     try {
       if (isForgotPassword) {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/reset-password`,
+          redirectTo: 'https://easyevent.lovable.app/reset-password',
         });
 
         if (error) {
@@ -75,7 +75,7 @@ const Login = () => {
               full_name: fullName,
               phone: phone,
             },
-            emailRedirectTo: `${window.location.origin}/dashboard`
+            emailRedirectTo: 'https://easyevent.lovable.app/dashboard'
           }
         });
 
