@@ -70,7 +70,7 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime, isG
           <div className="text-center py-6 bg-umma-50 rounded-lg border border-umma-200">
             <Clock className="w-8 h-8 text-umma-400 mx-auto mb-2" />
             <p className="text-umma-600 mb-4">No itinerary items yet</p>
-            <Button onClick={addItineraryItem} variant="default" disabled={disabled}>
+            <Button onClick={addItineraryItem} variant="outline" className="border-umma-300 text-umma-700 hover:bg-umma-100 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300" disabled={disabled}>
               <Plus className="w-4 h-4 mr-2" />
               Add First Item
             </Button>
@@ -130,7 +130,7 @@ const ItineraryEditor = ({ itinerary, onItineraryChange, startTime, endTime, isG
               ))}
             </div>
             
-            <Button onClick={addItineraryItem} variant="default" className="w-full" disabled={disabled}>
+            <Button onClick={addItineraryItem} variant="outline" className="w-full border-umma-300 text-umma-700 hover:bg-umma-100 bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300" disabled={disabled}>
               <Plus className="w-4 h-4 mr-2" />
               Add Another Item
             </Button>

@@ -1,83 +1,65 @@
-// Timezone utilities for handling user's local timezone
-import { parseISO, format } from 'date-fns';
 
-// Get the user's browser timezone
-export const getUserTimezone = (): string => {
-  return Intl.DateTimeFormat().resolvedOptions().timeZone;
-};
+// Timezone utilities for handling Michigan Time (Eastern Time)
+import { parseISO } from 'date-fns';
+import { format, toZonedTime, fromZonedTime } from 'date-fns-tz';
 
-// Get timezone abbreviation (e.g., "EST", "PST")
-export const getTimezoneAbbreviation = (): string => {
-  const date = new Date();
-  const timezoneName = date.toLocaleTimeString('en-US', { 
-    timeZoneName: 'short' 
-  }).split(' ').pop();
-  return timezoneName || '';
-};
+// Michigan is in Eastern Time Zone
+export const MICHIGAN_TIMEZONE = 'America/Detroit';
 
-// Convert a UTC date to user's local timezone
-export const toLocalTime = (date: Date | string): Date => {
+// Convert a date to Michigan time
+export const toMichiganTime = (date: Date | string): Date => {
   const dateObj = typeof date === 'string' ? parseISO(date) : date;
-  return new Date(dateObj);
+  return toZonedTime(dateObj, MICHIGAN_TIMEZONE);
 };
 
-// Convert from local datetime input to UTC for storage
+// Convert from Michigan time to UTC for storage
+export const fromMichiganTime = (date: Date): Date => {
+  return fromZonedTime(date, MICHIGAN_TIMEZONE);
+};
+
+// Convert local datetime to UTC for storage (fixes the 4-hour offset issue)
 export const localDateTimeToUTC = (dateString: string, timeString: string): string => {
   // Create a date object in the local timezone
   const localDate = new Date(`${dateString}T${timeString}:00`);
-  // Convert to UTC for storage
+  // Convert to UTC for storage (this preserves the local time as UTC)
   return localDate.toISOString();
 };
 
-// Format a date in user's local timezone
-export const formatInLocalTime = (
+// Format a date in Michigan timezone
+export const formatInMichiganTime = (
   date: Date | string, 
-  formatString: string = 'yyyy-MM-dd HH:mm:ss'
+  formatString: string = 'yyyy-MM-dd HH:mm:ss zzz'
 ): string => {
   const dateObj = typeof date === 'string' ? parseISO(date) : date;
-  return format(dateObj, formatString);
+  return format(dateObj, formatString, { timeZone: MICHIGAN_TIMEZONE });
 };
 
-// Get current time in user's local timezone
-export const getLocalTime = (): Date => {
-  return new Date();
+// Get current time in Michigan timezone
+export const getMichiganTime = (): Date => {
+  return toMichiganTime(new Date());
 };
 
-// Format time for display in user's timezone (e.g., "6:00 PM")
-export const formatTimeInLocal = (dateTime: string): string => {
-  const date = new Date(dateTime);
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  });
+// Format time for display in Michigan timezone
+export const formatTimeInMichigan = (dateTime: string): string => {
+  return formatInMichiganTime(dateTime, 'h:mm a');
 };
 
-// Format date for display in user's timezone (e.g., "January 15, 2025")
-export const formatDateInLocal = (dateTime: string): string => {
-  const date = new Date(dateTime);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+// Format date for display in Michigan timezone
+export const formatDateInMichigan = (dateTime: string): string => {
+  return formatInMichiganTime(dateTime, 'MMMM d, yyyy');
 };
 
-// Format date and time for display in user's timezone
-export const formatDateTimeInLocal = (dateTime: string): string => {
-  const date = new Date(dateTime);
-  const dateStr = formatDateInLocal(dateTime);
-  const timeStr = formatTimeInLocal(dateTime);
-  const timezone = getTimezoneAbbreviation();
-  return `${dateStr} at ${timeStr} ${timezone}`;
+// Format date and time for display in Michigan timezone
+export const formatDateTimeInMichigan = (dateTime: string): string => {
+  return formatInMichiganTime(dateTime, 'MMMM d, yyyy \'at\' h:mm a zzz');
 };
 
-// Helper function to display time in user's timezone consistently
-export const displayTimeInLocal = (dateTime: string): string => {
+// Helper function to display time in Michigan timezone consistently
+export const displayTimeInMichigan = (dateTime: string): string => {
   const date = new Date(dateTime);
   return date.toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
-    hour12: true
+    timeZone: MICHIGAN_TIMEZONE
   });
 };

@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, Calendar, Users, Eye, Edit, Copy, Phone, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { displayTimeInLocal } from "@/utils/timezoneUtils";
+import { displayTimeInMichigan } from "@/utils/timezoneUtils";
 import { Event, VolunteerRole, Volunteer } from "@/types/database";
 import { useIsMobile } from "@/hooks/use-mobile";
 import EventSharingDialog from "@/components/event-creation/EventSharingDialog";
@@ -165,66 +165,66 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-8 md:mb-12">
           <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
-              <CardTitle className="text-xs md:text-sm font-medium">Total Events</CardTitle>
-              <div className="w-8 md:w-12 h-8 md:h-12 bg-primary rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Total Events</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-umma-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Calendar className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent className="pb-3 md:pb-4">
-              <div className="text-xl md:text-3xl font-bold mb-1">{events.length}</div>
-              <p className="text-muted-foreground text-xs md:text-sm">Events created</p>
+              <div className="text-xl md:text-3xl font-bold text-umma-800 mb-1">{events.length}</div>
+              <p className="text-umma-600 text-xs md:text-sm">Events created</p>
             </CardContent>
           </Card>
           
           <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
-              <CardTitle className="text-xs md:text-sm font-medium">Active Events</CardTitle>
+              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Active Events</CardTitle>
               <div className="w-8 md:w-12 h-8 md:h-12 bg-green-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Calendar className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent className="pb-3 md:pb-4">
-              <div className="text-xl md:text-3xl font-bold mb-1">
+              <div className="text-xl md:text-3xl font-bold text-umma-800 mb-1">
                 {events.filter((event: Event) => event.status === "published").length}
               </div>
-              <p className="text-muted-foreground text-xs md:text-sm">Published</p>
+              <p className="text-umma-600 text-xs md:text-sm">Published</p>
             </CardContent>
           </Card>
           
           <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
-              <CardTitle className="text-xs md:text-sm font-medium">Draft Events</CardTitle>
+              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Draft Events</CardTitle>
               <div className="w-8 md:w-12 h-8 md:h-12 bg-yellow-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Calendar className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent className="pb-3 md:pb-4">
-              <div className="text-xl md:text-3xl font-bold mb-1">
+              <div className="text-xl md:text-3xl font-bold text-umma-800 mb-1">
                 {events.filter((event: Event) => event.status === "draft").length}
               </div>
-              <p className="text-muted-foreground text-xs md:text-sm">Draft</p>
+              <p className="text-umma-600 text-xs md:text-sm">Draft</p>
             </CardContent>
           </Card>
           
           <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
-              <CardTitle className="text-xs md:text-sm font-medium">Volunteers</CardTitle>
-              <div className="w-8 md:w-12 h-8 md:h-12 bg-primary rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Volunteers</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-umma-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Users className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>
             <CardContent className="pb-3 md:pb-4">
-              <div className="text-xl md:text-3xl font-bold mb-1">
+              <div className="text-xl md:text-3xl font-bold text-umma-800 mb-1">
                 {events.reduce((total: number, event: any) => total + (event.volunteers?.length || 0), 0)}
               </div>
-              <p className="text-muted-foreground text-xs md:text-sm">Signed up</p>
+              <p className="text-umma-600 text-xs md:text-sm">Signed up</p>
             </CardContent>
           </Card>
           
           <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 md:pb-3">
-              <CardTitle className="text-xs md:text-sm font-medium">Open Spots</CardTitle>
-              <div className="w-8 md:w-12 h-8 md:h-12 bg-primary rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
+              <CardTitle className="text-xs md:text-sm font-medium text-umma-800">Open Spots</CardTitle>
+              <div className="w-8 md:w-12 h-8 md:h-12 bg-umma-500 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg">
                 <Users className="h-4 md:h-6 w-4 md:w-6 text-white" />
               </div>
             </CardHeader>
@@ -281,11 +281,11 @@ const Dashboard = () => {
           <CardContent className={`${isMobile ? 'p-3' : 'p-0'}`}>
             {getFilteredEvents().length === 0 ? (
               <div className="text-center py-12 md:py-20 px-4 md:px-8">
-                <div className="w-16 md:w-20 h-16 md:h-20 bg-primary rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg">
+                <div className="w-16 md:w-20 h-16 md:h-20 bg-umma-500 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg">
                   <Calendar className="w-8 md:w-10 h-8 md:h-10 text-white" />
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Start Organizing Events</h3>
-                <p className="text-muted-foreground mb-6 md:mb-8 max-w-lg mx-auto leading-relaxed text-base md:text-lg">
+                <h3 className="text-xl md:text-2xl font-bold text-umma-800 mb-3 md:mb-4">Start Organizing Events</h3>
+                <p className="text-umma-600 mb-6 md:mb-8 max-w-lg mx-auto leading-relaxed text-base md:text-lg">
                   Create your first event and start coordinating volunteers
                 </p>
                 <Button 
@@ -427,9 +427,9 @@ const Dashboard = () => {
                                       day: 'numeric' 
                                     })}
                                   </div>
-                  <div className="text-umma-600 text-xs">
-                    {displayTimeInLocal(event.start_datetime)}
-                  </div>
+                                  <div className="text-umma-600 text-xs">
+                                    {displayTimeInMichigan(event.start_datetime)}
+                                  </div>
                                 </div>
                               </td>
                               <td className="py-4 md:py-6 px-3 md:px-6">

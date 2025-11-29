@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
 import { Event } from "@/types/database";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { formatTimeInLocal, formatDateInLocal, displayTimeInLocal, getTimezoneAbbreviation } from "@/utils/timezoneUtils";
+import { formatTimeInMichigan, formatDateInMichigan, displayTimeInMichigan } from "@/utils/timezoneUtils";
 
 interface EventHeaderProps {
   event: Event;
@@ -13,12 +13,16 @@ const EventHeader = ({ event }: EventHeaderProps) => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="bg-gradient-to-r from-primary to-orange-600 text-white">
+    <div className="bg-gradient-to-r from-umma-600 to-umma-700 text-white">
       <div className="container mx-auto px-4 py-4">
         {/* Logo only header */}
         <div className="flex justify-center mb-4">
           <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-lg">
-            <Calendar className="w-12 h-12 text-primary" />
+            <img 
+              src="/lovable-uploads/4d932e1e-7b46-4da9-8bd2-d2956c6271db.png" 
+              alt="UMMA Logo" 
+              className="w-12 h-12 object-contain"
+            />
           </div>
         </div>
 
@@ -31,7 +35,7 @@ const EventHeader = ({ event }: EventHeaderProps) => {
               <div className="flex items-center justify-center space-x-2 text-white/90">
                 <Calendar className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />
                 <span className={`${isMobile ? 'text-sm' : 'text-base'}`}>
-                  {formatDateInLocal(event.start_datetime)} at {displayTimeInLocal(event.start_datetime)} {getTimezoneAbbreviation()}
+                  {formatDateInMichigan(event.start_datetime)} at {displayTimeInMichigan(event.start_datetime)} (Michigan Time)
                 </span>
               </div>
             </div>
