@@ -63,7 +63,7 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				umma: {
+				brand: {
 					DEFAULT: '#9B9A6D',
 					50: '#F7F7F2',
 					100: '#EEEEE0',

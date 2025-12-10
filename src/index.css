@@ -117,15 +117,15 @@
     @apply shadow-lg hover:shadow-xl transition-all duration-300;
   }
 
-  .umma-primary {
+  .brand-primary {
     color: #9B9A6D;
   }
 
-  .umma-bg {
+  .brand-bg {
     background-color: #9B9A6D;
   }
 
-  .umma-border {
+  .brand-border {
     border-color: #9B9A6D;
   }
 }
