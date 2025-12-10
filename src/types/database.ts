@@ -70,6 +70,7 @@ export interface EventShare {
   event?: Event;
   shared_by_user?: { email: string };
   shared_with_user?: { email: string };
+  shared_with_profile?: { email: string; full_name?: string };
 }
 
 export interface SharedEventAccess {

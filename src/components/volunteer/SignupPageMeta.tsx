@@ -84,7 +84,7 @@ const SignupPageMeta = ({ event }: SignupPageMetaProps) => {
     updateMetaTag('og:description', `📅 ${eventDateTime}\n📍 ${event.location || 'Location TBA'}\n\n${description}\n\n✅ Sign up now to volunteer and be part of something amazing!`);
     updateMetaTag('og:type', 'website');
     updateMetaTag('og:url', window.location.href);
-    updateMetaTag('og:site_name', 'UMMA Event Volunteers');
+    updateMetaTag('og:site_name', 'EasyEvent Volunteers');
     updateMetaTag('og:locale', 'en_US');
     updateMetaTag('og:image', 'https://via.placeholder.com/1200x630/9B9A6D/FFFFFF?text=Volunteer+Signup');
     updateMetaTag('og:image:width', '1200');
@@ -95,13 +95,13 @@ const SignupPageMeta = ({ event }: SignupPageMetaProps) => {
     updateMetaTag('twitter:card', 'summary_large_image');
     updateMetaTag('twitter:title', `🤝 Volunteer for ${event.title}`);
     updateMetaTag('twitter:description', `📅 ${eventDate} at ${eventTime}\n📍 ${event.location || 'Location TBA'}\n\n${description}\n\nSign up to volunteer today!`);
-    updateMetaTag('twitter:site', '@umma');
-    updateMetaTag('twitter:creator', '@umma');
+    updateMetaTag('twitter:site', '@easyevent');
+    updateMetaTag('twitter:creator', '@easyevent');
     updateMetaTag('twitter:image', 'https://via.placeholder.com/1200x630/9B9A6D/FFFFFF?text=Volunteer+Signup');
 
     // Additional structured data for better SEO and previews
     updateMetaTag('article:section', 'Volunteer Opportunities');
-    updateMetaTag('article:tag', 'volunteer,community,event,signup,umma');
+    updateMetaTag('article:tag', 'volunteer,community,event,signup');
     updateMetaTag('event:start_time', event.start_datetime);
     updateMetaTag('event:location:latitude', '');
     updateMetaTag('event:location:longitude', '');
@@ -118,7 +118,7 @@ const SignupPageMeta = ({ event }: SignupPageMetaProps) => {
 
     // Cleanup function to restore original title
     return () => {
-      document.title = 'UMMA Event Management';
+      document.title = 'EasyEvent';
     };
   }, [event]);
 
