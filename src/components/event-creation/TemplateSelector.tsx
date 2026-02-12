@@ -67,7 +67,7 @@ export default function TemplateSelector({ onTemplateSelect, disabled = false, c
   // Enhanced icon system with visual recognition
   const getTemplateIcon = (templateName: string) => {
     const lowerName = templateName.toLowerCase();
-    const iconClass = "h-5 w-5 text-umma-600";
+    const iconClass = "h-5 w-5 text-white/50";
 
     if (lowerName.includes('jummah') || lowerName.includes('friday')) {
       return <Calendar className={iconClass} />;
@@ -144,13 +144,13 @@ export default function TemplateSelector({ onTemplateSelect, disabled = false, c
               Browse Templates
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg w-[92vw] sm:w-full max-h-[85vh] overflow-hidden flex flex-col p-0 rounded-3xl gap-0 border-umma-200">
+          <DialogContent className="max-w-lg w-[92vw] sm:w-full max-h-[85vh] overflow-hidden flex flex-col p-0 rounded-3xl gap-0 border-white/15">
             {/* Enhanced Header */}
-            <DialogHeader className="border-b border-umma-100 px-4 py-4 flex-shrink-0">
-              <DialogTitle className="text-xl font-bold text-umma-800">
+            <DialogHeader className="border-b border-white/10 px-4 py-4 flex-shrink-0">
+              <DialogTitle className="text-xl font-bold text-foreground">
                 Select Event Template
               </DialogTitle>
-              <DialogDescription className="text-xs text-umma-500 mt-1">
+              <DialogDescription className="text-xs text-gold-400 mt-1">
                 Choose a template to get started quickly
               </DialogDescription>
             </DialogHeader>
@@ -166,8 +166,8 @@ export default function TemplateSelector({ onTemplateSelect, disabled = false, c
                     className={cn(
                       "flex-shrink-0 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
                       activeFilter === filter.key
-                        ? "bg-umma-500 text-white shadow-sm"
-                        : "bg-umma-50 text-umma-700 hover:bg-umma-100"
+                        ? "bg-gold-400/20 text-white shadow-sm"
+                        : "bg-white/5 text-white/70 hover:bg-white/10"
                     )}
                   >
                     {filter.label}
@@ -206,7 +206,7 @@ export default function TemplateSelector({ onTemplateSelect, disabled = false, c
                             {getTemplateIcon(template.name)}
                           </div>
                           <div className="flex-1 min-w-0 pr-14">
-                            <h4 className="font-semibold text-lg text-umma-900 truncate leading-tight mb-1">
+                            <h4 className="font-semibold text-lg text-foreground truncate leading-tight mb-1">
                               {template.name}
                             </h4>
                             {template.description && (
@@ -223,7 +223,7 @@ export default function TemplateSelector({ onTemplateSelect, disabled = false, c
                                       e.stopPropagation();
                                       setExpandedDescriptionId(isDescExpanded ? null : template.id);
                                     }}
-                                    className="flex items-center gap-0.5 text-xs font-medium text-umma-600 hover:text-umma-700 mt-1.5 transition-colors"
+                                    className="flex items-center gap-0.5 text-xs font-medium text-white/50 hover:text-white/80 mt-1.5 transition-colors"
                                   >
                                     {isDescExpanded ? (
                                       <>Show less <ChevronUp className="h-3 w-3" /></>
@@ -272,7 +272,7 @@ export default function TemplateSelector({ onTemplateSelect, disabled = false, c
                 })}
 
                 {filteredTemplates.length === 0 && (
-                  <div className="text-center py-8 text-umma-500">
+                  <div className="text-center py-8 text-gold-400">
                     <LayoutTemplate className="h-12 w-12 mx-auto mb-3 opacity-40" />
                     <p className="text-sm">No templates found for this filter</p>
                   </div>
@@ -281,10 +281,10 @@ export default function TemplateSelector({ onTemplateSelect, disabled = false, c
             </div>
 
             {/* Sticky Bottom Bar */}
-            <div className="flex-shrink-0 border-t border-umma-100 bg-gradient-to-t from-white via-white to-white/95 px-4 py-3">
+            <div className="flex-shrink-0 border-t border-white/10 bg-gradient-to-t from-white via-white to-white/95 px-4 py-3">
               <button
                 onClick={() => setIsDialogOpen(false)}
-                className="w-full py-2.5 text-center text-sm font-medium text-umma-600 hover:text-umma-800 transition-colors rounded-xl hover:bg-umma-50"
+                className="w-full py-2.5 text-center text-sm font-medium text-white/50 hover:text-foreground transition-colors rounded-xl hover:bg-white/5"
               >
                 Continue without template
               </button>
@@ -329,21 +329,21 @@ export default function TemplateSelector({ onTemplateSelect, disabled = false, c
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="h-4 w-4 text-umma-500" />
-                      <span className="font-medium text-umma-700">Location:</span>
-                      <span className="text-umma-600">{selectedTemplate.details.location}</span>
+                      <MapPin className="h-4 w-4 text-gold-400" />
+                      <span className="font-medium text-white/70">Location:</span>
+                      <span className="text-white/50">{selectedTemplate.details.location}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <Clock className="h-4 w-4 text-umma-500" />
-                      <span className="font-medium text-umma-700">SMS Times:</span>
-                      <span className="text-umma-600">
+                      <Clock className="h-4 w-4 text-gold-400" />
+                      <span className="font-medium text-white/70">SMS Times:</span>
+                      <span className="text-white/50">
                         {formatTime(selectedTemplate.details.day_before_time)} / {formatTime(selectedTemplate.details.day_of_time)}
                       </span>
                     </div>
                     {selectedTemplate.details.marketing_level && (
                       <div className="flex items-center gap-2 text-sm">
-                        <Users className="h-4 w-4 text-umma-500" />
-                        <span className="font-medium text-umma-700">Marketing:</span>
+                        <Users className="h-4 w-4 text-gold-400" />
+                        <span className="font-medium text-white/70">Marketing:</span>
                         <Badge variant="outline" className="capitalize text-xs px-2 py-0.5">
                           {selectedTemplate.details.marketing_level}
                         </Badge>
@@ -353,8 +353,8 @@ export default function TemplateSelector({ onTemplateSelect, disabled = false, c
                   <div className="space-y-2">
                     {selectedTemplate.details.tone && (
                       <div className="flex items-center gap-2 text-sm">
-                        <Settings className="h-4 w-4 text-umma-500" />
-                        <span className="font-medium text-umma-700">Tone:</span>
+                        <Settings className="h-4 w-4 text-gold-400" />
+                        <span className="font-medium text-white/70">Tone:</span>
                         <Badge variant="outline" className="capitalize text-xs px-2 py-0.5">
                           {selectedTemplate.details.tone}
                         </Badge>
@@ -362,8 +362,8 @@ export default function TemplateSelector({ onTemplateSelect, disabled = false, c
                     )}
                     {selectedTemplate.details.age_groups && selectedTemplate.details.age_groups.length > 0 && (
                       <div className="flex items-center gap-2 text-sm flex-wrap">
-                        <Users className="h-4 w-4 text-umma-500" />
-                        <span className="font-medium text-umma-700">Age Groups:</span>
+                        <Users className="h-4 w-4 text-gold-400" />
+                        <span className="font-medium text-white/70">Age Groups:</span>
                         <div className="flex gap-1 flex-wrap">
                           {selectedTemplate.details.age_groups.map((group, index) => (
                             <Badge key={index} variant="secondary" className="text-xs px-2 py-0.5">
@@ -374,16 +374,16 @@ export default function TemplateSelector({ onTemplateSelect, disabled = false, c
                       </div>
                     )}
                     <div className="flex items-center gap-2 text-sm">
-                      <Users className="h-4 w-4 text-umma-500" />
-                      <span className="font-medium text-umma-700">Expected:</span>
-                      <span className="text-umma-600">{selectedTemplate.details.expected_attendance}</span>
+                      <Users className="h-4 w-4 text-gold-400" />
+                      <span className="font-medium text-white/70">Expected:</span>
+                      <span className="text-white/50">{selectedTemplate.details.expected_attendance}</span>
                     </div>
                   </div>
                 </div>
               )}
 
               {/* Template Summary */}
-              <div className="grid grid-cols-3 gap-3 pt-3 border-t border-umma-100">
+              <div className="grid grid-cols-3 gap-3 pt-3 border-t border-white/10">
                 <div className="text-center">
                   <div className="text-xl font-bold text-primary">
                     {selectedTemplate.itineraries?.length || 0}

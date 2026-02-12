@@ -36,7 +36,7 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
                         onClick={collapsible ? () => setIsExpanded(!isExpanded) : undefined}
                     >
                         {icon && (
-                            <div className="text-umma-500">
+                            <div className="text-gold-400">
                                 {icon}
                             </div>
                         )}
@@ -55,7 +55,7 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
                         {collapsible && (
                             <div className="flex items-center gap-1">
                                 {!isExpanded && (
-                                    <span className="text-xs text-umma-600 font-medium mr-1 hidden md:inline">
+                                    <span className="text-xs text-white/50 font-medium mr-1 hidden md:inline">
                                         Expand
                                     </span>
                                 )}
@@ -64,7 +64,7 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
                                         "w-8 h-8 md:w-7 md:h-7 rounded-full flex items-center justify-center transition-all",
                                         isExpanded
                                             ? "bg-white/15/50 text-white/40"
-                                            : "bg-umma-100 text-umma-600"
+                                            : "bg-white/10 text-white/50"
                                     )}
                                 >
                                     {isExpanded ? (

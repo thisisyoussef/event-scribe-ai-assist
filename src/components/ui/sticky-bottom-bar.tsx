@@ -23,7 +23,7 @@ const StickyBottomBar = React.forwardRef<HTMLDivElement, StickyBottomBarProps>(
                 ref={ref}
                 className={cn(
                     "fixed bottom-0 left-0 right-0 z-50",
-                    "bg-white/95 md:bg-white/80 backdrop-blur-xl border-t border-white/10 md:border-umma-100",
+                    "bg-navy-900/95 md:bg-navy-900/80 backdrop-blur-xl border-t border-white/10",
                     "px-4 py-4 md:py-3",
                     "shadow-[0_-4px_20px_rgba(0,0,0,0.1)] md:shadow-[0_-4px_20px_rgba(0,0,0,0.08)]",
                     "animate-in slide-in-from-bottom-2 duration-300",
@@ -40,7 +40,7 @@ const StickyBottomBar = React.forwardRef<HTMLDivElement, StickyBottomBarProps>(
                             <Button
                                 onClick={primaryAction.onClick}
                                 disabled={primaryAction.disabled || primaryAction.loading}
-                                className="w-full h-12 font-bold text-lg bg-umma-600 hover:bg-umma-700 shadow-sm hover:shadow-md transition-all active:scale-[0.98] touch-manipulation rounded-3xl"
+                                className="w-full h-12 font-bold text-lg bg-gold-400 hover:bg-gold-300 text-navy-900 shadow-sm hover:shadow-md transition-all active:scale-[0.98] touch-manipulation rounded-3xl"
                             >
                                 {primaryAction.loading ? (
                                     <div className="flex items-center gap-2">
@@ -83,7 +83,7 @@ const StickyBottomBar = React.forwardRef<HTMLDivElement, StickyBottomBarProps>(
                         {/* Left side - Status */}
                         <div className="flex items-center gap-2 min-w-0">
                             {statusText && (
-                                <span className="text-sm text-umma-600 font-medium truncate">
+                                <span className="text-sm text-white/50 font-medium truncate">
                                     {statusText}
                                 </span>
                             )}

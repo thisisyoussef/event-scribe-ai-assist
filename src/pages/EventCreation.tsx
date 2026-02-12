@@ -1952,7 +1952,7 @@ const EventCreation = () => {
                           value={eventData.title}
                           onChange={(e) => setEventData({ ...eventData, title: e.target.value })}
                           placeholder="e.g., Community Iftar 2024"
-                          className="h-12 md:h-11 rounded-xl border-2 border-white/10 focus-visible:ring-umma-500 text-lg md:text-sm font-medium placeholder:text-white/30 placeholder:font-normal"
+                          className="h-12 md:h-11 rounded-xl border-2 border-white/10 focus-visible:ring-gold-400 text-lg md:text-sm font-medium placeholder:text-white/30 placeholder:font-normal"
                           disabled={eventId && !hasEditPermission}
                         />
                       </div>
@@ -1973,7 +1973,7 @@ const EventCreation = () => {
                             id="date-mobile"
                             value={eventData.date || ""}
                             onChange={(e) => setEventData({ ...eventData, date: e.target.value })}
-                            className="md:hidden h-12 w-full block bg-white/5 text-foreground rounded-xl border-2 border-white/10 focus-visible:ring-umma-500 text-base font-medium appearance-none"
+                            className="md:hidden h-12 w-full block bg-white/5 text-foreground rounded-xl border-2 border-white/10 focus-visible:ring-gold-400 text-base font-medium appearance-none"
                             style={{ minHeight: '3rem' }}
                             disabled={eventId && !hasEditPermission}
                           />
@@ -1984,7 +1984,7 @@ const EventCreation = () => {
                               <PopoverTrigger asChild>
                                 <Button
                                   variant="outline"
-                                  className="w-full justify-start text-left font-normal h-11 rounded-xl border-2 border-umma-200 hover:border-umma-500 text-sm bg-white/5"
+                                  className="w-full justify-start text-left font-normal h-11 rounded-xl border-2 border-white/15 hover:border-gold-400 text-sm bg-white/5"
                                   disabled={eventId && !hasEditPermission}
                                 >
                                   <Calendar className="mr-2 h-4 w-4" />
@@ -2025,7 +2025,7 @@ const EventCreation = () => {
                                 }
                                 setEventData({ ...eventData, startTime: newStart, endTime: newEnd });
                               }}
-                              className="md:hidden h-12 w-full block bg-white/5 text-foreground rounded-xl border-2 border-white/10 focus-visible:ring-umma-500 text-base font-medium appearance-none"
+                              className="md:hidden h-12 w-full block bg-white/5 text-foreground rounded-xl border-2 border-white/10 focus-visible:ring-gold-400 text-base font-medium appearance-none"
                               style={{ minHeight: '3rem' }}
                               disabled={eventId && !hasEditPermission}
                             />
@@ -2043,7 +2043,7 @@ const EventCreation = () => {
                                   }
                                   setEventData({ ...eventData, startTime: newStart, endTime: newEnd });
                                 }}
-                                className="h-11 border-2 border-white/10 focus-visible:ring-umma-500 text-sm"
+                                className="h-11 border-2 border-white/10 focus-visible:ring-gold-400 text-sm"
                                 disabled={eventId && !hasEditPermission}
                               />
                             </div>
@@ -2062,7 +2062,7 @@ const EventCreation = () => {
                               onChange={(e) => {
                                 setEventData({ ...eventData, endTime: e.target.value });
                               }}
-                              className="md:hidden h-12 w-full block bg-white/5 text-foreground rounded-xl border-2 border-white/10 focus-visible:ring-umma-500 text-base font-medium appearance-none"
+                              className="md:hidden h-12 w-full block bg-white/5 text-foreground rounded-xl border-2 border-white/10 focus-visible:ring-gold-400 text-base font-medium appearance-none"
                               style={{ minHeight: '3rem' }}
                               disabled={eventId && !hasEditPermission}
                             />
@@ -2075,7 +2075,7 @@ const EventCreation = () => {
                                 onChange={(newEnd) => {
                                   setEventData({ ...eventData, endTime: newEnd });
                                 }}
-                                className="h-11 border-2 border-white/10 focus-visible:ring-umma-500 text-sm"
+                                className="h-11 border-2 border-white/10 focus-visible:ring-gold-400 text-sm"
                                 disabled={eventId && !hasEditPermission}
                               />
                             </div>
@@ -2127,7 +2127,7 @@ const EventCreation = () => {
                           onChange={(e) => setEventData({ ...eventData, description: e.target.value })}
                           placeholder="Describe your event..."
                           rows={4}
-                          className="border-2 border-white/10 focus-visible:ring-umma-500 rounded-xl resize-none text-base md:text-sm min-h-[120px] md:min-h-[100px]"
+                          className="border-2 border-white/10 focus-visible:ring-gold-400 rounded-xl resize-none text-base md:text-sm min-h-[120px] md:min-h-[100px]"
                           disabled={eventId && !hasEditPermission}
                         />
                       </div>
@@ -2197,7 +2197,7 @@ const EventCreation = () => {
                   <div className="space-y-5 md:space-y-6">
                     {/* Mobile: Beautiful Event Preview Card */}
                     <div className="md:hidden">
-                      <div className="bg-gradient-to-br from-umma-50 via-white to-white/5 rounded-3xl border border-white/10 shadow-lg overflow-hidden">
+                      <div className="bg-gradient-to-br from-white/5 via-white to-white/5 rounded-3xl border border-white/10 shadow-lg overflow-hidden">
                         {/* Event Header */}
                         <div className="p-5 pb-4">
                           <h2 className="text-2xl font-bold text-foreground leading-tight">
@@ -2207,11 +2207,11 @@ const EventCreation = () => {
                           {/* Date & Time Badge */}
                           <div className="flex flex-wrap items-center gap-2 mt-3">
                             <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-xl border border-white/10 text-sm font-medium text-white/70">
-                              <Calendar className="w-4 h-4 text-umma-500" />
+                              <Calendar className="w-4 h-4 text-gold-400" />
                               {eventData.date ? dateFromYMDLocal(eventData.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : "No date"}
                             </div>
                             <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-xl border border-white/10 text-sm font-medium text-white/70">
-                              <Clock className="w-4 h-4 text-umma-500" />
+                              <Clock className="w-4 h-4 text-gold-400" />
                               {formatTime24To12(eventData.startTime) || "--:--"} - {formatTime24To12(eventData.endTime) || "--:--"}
                               {eventData.startTime && eventData.endTime && isOvernightEvent(eventData.startTime, eventData.endTime) && (
                                 <span className="text-xs text-blue-600">(+1)</span>
@@ -2231,7 +2231,7 @@ const EventCreation = () => {
                           <div className="px-5 pb-5">
                             <div className="bg-white/5 rounded-2xl border border-white/10 p-4">
                               <div className="flex items-center gap-2 mb-3">
-                                <Users className="w-5 h-5 text-umma-500" />
+                                <Users className="w-5 h-5 text-gold-400" />
                                 <span className="text-sm font-semibold text-white/70">Volunteer Roles</span>
                               </div>
                               <div className="space-y-2">
@@ -2249,7 +2249,7 @@ const EventCreation = () => {
                               {/* Total */}
                               <div className="flex items-center justify-between pt-3 mt-2 border-t border-white/10">
                                 <span className="text-sm font-semibold text-white/50">Total volunteers</span>
-                                <span className="text-lg font-bold text-umma-600">
+                                <span className="text-lg font-bold text-white/50">
                                   {itinerary.reduce((total, item) =>
                                     total + item.volunteerRoles.reduce((roleTotal, role) =>
                                       roleTotal + role.slotsBrother + role.slotsSister + (role.slotsFlexible || 0), 0
@@ -2358,7 +2358,7 @@ const EventCreation = () => {
                                 type="time"
                                 value={eventData.dayBeforeTime}
                                 onChange={(e) => setEventData(prev => ({ ...prev, dayBeforeTime: e.target.value }))}
-                                className="h-12 md:h-10 border-white/10 md:border-white/10 focus-visible:ring-umma-500 md:focus-visible:ring-gold-400 rounded-xl md:rounded-lg"
+                                className="h-12 md:h-10 border-white/10 md:border-white/10 focus-visible:ring-gold-400 md:focus-visible:ring-gold-400 rounded-xl md:rounded-lg"
                                 disabled={eventId && !hasEditPermission}
                               />
                             </div>
@@ -2369,7 +2369,7 @@ const EventCreation = () => {
                                 type="time"
                                 value={eventData.dayOfTime}
                                 onChange={(e) => setEventData(prev => ({ ...prev, dayOfTime: e.target.value }))}
-                                className="h-12 md:h-10 border-white/10 md:border-white/10 focus-visible:ring-umma-500 md:focus-visible:ring-gold-400 rounded-xl md:rounded-lg"
+                                className="h-12 md:h-10 border-white/10 md:border-white/10 focus-visible:ring-gold-400 md:focus-visible:ring-gold-400 rounded-xl md:rounded-lg"
                                 disabled={eventId && !hasEditPermission}
                               />
                             </div>

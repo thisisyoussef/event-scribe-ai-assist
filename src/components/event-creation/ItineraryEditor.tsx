@@ -318,30 +318,30 @@ const ItineraryEditor = ({
   };
 
   return (
-    <Card className="border-white/10 md:border-umma-200 bg-white/5 shadow-sm md:shadow-none">
+    <Card className="border-white/10 md:border-white/15 bg-white/5 shadow-sm md:shadow-none">
       <CardHeader className="pb-3 md:pb-2 px-3 md:px-6">
-        <CardTitle className="flex items-center space-x-2 text-foreground md:text-umma-800 text-lg md:text-base">
+        <CardTitle className="flex items-center space-x-2 text-foreground md:text-foreground text-lg md:text-base">
           <Clock className="w-5 h-5" />
           <span>Event Timeline & Roles</span>
         </CardTitle>
-        <p className="text-sm md:text-xs text-white/40 md:text-umma-600 mt-1">
+        <p className="text-sm md:text-xs text-white/40 md:text-white/50 mt-1">
           Build your event schedule and assign volunteer roles.
         </p>
       </CardHeader>
       <CardContent className="space-y-4 px-3 md:px-6">
         {itinerary.length === 0 ? (
-          <div className="text-center py-10 md:py-8 bg-white/5 md:bg-umma-50 rounded-3xl md:rounded-xl border border-white/10 md:border-umma-200">
-            <div className="w-16 h-16 md:w-12 md:h-12 rounded-full bg-white/10 md:bg-umma-100 mx-auto mb-4 flex items-center justify-center">
-              <Clock className="w-8 h-8 md:w-6 md:h-6 text-white/30 md:text-umma-400" />
+          <div className="text-center py-10 md:py-8 bg-white/5 md:bg-white/5 rounded-3xl md:rounded-xl border border-white/10 md:border-white/15">
+            <div className="w-16 h-16 md:w-12 md:h-12 rounded-full bg-white/10 md:bg-white/10 mx-auto mb-4 flex items-center justify-center">
+              <Clock className="w-8 h-8 md:w-6 md:h-6 text-white/30 md:text-gold-400" />
             </div>
-            <h3 className="text-lg md:text-base font-semibold text-white/70 md:text-umma-700 mb-2">No activities yet</h3>
-            <p className="text-white/40 md:text-umma-600 mb-6 text-sm px-4">Start by adding your first activity with volunteer roles</p>
+            <h3 className="text-lg md:text-base font-semibold text-white/70 md:text-white/70 mb-2">No activities yet</h3>
+            <p className="text-white/40 md:text-white/50 mb-6 text-sm px-4">Start by adding your first activity with volunteer roles</p>
 
             <div className="flex flex-col gap-3 px-6 md:px-0 md:flex-row md:justify-center">
               <Button
                 onClick={addItineraryItem}
                 variant="default"
-                className="h-14 md:h-11 text-base md:text-sm font-semibold bg-umma-600 hover:bg-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-3xl md:rounded-lg touch-manipulation"
+                className="h-14 md:h-11 text-base md:text-sm font-semibold bg-gold-400/20 hover:bg-white/10 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-3xl md:rounded-lg touch-manipulation"
                 disabled={disabled}
               >
                 <Plus className="w-5 h-5 md:w-4 md:h-4 mr-2" />
@@ -352,7 +352,7 @@ const ItineraryEditor = ({
                 <Button
                   onClick={onGenerateItinerary}
                   variant="outline"
-                  className="h-14 md:h-11 text-base md:text-sm font-medium border border-white/10 md:border-umma-500 text-white/70 md:text-umma-700 hover:bg-white/5 md:hover:bg-umma-50 rounded-3xl md:rounded-lg touch-manipulation"
+                  className="h-14 md:h-11 text-base md:text-sm font-medium border border-white/10 md:border-gold-400/40 text-white/70 md:text-white/70 hover:bg-white/5 md:hover:bg-white/5 rounded-3xl md:rounded-lg touch-manipulation"
                   disabled={!canGenerateItinerary || isGenerating || disabled}
                 >
                   <Sparkles className="w-5 h-5 md:w-4 md:h-4 mr-2" />
@@ -367,7 +367,7 @@ const ItineraryEditor = ({
               {itinerary.map((item, index) => {
                 const overlappingIds = getOverlappingRoleIds(item.volunteerRoles);
                 return (
-                  <div key={item.id} className="bg-white/5 md:bg-umma-50 rounded-3xl md:rounded-xl border border-white/10 md:border-umma-200 overflow-hidden">
+                  <div key={item.id} className="bg-white/5 md:bg-white/5 rounded-3xl md:rounded-xl border border-white/10 md:border-white/15 overflow-hidden">
                     {/* Main Itinerary Item */}
                     <div className="p-3 md:p-4 space-y-4 overflow-visible">
                       {/* Mobile: Compact header */}
@@ -399,7 +399,7 @@ const ItineraryEditor = ({
                           type="time"
                           value={item.time}
                           onChange={(e) => updateItineraryItemTime(item.id, e.target.value)}
-                          className="h-12 border border-white/10 focus-visible:ring-umma-500 rounded-2xl text-base font-medium"
+                          className="h-12 border border-white/10 focus-visible:ring-gold-400/50 rounded-2xl text-base font-medium"
                           disabled={disabled}
                         />
                       </div>
@@ -407,22 +407,22 @@ const ItineraryEditor = ({
                       {/* Desktop: Original layout */}
                       <div className="hidden md:grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
                         <div className="space-y-2">
-                          <Label className="text-sm sm:text-xs text-umma-700 font-semibold">Time</Label>
+                          <Label className="text-sm sm:text-xs text-white/70 font-semibold">Time</Label>
                           <TimeInput12h
                             value={item.time}
                             onChange={(val) => updateItineraryItemTime(item.id, val)}
-                            className="text-base sm:text-sm border-umma-200 focus-visible:ring-umma-500"
+                            className="text-base sm:text-sm border-white/15 focus-visible:ring-gold-400/50"
                             disabled={disabled}
                           />
                         </div>
 
                         <div className="space-y-2 lg:col-span-2">
-                          <Label className="text-sm sm:text-xs text-umma-700 font-semibold">Activity Title</Label>
+                          <Label className="text-sm sm:text-xs text-white/70 font-semibold">Activity Title</Label>
                           <Input
                             value={item.title}
                             onChange={(e) => updateItineraryItem(item.id, 'title', e.target.value)}
                             placeholder="e.g., Doors Open"
-                            className="text-base sm:text-sm h-12 sm:h-11 border-umma-200 focus-visible:ring-umma-500"
+                            className="text-base sm:text-sm h-12 sm:h-11 border-white/15 focus-visible:ring-gold-400/50"
                             disabled={disabled}
                           />
                         </div>
@@ -431,7 +431,7 @@ const ItineraryEditor = ({
                       {/* Description - Collapsible on mobile */}
                       <div className="space-y-2">
                         <div className="hidden md:flex justify-between items-center">
-                          <Label className="text-sm sm:text-xs text-umma-700 font-semibold">Description</Label>
+                          <Label className="text-sm sm:text-xs text-white/70 font-semibold">Description</Label>
                           <Button
                             size="sm"
                             variant="ghost"
@@ -447,20 +447,20 @@ const ItineraryEditor = ({
                           onChange={(e) => updateItineraryItem(item.id, 'description', e.target.value)}
                           placeholder="What happens during this time? (optional)"
                           rows={2}
-                          className="text-base md:text-sm resize-none border-white/10 md:border-umma-200 focus-visible:ring-umma-500 rounded-2xl md:rounded-lg"
+                          className="text-base md:text-sm resize-none border-white/10 md:border-white/15 focus-visible:ring-gold-400/50 rounded-2xl md:rounded-lg"
                           disabled={disabled}
                         />
                       </div>
                     </div>
 
                     {/* Volunteer Roles Section */}
-                    <div className="border-t border-white/10 md:border-umma-200 bg-white/5 p-3 md:p-4">
+                    <div className="border-t border-white/10 md:border-white/15 bg-white/5 p-3 md:p-4">
                       <div className="flex items-center justify-between mb-4 md:mb-3">
                         <div className="flex items-center gap-2">
-                          <Users className="w-5 h-5 md:w-4 md:h-4 text-white/40 md:text-umma-600" />
-                          <Label className="text-base md:text-sm font-semibold text-white/70 md:text-umma-700">Roles</Label>
+                          <Users className="w-5 h-5 md:w-4 md:h-4 text-white/40 md:text-white/50" />
+                          <Label className="text-base md:text-sm font-semibold text-white/70 md:text-white/70">Roles</Label>
                           {item.volunteerRoles.length > 0 && (
-                            <Badge variant="secondary" className="text-xs bg-umma-100 text-umma-700 border-0">
+                            <Badge variant="secondary" className="text-xs bg-white/10 text-white/70 border-0">
                               {getTotalVolunteerSlots(item.volunteerRoles)} volunteers
                             </Badge>
                           )}
@@ -470,7 +470,7 @@ const ItineraryEditor = ({
                             size="sm"
                             variant="outline"
                             onClick={() => addVolunteerRole(item.id)}
-                            className="hidden md:flex h-8 px-3 text-xs border-umma-500 text-umma-700 hover:bg-umma-50"
+                            className="hidden md:flex h-8 px-3 text-xs border-gold-400/40 text-white/70 hover:bg-white/5"
                             disabled={disabled}
                           >
                             <UserPlus className="w-3 h-3 mr-1" />
@@ -480,7 +480,7 @@ const ItineraryEditor = ({
                             size="sm"
                             variant="default"
                             onClick={() => addVolunteerRoleMobile(item.id)}
-                            className="md:hidden h-11 px-4 text-sm bg-umma-600 hover:bg-umma-700 text-white font-semibold rounded-3xl touch-manipulation"
+                            className="md:hidden h-11 px-4 text-sm bg-gold-400/20 hover:bg-white/10 text-white font-semibold rounded-3xl touch-manipulation"
                             disabled={disabled}
                           >
                             <UserPlus className="w-4 h-4 mr-2" />
@@ -494,7 +494,7 @@ const ItineraryEditor = ({
                           <div className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/10 mx-auto mb-3 flex items-center justify-center">
                             <Users className="w-6 h-6 md:w-5 md:h-5 text-white/30" />
                           </div>
-                          <p className="text-sm text-white/40 md:text-umma-500">
+                          <p className="text-sm text-white/40 md:text-gold-400">
                             No roles yet. Tap "Add Role" to get started.
                           </p>
                         </div>
@@ -504,22 +504,22 @@ const ItineraryEditor = ({
                             const roleError = getRoleError(role);
                             const overlaps = overlappingIds.has(role.id);
                             return (
-                              <div key={role.id} className="bg-umma-25 border border-umma-100 rounded-2xl p-3 sm:p-3">
+                              <div key={role.id} className="bg-white/5 border border-white/10 rounded-2xl p-3 sm:p-3">
                                 <div className="hidden md:block">
                                   <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-3 overflow-visible">
                                     <div className="space-y-2 sm:space-y-1 col-span-2 sm:col-span-2 lg:col-span-1">
-                                      <Label className="text-sm sm:text-xs text-umma-700 font-semibold">Role Name</Label>
+                                      <Label className="text-sm sm:text-xs text-white/70 font-semibold">Role Name</Label>
                                       <Input
                                         value={role.roleLabel}
                                         onChange={(e) => updateVolunteerRole(item.id, role.id, 'roleLabel', e.target.value)}
                                         placeholder="e.g., Greeter"
-                                        className="text-base sm:text-sm h-12 sm:h-11 border-umma-200 focus-visible:ring-umma-500"
+                                        className="text-base sm:text-sm h-12 sm:h-11 border-white/15 focus-visible:ring-gold-400/50"
                                         disabled={disabled}
                                       />
                                     </div>
 
                                     <div className="space-y-2 sm:space-y-1">
-                                      <Label className="text-sm sm:text-xs text-umma-700 font-semibold">Brother Slots</Label>
+                                      <Label className="text-sm sm:text-xs text-white/70 font-semibold">Brother Slots</Label>
                                       <Input
                                         type="number"
                                         min="0"
@@ -537,13 +537,13 @@ const ItineraryEditor = ({
                                             updateVolunteerRole(item.id, role.id, 'slotsBrother', next);
                                           }
                                         }}
-                                        className="text-base sm:text-sm h-12 sm:h-11 border-umma-200 focus-visible:ring-umma-500"
+                                        className="text-base sm:text-sm h-12 sm:h-11 border-white/15 focus-visible:ring-gold-400/50"
                                         disabled={disabled}
                                       />
                                     </div>
 
                                     <div className="space-y-2 sm:space-y-1">
-                                      <Label className="text-sm sm:text-xs text-umma-700 font-semibold">Sister Slots</Label>
+                                      <Label className="text-sm sm:text-xs text-white/70 font-semibold">Sister Slots</Label>
                                       <Input
                                         type="number"
                                         min="0"
@@ -562,13 +562,13 @@ const ItineraryEditor = ({
                                             updateVolunteerRole(item.id, role.id, 'slotsSister', next);
                                           }
                                         }}
-                                        className="text-base sm:text-sm h-12 sm:h-11 border-umma-200 focus-visible:ring-umma-500"
+                                        className="text-base sm:text-sm h-12 sm:h-11 border-white/15 focus-visible:ring-gold-400/50"
                                         disabled={disabled}
                                       />
                                     </div>
 
                                     <div className="space-y-2 sm:space-y-1">
-                                      <Label className="text-sm sm:text-xs text-umma-700 font-semibold">Either Gender</Label>
+                                      <Label className="text-sm sm:text-xs text-white/70 font-semibold">Either Gender</Label>
                                       <Input
                                         type="number"
                                         min="0"
@@ -585,10 +585,10 @@ const ItineraryEditor = ({
                                             updateVolunteerRole(item.id, role.id, 'slotsFlexible', next);
                                           }
                                         }}
-                                        className="text-base sm:text-sm h-12 sm:h-11 border-umma-200 focus-visible:ring-umma-500"
+                                        className="text-base sm:text-sm h-12 sm:h-11 border-white/15 focus-visible:ring-gold-400/50"
                                         disabled={disabled}
                                       />
-                                      <div className="text-sm sm:text-xs text-umma-600 font-medium">
+                                      <div className="text-sm sm:text-xs text-white/50 font-medium">
                                         Can be filled by either brothers or sisters
                                       </div>
                                     </div>
@@ -597,7 +597,7 @@ const ItineraryEditor = ({
                                   <div className="mt-4 sm:mt-3 space-y-3 sm:space-y-2">
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
                                       <div className="space-y-2 sm:space-y-1">
-                                        <Label className="text-sm sm:text-xs text-umma-700 font-semibold">Points of Contact</Label>
+                                        <Label className="text-sm sm:text-xs text-white/70 font-semibold">Points of Contact</Label>
                                         <div className="space-y-3 sm:space-y-2">
                                           {/* Display selected points of contact as tags */}
                                           <div className="flex flex-wrap gap-2 sm:gap-1">
@@ -606,7 +606,7 @@ const ItineraryEditor = ({
                                               return contact ? (
                                                 <div
                                                   key={pocId}
-                                                  className="flex items-center gap-1.5 sm:gap-1 px-3 py-1.5 sm:px-2 sm:py-1 bg-umma-100 text-umma-700 rounded-md text-sm sm:text-xs"
+                                                  className="flex items-center gap-1.5 sm:gap-1 px-3 py-1.5 sm:px-2 sm:py-1 bg-white/10 text-white/70 rounded-md text-sm sm:text-xs"
                                                 >
                                                   <span>{contact.name}</span>
                                                   <button
@@ -615,7 +615,7 @@ const ItineraryEditor = ({
                                                       const newPOCs = (role.suggestedPOC || []).filter((_, i) => i !== index);
                                                       updateVolunteerRole(item.id, role.id, 'suggestedPOC', newPOCs);
                                                     }}
-                                                    className="text-umma-500 hover:text-umma-700"
+                                                    className="text-gold-400 hover:text-white/80"
                                                     disabled={disabled}
                                                   >
                                                     <X className="w-3 h-3" />
@@ -635,7 +635,7 @@ const ItineraryEditor = ({
                                               }}
                                               disabled={disabled}
                                             >
-                                              <SelectTrigger className="text-base sm:text-sm border-umma-200 h-12 sm:h-11 px-3 focus-visible:ring-umma-500 flex-1">
+                                              <SelectTrigger className="text-base sm:text-sm border-white/15 h-12 sm:h-11 px-3 focus-visible:ring-gold-400/50 flex-1">
                                                 <SelectValue placeholder="Add coordinator" />
                                               </SelectTrigger>
                                               <SelectContent>
@@ -660,7 +660,7 @@ const ItineraryEditor = ({
                                                 size="sm"
                                                 variant="outline"
                                                 onClick={onAddContact}
-                                                className="h-11 w-12 p-0 border-umma-200 text-umma-700 hover:bg-umma-50 focus-visible:ring-umma-500 flex-shrink-0"
+                                                className="h-11 w-12 p-0 border-white/15 text-white/70 hover:bg-white/5 focus-visible:ring-gold-400/50 flex-shrink-0"
                                                 disabled={disabled}
                                               >
                                                 <Plus className="w-4 h-4" />
@@ -671,14 +671,14 @@ const ItineraryEditor = ({
                                       </div>
 
                                       <div className="space-y-2 sm:space-y-1">
-                                        <Label className="text-sm sm:text-xs text-umma-700 font-semibold">End Time</Label>
+                                        <Label className="text-sm sm:text-xs text-white/70 font-semibold">End Time</Label>
                                         <TimeInput12h
                                           value={role.shiftEndTime}
                                           onChange={(val) => updateVolunteerRole(item.id, role.id, 'shiftEndTime', val)}
-                                          className="text-base sm:text-sm border-umma-200 focus-visible:ring-umma-500"
+                                          className="text-base sm:text-sm border-white/15 focus-visible:ring-gold-400/50"
                                           disabled={disabled}
                                         />
-                                        <div className="text-sm sm:text-xs text-umma-600 font-medium">When this role ends</div>
+                                        <div className="text-sm sm:text-xs text-white/50 font-medium">When this role ends</div>
                                         {showValidation && roleError && (
                                           <div className="text-sm sm:text-[11px] text-red-400">{roleError}</div>
                                         )}
@@ -686,12 +686,12 @@ const ItineraryEditor = ({
                                     </div>
 
                                     <div className="space-y-2 sm:space-y-1">
-                                      <Label className="text-sm sm:text-xs text-umma-700 font-semibold">Notes</Label>
+                                      <Label className="text-sm sm:text-xs text-white/70 font-semibold">Notes</Label>
                                       <Input
                                         value={role.notes || ""}
                                         onChange={(e) => updateVolunteerRole(item.id, role.id, 'notes', e.target.value)}
                                         placeholder="Special instructions or requirements"
-                                        className="text-base sm:text-sm h-12 sm:h-11 border-umma-200 focus-visible:ring-umma-500"
+                                        className="text-base sm:text-sm h-12 sm:h-11 border-white/15 focus-visible:ring-gold-400/50"
                                         disabled={disabled}
                                       />
                                     </div>
@@ -722,7 +722,7 @@ const ItineraryEditor = ({
                                     </div>
                                     <div className="text-sm text-white/40 flex items-center flex-wrap gap-x-4 gap-y-1 mt-1">
                                       <span className="flex items-center gap-1.5 font-medium">
-                                        <Users className="w-4 h-4 text-umma-500" />
+                                        <Users className="w-4 h-4 text-gold-400" />
                                         <span className="text-white/70">{role.slotsBrother + role.slotsSister + role.slotsFlexible}</span>
                                         <span className="text-white/30">needed</span>
                                       </span>
@@ -749,7 +749,7 @@ const ItineraryEditor = ({
               <Button
                 onClick={addItineraryItem}
                 variant="outline"
-                className="flex-1 h-14 md:h-11 text-base md:text-sm font-semibold border border-white/10 md:border-umma-500 text-white/70 md:text-umma-700 hover:bg-white/5 md:hover:bg-umma-100 rounded-3xl md:rounded-lg touch-manipulation"
+                className="flex-1 h-14 md:h-11 text-base md:text-sm font-semibold border border-white/10 md:border-gold-400/40 text-white/70 md:text-white/70 hover:bg-white/5 md:hover:bg-white/10 rounded-3xl md:rounded-lg touch-manipulation"
                 disabled={disabled}
               >
                 <Plus className="w-5 h-5 md:w-4 md:h-4 mr-2" />
@@ -760,7 +760,7 @@ const ItineraryEditor = ({
                 <Button
                   onClick={onGenerateItinerary}
                   variant="outline"
-                  className="flex-1 h-14 md:h-11 text-base md:text-sm font-medium border border-white/10 md:border-umma-500 text-white/70 md:text-umma-700 hover:bg-white/5 md:hover:bg-umma-50 rounded-3xl md:rounded-lg touch-manipulation"
+                  className="flex-1 h-14 md:h-11 text-base md:text-sm font-medium border border-white/10 md:border-gold-400/40 text-white/70 md:text-white/70 hover:bg-white/5 md:hover:bg-white/5 rounded-3xl md:rounded-lg touch-manipulation"
                   disabled={!canGenerateItinerary || isGenerating || disabled}
                 >
                   <Sparkles className="w-5 h-5 md:w-4 md:h-4 mr-2" />
@@ -796,7 +796,7 @@ const ItineraryEditor = ({
                       value={activeRoleData.roleLabel}
                       onChange={(e) => updateVolunteerRole(activeItem.id, activeRoleData.id, 'roleLabel', e.target.value)}
                       placeholder="e.g., Greeter, Setup Crew..."
-                      className="text-xl font-semibold h-14 border border-white/10 focus-visible:ring-umma-500 rounded-2xl placeholder:font-normal placeholder:text-white/30"
+                      className="text-xl font-semibold h-14 border border-white/10 focus-visible:ring-gold-400/50 rounded-2xl placeholder:font-normal placeholder:text-white/30"
                     />
                   </div>
 
@@ -849,7 +849,7 @@ const ItineraryEditor = ({
                     {/* Total indicator */}
                     <div className="flex items-center justify-between pt-3 border-t border-white/10">
                       <span className="text-sm font-semibold text-white/50">Total volunteers</span>
-                      <span className="text-lg font-bold text-umma-600">
+                      <span className="text-lg font-bold text-white/50">
                         {activeRoleData.slotsBrother + activeRoleData.slotsSister + activeRoleData.slotsFlexible}
                       </span>
                     </div>
@@ -912,7 +912,7 @@ const ItineraryEditor = ({
           {/* Sticky Done Button */}
           <div className="mt-auto p-4 pt-3 bg-white/5 border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] shrink-0" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
             <Button
-              className="w-full h-14 text-lg font-bold bg-umma-600 hover:bg-umma-700 text-white shadow-xl rounded-xl touch-manipulation"
+              className="w-full h-14 text-lg font-bold bg-gold-400/20 hover:bg-white/10 text-white shadow-xl rounded-xl touch-manipulation"
               onClick={() => setEditingRole(null)}
             >
               Done
