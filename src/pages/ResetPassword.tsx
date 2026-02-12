@@ -17,6 +17,14 @@ const ResetPassword = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const redirectTo = ((): string => {
+    try {
+      const url = new URL(window.location.href);
+      return url.searchParams.get("redirect") || "/dashboard";
+    } catch {
+      return "/dashboard";
+    }
+  })();
 
   useEffect(() => {
     // Check if we have the necessary tokens for password reset
@@ -75,10 +83,10 @@ const ResetPassword = () => {
           description: "Your password has been successfully updated. You can now sign in with your new password.",
         });
         
-        // Redirect to login after a short delay
+        // Redirect after a short delay
         setTimeout(() => {
-          navigate("/login");
-        }, 3000);
+          navigate(redirectTo, { replace: true });
+        }, 1500);
       }
     } catch (error) {
       console.error('Password reset error:', error);
@@ -90,21 +98,21 @@ const ResetPassword = () => {
 
   if (error && !searchParams.get('access_token')) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-stone-100 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md border-brand-200 bg-white/90 backdrop-blur-sm shadow-xl">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-white/10 bg-white/5 backdrop-blur-xl shadow-xl golden-glow">
           <CardHeader className="space-y-1 text-center">
-            <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
-              <AlertCircle className="w-6 h-6 text-red-600" />
+            <div className="mx-auto w-12 h-12 bg-red-500/100/10 rounded-full flex items-center justify-center mb-4">
+              <AlertCircle className="w-6 h-6 text-red-400" />
             </div>
-            <CardTitle className="text-2xl text-brand-800">Invalid Link</CardTitle>
-            <CardDescription className="text-brand-600">
+            <CardTitle className="text-2xl text-foreground">Invalid Link</CardTitle>
+            <CardDescription className="text-white/50">
               {error}
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
             <Button
               onClick={() => navigate("/login")}
-              className="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white"
+              className="bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-300 hover:to-gold-400 text-white"
             >
               Return to Login
             </Button>
@@ -116,14 +124,14 @@ const ResetPassword = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-stone-100 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md border-brand-200 bg-white/90 backdrop-blur-sm shadow-xl">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-white/10 bg-white/5 backdrop-blur-xl shadow-xl golden-glow">
           <CardHeader className="space-y-1 text-center">
-            <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="w-6 h-6 text-green-600" />
+            <div className="mx-auto w-12 h-12 bg-emerald-500/15 rounded-full flex items-center justify-center mb-4">
+              <CheckCircle className="w-6 h-6 text-emerald-400" />
             </div>
-            <CardTitle className="text-2xl text-brand-800">Password Updated!</CardTitle>
-            <CardDescription className="text-brand-600">
+            <CardTitle className="text-2xl text-foreground">Password Updated!</CardTitle>
+            <CardDescription className="text-white/50">
               Your password has been successfully updated. Redirecting you to login...
             </CardDescription>
           </CardHeader>
@@ -133,28 +141,28 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-stone-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       {/* Logo */}
       <div className="absolute top-8 left-8 flex items-center space-x-3">
-        <div className="w-10 h-10 bg-gradient-to-br from-brand-400 to-brand-600 rounded-xl flex items-center justify-center shadow-lg">
+        <div className="w-10 h-10 bg-gradient-to-br from-gold-400 to-gold-500 rounded-xl flex items-center justify-center shadow-lg">
           <Heart className="w-6 h-6 text-white" />
         </div>
-        <h1 className="text-xl font-bold bg-gradient-to-r from-brand-600 to-brand-800 bg-clip-text text-transparent">
+        <h1 className="text-xl font-bold bg-gradient-to-r from-gold-400 to-gold-300 bg-clip-text text-transparent">
           EasyEvent
         </h1>
       </div>
 
-      <Card className="w-full max-w-md border-brand-200 bg-white/90 backdrop-blur-sm shadow-xl">
+      <Card className="w-full max-w-md border-white/10 bg-white/5 backdrop-blur-xl shadow-xl golden-glow">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl text-brand-800">Set New Password</CardTitle>
-          <CardDescription className="text-brand-600">
+          <CardTitle className="text-2xl text-foreground">Set New Password</CardTitle>
+          <CardDescription className="text-white/50">
             Enter your new password below
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-brand-800">New Password</Label>
+              <Label htmlFor="password" className="text-foreground">New Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -162,13 +170,13 @@ const ResetPassword = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="border-brand-200 focus:border-brand-400"
+                className="border-white/15 focus:border-gold-400"
                 minLength={6}
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-brand-800">Confirm New Password</Label>
+              <Label htmlFor="confirmPassword" className="text-foreground">Confirm New Password</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -176,20 +184,20 @@ const ResetPassword = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                className="border-brand-200 focus:border-brand-400"
+                className="border-white/15 focus:border-gold-400"
                 minLength={6}
               />
             </div>
 
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600">{error}</p>
+              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                <p className="text-sm text-red-400">{error}</p>
               </div>
             )}
 
             <Button 
               type="submit" 
-              className="w-full bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="w-full bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-300 hover:to-gold-400 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
               disabled={loading}
             >
               {loading ? "Updating Password..." : "Update Password"}
@@ -200,7 +208,7 @@ const ResetPassword = () => {
             <button
               type="button"
               onClick={() => navigate("/login")}
-              className="text-brand-600 hover:text-brand-700 hover:underline font-medium"
+              className="text-white/50 hover:text-white/70 hover:underline font-medium"
             >
               Back to Login
             </button>

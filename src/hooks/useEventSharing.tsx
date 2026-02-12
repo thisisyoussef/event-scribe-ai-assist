@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { EventShare, Event, SharedEventAccess } from '@/types/database';
+import { EventShare, Event, SharedEventAccess, PreviouslySharedUser } from '@/types/database';
 import { useToast } from '@/hooks/use-toast';
 
 export const useEventSharing = () => {
@@ -179,6 +179,32 @@ export const useEventSharing = () => {
     }
   };
 
+  // Get previously shared users
+  const getPreviouslySharedUsers = async (): Promise<PreviouslySharedUser[]> => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.log('No user found in getPreviouslySharedUsers');
+        return [];
+      }
+
+      console.log('Current user ID:', user.id);
+      const { data, error } = await supabase
+        .rpc('get_previously_shared_users');
+
+      if (error) {
+        console.error('Error fetching previously shared users:', error);
+        return [];
+      }
+
+      console.log('Raw RPC result for previously shared users:', data);
+      return data || [];
+    } catch (error) {
+      console.error('Error in getPreviouslySharedUsers:', error);
+      return [];
+    }
+  };
+
   // Check if current user has access to an event
   const checkEventAccess = async (
     eventId: string,
@@ -188,36 +214,8 @@ export const useEventSharing = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { hasAccess: false, permissionLevel: null };
 
-      // Check if user owns the event
-      const { data: ownedEvent } = await supabase
-        .from('events')
-        .select('created_by')
-        .eq('id', eventId)
-        .eq('created_by', user.id)
-        .single();
-
-      if (ownedEvent) {
-        return { hasAccess: true, permissionLevel: 'edit' };
-      }
-
-      // Check if event is shared with user
-      const { data: share } = await supabase
-        .from('event_shares')
-        .select('permission_level')
-        .eq('event_id', eventId)
-        .eq('shared_with', user.id)
-        .single();
-
-      if (!share) {
-        return { hasAccess: false, permissionLevel: null };
-      }
-
-      // Check permission level
-      if (requiredPermission === 'edit' && share.permission_level === 'view') {
-        return { hasAccess: false, permissionLevel: 'view' };
-      }
-
-      return { hasAccess: true, permissionLevel: share.permission_level };
+      // Simplified policy: any authenticated user (POC) has edit access
+      return { hasAccess: true, permissionLevel: 'edit' };
     } catch (error) {
       console.error('Error checking event access:', error);
       return { hasAccess: false, permissionLevel: null };
@@ -230,6 +228,7 @@ export const useEventSharing = () => {
     getSharedEvents,
     removeShare,
     checkEventAccess,
+    getPreviouslySharedUsers,
     isLoading,
   };
 };

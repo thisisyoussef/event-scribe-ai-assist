@@ -10,7 +10,9 @@ export const useVolunteerDeletion = () => {
   const deleteVolunteer = async (
     volunteerId: string, 
     volunteerName: string, 
-    adminPassword?: string
+    adminPassword?: string,
+    phoneVerification?: string,
+    volunteerPhone?: string
   ): Promise<boolean> => {
     if (isDeleting) {
       console.log(`[DELETION] Already deleting, ignoring request`);
@@ -22,25 +24,32 @@ export const useVolunteerDeletion = () => {
     try {
       console.log(`[DELETION] Starting deletion process for volunteer ${volunteerId} (${volunteerName})`);
       
-      if (!adminPassword) {
-        console.log(`[DELETION] No admin password provided`);
+      // Check if we have either admin password or phone verification
+      if (!adminPassword && (!phoneVerification || !volunteerPhone)) {
+        console.log(`[DELETION] No admin password or phone verification provided`);
         toast({
-          title: "Admin Password Required",
-          description: "Please enter the admin password to delete volunteers.",
+          title: "Authorization Required",
+          description: "Please provide either admin password or phone verification to delete volunteers.",
           variant: "destructive",
         });
         return false;
       }
 
-      console.log(`[DELETION] Calling Edge Function with password`);
+      console.log(`[DELETION] Calling Edge Function with ${adminPassword ? 'admin password' : 'phone verification'}`);
+      
+      const requestBody = {
+        volunteerId,
+        volunteerName,
+        ...(adminPassword && { adminPassword }),
+        ...(phoneVerification && { phoneVerification }),
+        ...(volunteerPhone && { volunteerPhone })
+      };
+      
+      console.log(`[DELETION] Request body:`, requestBody);
       
       // Call the Edge Function to delete the volunteer
       const { data, error } = await supabase.functions.invoke('delete-volunteer', {
-        body: {
-          volunteerId,
-          volunteerName,
-          adminPassword
-        }
+        body: requestBody
       });
 
       console.log(`[DELETION] Edge Function response received:`, { data, error });

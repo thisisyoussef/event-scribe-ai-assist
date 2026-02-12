@@ -1,87 +1,87 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 46 12% 39%;
+    /* Ramadan Night Sky Theme — default is dark */
+    --background: 230 60% 6%;
+    --foreground: 45 100% 96%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 46 12% 39%;
+    --card: 230 50% 10%;
+    --card-foreground: 45 100% 96%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 46 12% 39%;
+    --popover: 230 50% 10%;
+    --popover-foreground: 45 100% 96%;
 
-    --primary: 46 12% 39%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 43 96% 56%;
+    --primary-foreground: 230 60% 8%;
 
-    --secondary: 46 12% 96%;
-    --secondary-foreground: 46 12% 39%;
+    --secondary: 230 40% 16%;
+    --secondary-foreground: 45 80% 90%;
 
-    --muted: 46 12% 96%;
-    --muted-foreground: 46 12% 46%;
+    --muted: 230 35% 14%;
+    --muted-foreground: 230 20% 60%;
 
-    --accent: 46 12% 96%;
-    --accent-foreground: 46 12% 39%;
+    --accent: 230 40% 18%;
+    --accent-foreground: 45 80% 90%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 350 84% 50%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 46 12% 91%;
-    --input: 46 12% 91%;
-    --ring: 46 12% 39%;
+    --border: 230 30% 18%;
+    --input: 230 30% 18%;
+    --ring: 43 96% 56%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 46 12% 26%;
-    --sidebar-primary: 46 12% 39%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 46 12% 96%;
-    --sidebar-accent-foreground: 46 12% 39%;
-    --sidebar-border: 46 12% 91%;
-    --sidebar-ring: 46 12% 39%;
+    --sidebar-background: 230 55% 8%;
+    --sidebar-foreground: 45 80% 90%;
+    --sidebar-primary: 43 96% 56%;
+    --sidebar-primary-foreground: 230 60% 8%;
+    --sidebar-accent: 230 40% 14%;
+    --sidebar-accent-foreground: 45 80% 90%;
+    --sidebar-border: 230 30% 16%;
+    --sidebar-ring: 43 96% 56%;
   }
 
   .dark {
-    --background: 46 12% 5%;
-    --foreground: 0 0% 98%;
+    --background: 230 60% 4%;
+    --foreground: 45 100% 96%;
 
-    --card: 46 12% 5%;
-    --card-foreground: 0 0% 98%;
+    --card: 230 50% 8%;
+    --card-foreground: 45 100% 96%;
 
-    --popover: 46 12% 5%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 230 50% 8%;
+    --popover-foreground: 45 100% 96%;
 
-    --primary: 46 12% 39%;
-    --primary-foreground: 46 12% 11%;
+    --primary: 43 96% 56%;
+    --primary-foreground: 230 60% 8%;
 
-    --secondary: 46 12% 18%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 230 40% 14%;
+    --secondary-foreground: 45 80% 90%;
 
-    --muted: 46 12% 18%;
-    --muted-foreground: 46 12% 65%;
+    --muted: 230 35% 12%;
+    --muted-foreground: 230 20% 55%;
 
-    --accent: 46 12% 18%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 230 40% 16%;
+    --accent-foreground: 45 80% 90%;
 
-    --destructive: 0 63% 31%;
+    --destructive: 350 63% 40%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 46 12% 18%;
-    --input: 46 12% 18%;
-    --ring: 46 12% 39%;
+    --border: 230 30% 15%;
+    --input: 230 30% 15%;
+    --ring: 43 96% 56%;
 
-    --sidebar-background: 46 12% 10%;
-    --sidebar-foreground: 46 12% 96%;
-    --sidebar-primary: 46 12% 39%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 46 12% 16%;
-    --sidebar-accent-foreground: 46 12% 96%;
-    --sidebar-border: 46 12% 16%;
-    --sidebar-ring: 46 12% 39%;
+    --sidebar-background: 230 55% 6%;
+    --sidebar-foreground: 45 80% 90%;
+    --sidebar-primary: 43 96% 56%;
+    --sidebar-primary-foreground: 230 60% 8%;
+    --sidebar-accent: 230 40% 12%;
+    --sidebar-accent-foreground: 45 80% 90%;
+    --sidebar-border: 230 30% 14%;
+    --sidebar-ring: 43 96% 56%;
   }
 }
 
@@ -91,41 +91,476 @@
   }
 
   body {
-    @apply bg-gradient-to-br from-white via-slate-50 to-stone-100 text-foreground font-sans;
+    @apply bg-background text-foreground;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji', ui-sans-serif, system-ui, sans-serif;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(26, 35, 126, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(49, 27, 146, 0.10) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 80%, rgba(12, 20, 69, 0.20) 0%, transparent 50%);
     background-attachment: fixed;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply text-stone-700;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-foreground;
   }
 
   p {
-    @apply text-stone-600 leading-relaxed;
+    @apply text-muted-foreground leading-relaxed;
   }
 }
 
+/* ==========================================
+   STARS BACKGROUND - animated night sky
+   ========================================== */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@keyframes twinkle-slow {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.8; }
+}
+
+.stars-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.stars-bg::before,
+.stars-bg::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.stars-bg::before {
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(255, 213, 79, 0.8) 50%, transparent 50%),
+    radial-gradient(1px 1px at 25% 35%, rgba(255, 213, 79, 0.6) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 40% 10%, rgba(255, 213, 79, 0.9) 50%, transparent 50%),
+    radial-gradient(1px 1px at 55% 45%, rgba(255, 213, 79, 0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 70% 20%, rgba(255, 213, 79, 0.7) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 85% 60%, rgba(255, 213, 79, 0.8) 50%, transparent 50%),
+    radial-gradient(1px 1px at 15% 70%, rgba(255, 213, 79, 0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 30% 85%, rgba(255, 213, 79, 0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 60% 75%, rgba(255, 213, 79, 0.7) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 90% 30%, rgba(255, 213, 79, 0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 5% 50%, rgba(255, 213, 79, 0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 45% 55%, rgba(255, 213, 79, 0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 75% 90%, rgba(255, 213, 79, 0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 95% 85%, rgba(255, 213, 79, 0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 35% 95%, rgba(255, 213, 79, 0.4) 50%, transparent 50%);
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+.stars-bg::after {
+  background-image:
+    radial-gradient(1px 1px at 20% 25%, rgba(255, 248, 225, 0.6) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 50% 15%, rgba(255, 248, 225, 0.8) 50%, transparent 50%),
+    radial-gradient(1px 1px at 80% 45%, rgba(255, 248, 225, 0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 10% 80%, rgba(255, 248, 225, 0.7) 50%, transparent 50%),
+    radial-gradient(1px 1px at 65% 65%, rgba(255, 248, 225, 0.4) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 35% 40%, rgba(255, 248, 225, 0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 90% 70%, rgba(255, 248, 225, 0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 45% 90%, rgba(255, 248, 225, 0.4) 50%, transparent 50%);
+  animation: twinkle-slow 6s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
 @layer components {
+  /* ==========================================
+     GLASS-MORPHISM CARDS - Ramadan style
+     ========================================== */
   .glass-effect {
-    @apply bg-white/80 backdrop-blur-sm border border-stone-200;
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg;
   }
 
+  .frosted-panel {
+    @apply bg-white/5 backdrop-blur-xl shadow-lg ring-1 ring-white/10 rounded-2xl;
+  }
+
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-lg;
+    @apply hover:bg-white/8 hover:border-gold-400/20 transition-all duration-300;
+  }
+
+  .glass-card-glow {
+    @apply glass-card;
+    box-shadow: 0 0 20px rgba(249, 168, 37, 0.05), 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .glass-card-glow:hover {
+    box-shadow: 0 0 30px rgba(249, 168, 37, 0.1), 0 8px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  /* ==========================================
+     PILL BADGES
+     ========================================== */
+  .pill-badge {
+    @apply rounded-full px-3 py-1 text-xs font-medium shadow-sm transition-all duration-200;
+  }
+
+  .olive-pill {
+    @apply pill-badge bg-gold-400/15 text-gold-300 border border-gold-400/25;
+  }
+
+  .neutral-pill {
+    @apply pill-badge bg-white/10 text-white/70 border border-white/15;
+  }
+
+  .success-pill {
+    @apply pill-badge bg-emerald-500/15 text-emerald-300 border border-emerald-500/25;
+  }
+
+  .warning-pill {
+    @apply pill-badge bg-amber-500/15 text-amber-300 border border-amber-500/25;
+  }
+
+  .danger-pill {
+    @apply pill-badge bg-red-500/15 text-red-300 border border-red-500/25;
+  }
+
+  /* ==========================================
+     GRADIENT TEXT
+     ========================================== */
   .gradient-text {
-    @apply bg-gradient-to-r from-stone-600 to-stone-800 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-gold-300 via-gold-400 to-amber-300 bg-clip-text text-transparent;
   }
 
+  .gradient-text-subtle {
+    @apply bg-gradient-to-r from-white via-gold-100 to-white/80 bg-clip-text text-transparent;
+  }
+
+  /* ==========================================
+     BUTTONS
+     ========================================== */
   .button-glow {
-    @apply shadow-lg hover:shadow-xl transition-all duration-300;
+    @apply shadow-lg transition-all duration-300;
+    box-shadow: 0 0 15px rgba(249, 168, 37, 0.2);
   }
 
-  .brand-primary {
-    color: #9B9A6D;
+  .button-glow:hover {
+    box-shadow: 0 0 25px rgba(249, 168, 37, 0.35);
   }
 
-  .brand-bg {
-    background-color: #9B9A6D;
+  /* ==========================================
+     GOLDEN GLOW EFFECTS
+     ========================================== */
+  .golden-glow {
+    box-shadow: 0 0 20px rgba(249, 168, 37, 0.15);
   }
 
-  .brand-border {
-    border-color: #9B9A6D;
+  .golden-glow-strong {
+    box-shadow: 0 0 30px rgba(249, 168, 37, 0.25), 0 0 60px rgba(249, 168, 37, 0.1);
+  }
+
+  .golden-border {
+    @apply border border-gold-400/30;
+  }
+
+  .golden-border-glow {
+    @apply border border-gold-400/40;
+    box-shadow: 0 0 15px rgba(249, 168, 37, 0.1);
+  }
+
+  /* ==========================================
+     CRESCENT MOON (CSS-only decorative)
+     ========================================== */
+  .crescent-moon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    box-shadow: 6px -2px 0 0 #FFD54F;
+    transform: rotate(-30deg);
+  }
+
+  .crescent-moon-lg {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: 10px -3px 0 0 #FFD54F;
+    transform: rotate(-30deg);
+  }
+
+  /* ==========================================
+     GEOMETRIC PATTERN (Islamic art inspired)
+     ========================================== */
+  .geometric-accent {
+    background-image:
+      radial-gradient(circle, rgba(249, 168, 37, 0.08) 1px, transparent 1px),
+      radial-gradient(circle, rgba(249, 168, 37, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px, 30px 30px;
+    background-position: 0 0, 10px 10px;
+  }
+
+  .geometric-border {
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 8px,
+      rgba(249, 168, 37, 0.2) 8px,
+      rgba(249, 168, 37, 0.2) 10px,
+      transparent 10px,
+      transparent 18px,
+      rgba(249, 168, 37, 0.1) 18px,
+      rgba(249, 168, 37, 0.1) 20px
+    );
+    height: 2px;
+  }
+
+  /* ==========================================
+     HERO BACKGROUND (landing page)
+     ========================================== */
+  .hero-bg {
+    background-image: url('/images/umma_stewards_mobile.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+
+  @media (min-width: 640px) {
+    .hero-bg {
+      background-image: url('/images/umma_stewards_mobile.png');
+      background-size: cover;
+      background-position: center center;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .hero-bg {
+      background-image: url('/images/umma_stewards_mobile.png');
+      background-size: cover;
+      background-position: center center;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-bg {
+      background-image: url('/images/umma_stewards_mobile.png');
+      background-size: cover;
+      background-position: center center;
+    }
+  }
+
+  /* Hide scrollbar for horizontal scrolling containers */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Section title for visual chunking */
+  .section-title {
+    @apply text-xs font-semibold uppercase tracking-wider text-gold-400/70;
+  }
+
+  /* Interactive card with press animation */
+  .card-interactive {
+    @apply cursor-pointer transition-all duration-200;
+    @apply hover:-translate-y-0.5;
+    @apply active:scale-[0.97] active:shadow-lg;
+  }
+
+  .card-interactive:hover {
+    box-shadow: 0 0 20px rgba(249, 168, 37, 0.08), 0 10px 25px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Safe area padding for iOS devices */
+  .pb-safe-bottom {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  .pt-safe-top {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+  }
+
+  /* Enhanced focus glow for inputs - golden ring */
+  .input-focus-glow:focus {
+    @apply ring-2 ring-gold-400/50 ring-offset-2 ring-offset-background border-gold-400;
+    box-shadow: 0 0 0 3px rgba(249, 168, 37, 0.15);
+  }
+
+  /* Micro-interaction: subtle hover lift */
+  .hover-lift {
+    @apply transition-all duration-200;
+    @apply hover:-translate-y-0.5;
+  }
+
+  .hover-lift:hover {
+    box-shadow: 0 0 15px rgba(249, 168, 37, 0.08), 0 8px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Micro-interaction: press feedback */
+  .press-feedback {
+    @apply transition-transform duration-100;
+    @apply active:scale-[0.97];
+  }
+
+  /* Gradient header */
+  .gradient-header {
+    @apply bg-gradient-to-br from-[#0C1445] via-[#1A237E]/80 to-[#311B92]/60;
+  }
+
+  /* Night sky gradient */
+  .night-sky-gradient {
+    background: linear-gradient(135deg, #0C1445 0%, #1A237E 40%, #311B92 100%);
+  }
+
+  /* Ramadan glow divider */
+  .ramadan-divider {
+    @apply h-px w-full;
+    background: linear-gradient(90deg, transparent, rgba(249, 168, 37, 0.3), transparent);
+  }
+
+  /* Line clamp utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  /* =============================================
+     MOBILE-FIRST UTILITIES
+     ============================================= */
+
+  /* Mobile typography scale */
+  .mobile-section-header {
+    @apply text-base font-semibold md:text-sm md:font-semibold;
+  }
+
+  .mobile-field-label {
+    @apply text-sm font-medium md:text-xs;
+  }
+
+  .mobile-input-text {
+    @apply text-base md:text-sm;
+  }
+
+  .mobile-cta-text {
+    @apply text-base font-bold md:text-sm md:font-semibold;
+  }
+
+  /* Mobile section card - dark glass style */
+  .section-card-mobile {
+    @apply bg-white/5 backdrop-blur-xl rounded-2xl p-4 md:p-5;
+    @apply border border-white/10;
+    @apply shadow-lg;
+  }
+
+  /* Stepper button - large touch targets (44px minimum) */
+  .stepper-btn {
+    @apply w-11 h-11 flex items-center justify-center;
+    @apply rounded-full bg-white/10 text-gold-300;
+    @apply transition-all duration-150;
+    @apply active:scale-95 active:bg-white/20;
+    @apply touch-manipulation;
+  }
+
+  .stepper-btn:disabled {
+    @apply opacity-40 cursor-not-allowed;
+  }
+
+  /* Touch-friendly input wrapper */
+  .mobile-input-wrapper {
+    @apply min-h-[48px] md:min-h-0;
+  }
+
+  /* Mobile button - large touch target */
+  .mobile-btn {
+    @apply min-h-[48px] px-6 text-base font-semibold;
+    @apply rounded-xl transition-all duration-200;
+    @apply active:scale-[0.97];
+    @apply touch-manipulation;
+  }
+
+  /* Hide on mobile, show on larger screens */
+  .hide-mobile {
+    @apply hidden lg:block;
+  }
+
+  /* Show on mobile, hide on larger screens */
+  .show-mobile {
+    @apply block lg:hidden;
+  }
+
+  /* Expandable field - collapsed state */
+  .expandable-trigger {
+    @apply flex items-center gap-2 text-white/50;
+    @apply py-3 px-4 rounded-xl bg-white/5;
+    @apply border border-white/10 border-dashed;
+    @apply cursor-pointer transition-all duration-200;
+    @apply hover:bg-white/10 hover:border-gold-400/30;
+  }
+
+  /* Full-width on mobile, auto on desktop */
+  .mobile-full-width {
+    @apply w-full md:w-auto;
+  }
+
+  /* Stack on mobile, row on desktop */
+  .mobile-stack {
+    @apply flex flex-col gap-3 md:flex-row md:gap-4;
+  }
+
+  /* Mobile-friendly scrolling for horizontal content */
+  .mobile-scroll-x {
+    @apply overflow-x-auto scrollbar-hide;
+    @apply -mx-4 px-4 md:mx-0 md:px-0;
+  }
+
+  /* Lantern loading animation */
+  @keyframes lantern-sway {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+
+  .lantern-sway {
+    animation: lantern-sway 3s ease-in-out infinite;
+    transform-origin: top center;
+  }
+
+  /* Shimmer effect for loading / success */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .shimmer {
+    background: linear-gradient(90deg, transparent, rgba(249, 168, 37, 0.15), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s ease-in-out infinite;
   }
 }

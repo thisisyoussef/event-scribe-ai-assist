@@ -1,140 +1,167 @@
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, Calendar, MessageSquare, Star } from "lucide-react";
+import UpcomingEvents from "@/components/UpcomingEvents";
+import { supabase } from "@/integrations/supabase/client";
+import { isEventTodayOrFuture } from "@/utils/eventUtils";
+import { toMichiganTime } from "@/utils/timezoneUtils";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [hasEvents, setHasEvents] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // If user lands on home with hash tokens from Supabase, forward to callback preserving hash
+    if (typeof window !== "undefined" && window.location.hash.includes("access_token=")) {
+      const hash = window.location.hash;
+      window.location.replace(`/auth/callback${hash}`);
+    }
+
+    checkForUpcomingEvents();
+  }, []);
+
+  // Auto-make events public 5 hours before start time
+  const autoMakeEventsPublic = async () => {
+    try {
+      const now = new Date();
+      const fiveHoursFromNow = new Date(now.getTime() + 5 * 60 * 60 * 1000);
+
+      const { data: privateEvents, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('status', 'published')
+        .eq('is_public', false);
+
+      if (error || !privateEvents || privateEvents.length === 0) return;
+
+      const eventsToMakePublic = privateEvents.filter(event => {
+        const eventStart = new Date(event.start_datetime);
+        return eventStart <= fiveHoursFromNow && eventStart > now;
+      });
+
+      if (eventsToMakePublic.length === 0) return;
+
+      for (const event of eventsToMakePublic) {
+        await supabase
+          .from('events')
+          .update({
+            is_public: true,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', event.id);
+      }
+    } catch (error) {
+      console.error('Error in autoMakeEventsPublic:', error);
+    }
+  };
+
+  const checkForUpcomingEvents = async () => {
+    try {
+      await autoMakeEventsPublic();
+
+      const { data: events, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('status', 'published')
+        .eq('is_public', true)
+        .is('deleted_at', null);
+
+      if (error) {
+        setHasEvents(false);
+        return;
+      }
+
+      const upcomingEvents = events?.filter(event => isEventTodayOrFuture(event)) || [];
+      setHasEvents(upcomingEvents.length > 0);
+    } catch (error) {
+      setHasEvents(false);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-stone-100">
+    <div className="min-h-screen bg-background relative">
       {/* Header */}
-      <header className="border-b border-umma-200 bg-white/90 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-umma-400 to-umma-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Heart className="w-6 h-6 text-white" />
+      <header className="border-b border-gold-400/10 bg-navy-800/60 backdrop-blur-xl absolute top-0 left-0 right-0 z-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => navigate("/")}
+                className="flex items-center space-x-3 hover:opacity-80 transition-opacity cursor-pointer"
+              >
+                <div className="crescent-moon mr-1" />
+                <span className="text-lg font-semibold text-gold-300 tracking-wide">UMMA Stewards</span>
+              </button>
             </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-umma-600 to-umma-800 bg-clip-text text-transparent">
-              EasyEvent
-            </h1>
+            <Button
+              onClick={() => navigate("/login")}
+              className="bg-gold-400 hover:bg-gold-300 text-navy-900 font-medium rounded-lg shadow-lg button-glow transition-all duration-200"
+            >
+              Sign In
+            </Button>
           </div>
-          <Button onClick={() => navigate("/login")} variant="outline" className="border-umma-300 text-umma-700 hover:bg-umma-50">
-            Sign In
-          </Button>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <h2 className="text-6xl font-bold mb-8 bg-gradient-to-r from-umma-600 to-umma-800 bg-clip-text text-transparent leading-tight">
-          Streamlined Event Planning
-        </h2>
-        <p className="text-xl text-stone-700 mb-10 max-w-4xl mx-auto leading-relaxed">
-          Plan and coordinate events with ease. Connect with your team, manage volunteer schedules, 
-          and keep everyone informed with simple, effective tools.
-        </p>
-        <div className="flex gap-6 justify-center">
-          <Button 
-            size="lg" 
-            className="bg-gradient-to-r from-umma-500 to-umma-600 hover:from-umma-600 hover:to-umma-700 text-white px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-            onClick={() => navigate("/login")}
-          >
-            Get Started
-          </Button>
-          <Button size="lg" variant="outline" className="border-umma-300 text-umma-700 hover:bg-umma-50 px-8 py-4 text-lg rounded-xl">
-            Learn More
-          </Button>
-        </div>
+      {/* Main Content */}
+      <section className={`w-full ${hasEvents ? 'min-h-[calc(100vh-4rem)] px-4 sm:px-6 lg:px-8 py-8 pt-24' : 'min-h-screen'}`}>
+        {loading ? (
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center">
+              <div className="crescent-moon-lg mx-auto mb-4 animate-pulse-soft" />
+              <p className="text-white/50">Loading...</p>
+            </div>
+          </div>
+        ) : hasEvents ? (
+          <div className="max-w-4xl mx-auto">
+            <UpcomingEvents />
+          </div>
+        ) : (
+          <>
+            {/* Night sky landing with hero content */}
+            <div className="relative z-10 min-h-screen flex items-center justify-center text-center">
+              {/* Decorative geometric pattern overlay */}
+              <div className="absolute inset-0 geometric-accent opacity-30" />
+
+              <div className="max-w-4xl mx-auto relative z-10 px-4">
+                <div className="mt-20 sm:mt-32 md:mt-40 lg:mt-48">
+                  {/* Crescent + Stars decorative element */}
+                  <div className="flex items-center justify-center space-x-4 mb-8">
+                    <div className="h-px w-16 bg-gradient-to-r from-transparent to-gold-400/40" />
+                    <div className="crescent-moon-lg animate-float" />
+                    <div className="h-px w-16 bg-gradient-to-l from-transparent to-gold-400/40" />
+                  </div>
+
+                  <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold gradient-text mb-6">
+                    Ramadan Mubarak
+                  </h1>
+
+                  <p className="text-lg sm:text-xl text-white/70 mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed">
+                    We are excited to have you as part of our volunteer network. Our stewards play a vital role in serving the community with trust, hospitality, and dedication.
+                  </p>
+
+                  {/* Decorative divider */}
+                  <div className="ramadan-divider max-w-xs mx-auto mb-8" />
+
+                  <div className="flex justify-center">
+                    <Button
+                      size="lg"
+                      className="bg-gold-400 hover:bg-gold-300 text-navy-900 px-8 py-4 text-lg rounded-xl shadow-xl button-glow transition-all duration-300 font-semibold"
+                      onClick={() => navigate("/login?mode=signup")}
+                    >
+                      Get Started
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </section>
-
-      {/* Features Grid */}
-      <section className="container mx-auto px-4 py-20">
-        <h3 className="text-4xl font-bold text-center mb-16 text-stone-800">Why Choose EasyEvent?</h3>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <Card className="hover:shadow-xl transition-all duration-300 border-umma-200 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-umma-400 to-umma-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Star className="w-8 h-8 text-white" />
-              </div>
-              <CardTitle className="text-umma-800">Smart Planning</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-center text-stone-600 leading-relaxed">
-                Get helpful suggestions for event structure and volunteer roles. Make planning efficient and organized.
-              </CardDescription>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-xl transition-all duration-300 border-umma-200 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-umma-400 to-umma-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Calendar className="w-8 h-8 text-white" />
-              </div>
-              <CardTitle className="text-umma-800">Real-Time Updates</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-center text-stone-600 leading-relaxed">
-                Track volunteer signups and availability as they happen. Stay informed about who's participating and what roles need filling.
-              </CardDescription>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-xl transition-all duration-300 border-umma-200 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-umma-400 to-umma-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <MessageSquare className="w-8 h-8 text-white" />
-              </div>
-              <CardTitle className="text-umma-800">Automatic Reminders</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-center text-stone-600 leading-relaxed">
-                Send timely notifications to keep volunteers informed. Reduce no-shows with well-timed reminders.
-              </CardDescription>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-xl transition-all duration-300 border-umma-200 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-umma-400 to-umma-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Heart className="w-8 h-8 text-white" />
-              </div>
-              <CardTitle className="text-umma-800">Easy Sharing</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-center text-stone-600 leading-relaxed">
-                Share your event with a simple link. No complicated setup required for volunteers to sign up and participate.
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-gradient-to-r from-umma-500 to-umma-600 text-white py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h3 className="text-4xl font-bold mb-6">Ready to Simplify Your Events?</h3>
-          <p className="text-xl mb-10 opacity-95 max-w-2xl mx-auto leading-relaxed">
-            Join event organizers who've streamlined their coordination process and improved volunteer participation.
-          </p>
-          <Button 
-            size="lg" 
-            variant="secondary"
-            className="bg-white text-umma-600 hover:bg-umma-50 px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-            onClick={() => navigate("/login")}
-          >
-            Start Planning Today
-          </Button>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-umma-50 border-t border-umma-200 py-12">
-        <div className="container mx-auto px-4 text-center text-umma-700">
-          <p className="text-lg">&copy; 2025 EasyEvent. Streamlined event coordination.</p>
-        </div>
-      </footer>
     </div>
   );
 };

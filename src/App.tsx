@@ -10,9 +10,11 @@ import EventCreation from "./pages/EventCreation";
 import Contacts from "./pages/Contacts";
 import EventRoster from "./pages/EventRoster";
 import VolunteerSignup from "./pages/VolunteerSignup";
-import SharedEvents from "./pages/SharedEvents";
+import Templates from "./pages/Templates";
+import RecentlyDeleted from "./pages/RecentlyDeleted";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
+import AuthCallback from "./pages/AuthCallback";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
@@ -21,19 +23,22 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <div className="stars-bg" aria-hidden="true" />
       <Toaster />
       <Sonner />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/events/create" element={<EventCreation />} />
           <Route path="/events/:eventId/edit" element={<EventCreation />} />
-          <Route path="/events/:eventId/roster" element={<EventRoster />} />
-          <Route path="/:eventSlug/volunteer" element={<VolunteerSignup />} />
-          <Route path="/shared-events" element={<SharedEvents />} />
+          <Route path="/:slug/checkin" element={<EventRoster />} />
+          <Route path="/:eventSlug" element={<VolunteerSignup />} />
+          <Route path="/templates" element={<Templates />} />
+          <Route path="/recently-deleted" element={<RecentlyDeleted />} />
           <Route path="/contacts" element={<Contacts />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />

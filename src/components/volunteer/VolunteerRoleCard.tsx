@@ -6,7 +6,7 @@ import { Clock, Users } from "lucide-react";
 import { VolunteerRole, Volunteer } from "@/types/database";
 import VolunteerTable from "./VolunteerTable";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { displayTimeInMichigan } from "@/utils/timezoneUtils";
+import { displayTimeInMichigan, formatTime24To12 } from "@/utils/timezoneUtils";
 
 interface VolunteerRoleCardProps {
   role: VolunteerRole;
@@ -16,19 +16,7 @@ interface VolunteerRoleCardProps {
   getRemainingSlots: (role: VolunteerRole, gender?: "brother" | "sister") => number;
 }
 
-const formatTime = (time: string) => {
-  // Since shift_start and shift_end are now TIME fields (HH:MM), 
-  // we can format them directly without timezone conversion
-  const [hours, minutes] = time.split(':');
-  const date = new Date();
-  date.setHours(parseInt(hours), parseInt(minutes));
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: 'America/Detroit'
-  });
-};
+
 
 const VolunteerRoleCard = ({ 
   role, 
@@ -44,30 +32,30 @@ const VolunteerRoleCard = ({
   const sisterSlots = getRemainingSlots(role, 'sister');
 
   return (
-    <Card className={`${remainingSlots === 0 ? 'opacity-75' : ''} border-brand-200 bg-white/80`}>
+    <Card className={`${remainingSlots === 0 ? 'opacity-75' : ''} border-white/10 bg-white/5`}>
       <CardContent className={`${isMobile ? 'p-3' : 'p-4 sm:p-6'}`}>
         <div className={`${isMobile ? 'space-y-3' : 'flex justify-between items-start'} mb-4`}>
           <div className="flex-1">
             <div className="mb-3">
-              <h3 className={`${isMobile ? 'text-sm' : 'text-base sm:text-lg'} font-semibold text-brand-800 mb-2`}>{role.role_label}</h3>
+              <h3 className={`${isMobile ? 'text-sm' : 'text-base sm:text-lg'} font-semibold text-foreground mb-2`}>{role.role_label}</h3>
               <div className={`flex flex-wrap gap-2 ${isMobile ? 'text-xs' : 'text-sm'}`}>
-                <Badge variant={remainingSlots > 0 ? "default" : "secondary"} className="bg-brand-100 text-brand-700 border-brand-200 text-xs">
+                <Badge variant={remainingSlots > 0 ? "default" : "secondary"} className="bg-gold-400/15 text-gold-300 border-white/10 text-xs">
                   {remainingSlots > 0 ? `${remainingSlots} open` : "Full"}
                 </Badge>
-                <Badge variant="outline" className="border-brand-300 text-brand-700 text-xs">
+                <Badge variant="outline" className="border-gold-400 text-gold-300 text-xs">
                   Brothers: {brotherSlots}/{role.slots_brother}
                 </Badge>
-                <Badge variant="outline" className="border-brand-300 text-brand-700 text-xs">
+                <Badge variant="outline" className="border-gold-400 text-gold-300 text-xs">
                   Sisters: {sisterSlots}/{role.slots_sister}
                 </Badge>
               </div>
             </div>
             
-            <div className={`grid ${isMobile ? 'grid-cols-1 gap-1' : 'md:grid-cols-2 gap-4'} text-xs sm:text-sm text-brand-600`}>
+            <div className={`grid ${isMobile ? 'grid-cols-1 gap-1' : 'md:grid-cols-2 gap-4'} text-xs sm:text-sm text-gold-400`}>
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">
                   <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
-                  <span>{formatTime(role.shift_start)} - {formatTime(role.shift_end)}</span>
+                  <span>{formatTime24To12(role.shift_start)} - {formatTime24To12(role.shift_end)}</span>
                 </div>
               </div>
               <div className="space-y-1">
@@ -79,7 +67,7 @@ const VolunteerRoleCard = ({
             </div>
             
             {role.notes && (
-              <div className="text-xs sm:text-sm text-brand-600 mt-2 italic">
+              <div className="text-xs sm:text-sm text-gold-400 mt-2 italic">
                 {role.notes}
               </div>
             )}
@@ -89,7 +77,7 @@ const VolunteerRoleCard = ({
             <Button
               onClick={() => onSignUp(role)}
               disabled={remainingSlots === 0}
-              className={`bg-brand-500 hover:bg-brand-600 text-white disabled:opacity-50 disabled:cursor-not-allowed ${isMobile ? 'w-full text-sm py-2' : ''}`}
+              className={`bg-gold-400 hover:bg-gold-300 text-white disabled:opacity-50 disabled:cursor-not-allowed ${isMobile ? 'w-full text-sm py-2' : ''}`}
             >
               {remainingSlots === 0 ? "Full" : "Sign Up"}
             </Button>

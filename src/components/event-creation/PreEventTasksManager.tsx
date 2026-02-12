@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { CalendarDays, Users, DollarSign, Megaphone, Package, Trash2, Plus, Sparkles } from "lucide-react";
+import { AIIcon } from "@/components/ui/ai-icon";
 import { Contact } from "@/types/database";
 
 interface Task {
@@ -49,70 +50,124 @@ const PreEventTasksManager = ({
   ];
 
   const generateAITasks = async () => {
+    if (!eventDescription || !eventDate) {
+      return;
+    }
+
     setIsGenerating(true);
     
-    // Simulate AI generation
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Simulate AI processing time
+    await new Promise(resolve => setTimeout(resolve, 1500));
     
-    const eventDateObj = new Date(eventDate);
-    const twoWeeksBefore = new Date(eventDateObj);
-    twoWeeksBefore.setDate(twoWeeksBefore.getDate() - 14);
+    const description = eventDescription.toLowerCase();
+    const eventDateTime = new Date(eventDate);
+    const oneWeekBefore = new Date(eventDateTime.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const threeDaysBefore = new Date(eventDateTime.getTime() - 3 * 24 * 60 * 60 * 1000);
+    const oneDayBefore = new Date(eventDateTime.getTime() - 1 * 24 * 60 * 60 * 1000);
     
-    const oneWeekBefore = new Date(eventDateObj);
-    oneWeekBefore.setDate(oneWeekBefore.getDate() - 7);
+    const suggestedTasks: Task[] = [];
     
-    const threeDaysBefore = new Date(eventDateObj);
-    threeDaysBefore.setDate(threeDaysBefore.getDate() - 3);
-
-    const aiGeneratedTasks: Task[] = [
-      {
+    // Marketing tasks (always relevant)
+    suggestedTasks.push({
+      id: crypto.randomUUID(),
+      title: "Social Media Announcement",
+      description: "Create and post event announcement on social media platforms",
+      category: 'marketing',
+      dueDate: oneWeekBefore.toISOString().split('T')[0],
+      priority: 'medium',
+      status: 'todo'
+    });
+    
+    // Food-related tasks
+    if (description.includes('food') || description.includes('meal') || 
+        description.includes('dinner') || description.includes('lunch') || 
+        description.includes('iftar') || description.includes('breakfast')) {
+      
+      suggestedTasks.push({
         id: crypto.randomUUID(),
-        title: "Create event flyers and social media graphics",
-        description: "Design promotional materials for the event including flyers, social media posts, and digital announcements",
-        category: 'marketing',
-        dueDate: twoWeeksBefore.toISOString().split('T')[0],
-        priority: 'high',
-        status: 'todo'
-      },
-      {
-        id: crypto.randomUUID(),
-        title: "Reach out to potential sponsors",
-        description: "Contact local businesses and organizations for event sponsorship opportunities",
-        category: 'sponsors',
-        dueDate: twoWeeksBefore.toISOString().split('T')[0],
-        priority: 'medium',
-        status: 'todo'
-      },
-      {
-        id: crypto.randomUUID(),
-        title: "Order event supplies and equipment",
-        description: "Purchase or rent tables, chairs, sound equipment, decorations, and other necessary items",
-        category: 'supplies',
+        title: "Food Quantity Planning",
+        description: "Calculate food quantities based on expected attendance",
+        category: 'logistics',
         dueDate: oneWeekBefore.toISOString().split('T')[0],
         priority: 'high',
         status: 'todo'
-      },
-      {
+      });
+      
+      suggestedTasks.push({
         id: crypto.randomUUID(),
-        title: "Confirm venue setup and logistics",
-        description: "Coordinate with venue staff about setup time, parking, and facility requirements",
-        category: 'logistics',
+        title: "Catering/Food Procurement",
+        description: "Arrange catering or purchase ingredients for meal preparation",
+        category: 'supplies',
         dueDate: threeDaysBefore.toISOString().split('T')[0],
         priority: 'high',
         status: 'todo'
-      },
-      {
+      });
+    }
+    
+    // Venue and logistics
+    suggestedTasks.push({
+      id: crypto.randomUUID(),
+      title: "Venue Setup Planning",
+      description: "Plan table arrangements, decorations, and equipment placement",
+      category: 'logistics',
+      dueDate: threeDaysBefore.toISOString().split('T')[0],
+      priority: 'medium',
+      status: 'todo'
+    });
+    
+    // Equipment and supplies
+    suggestedTasks.push({
+      id: crypto.randomUUID(),
+      title: "Equipment Check",
+      description: "Verify all needed equipment is available (microphones, projectors, etc.)",
+      category: 'supplies',
+      dueDate: oneDayBefore.toISOString().split('T')[0],
+      priority: 'medium',
+      status: 'todo'
+    });
+    
+    // Prayer-related events
+    if (description.includes('prayer') || description.includes('maghrib') || 
+        description.includes('islamic') || description.includes('quran')) {
+      
+      suggestedTasks.push({
         id: crypto.randomUUID(),
-        title: "Send reminder announcements",
-        description: "Send final reminders to community through all communication channels",
-        category: 'marketing',
+        title: "Prayer Time Coordination",
+        description: "Confirm prayer times and arrange prayer space setup",
+        category: 'logistics',
+        dueDate: oneDayBefore.toISOString().split('T')[0],
+        priority: 'high',
+        status: 'todo'
+      });
+    }
+    
+    // Children's activities
+    if (description.includes('family') || description.includes('children') || description.includes('kids')) {
+      suggestedTasks.push({
+        id: crypto.randomUUID(),
+        title: "Children's Activity Preparation",
+        description: "Prepare games, activities, and supervision plan for children",
+        category: 'supplies',
         dueDate: threeDaysBefore.toISOString().split('T')[0],
         priority: 'medium',
         status: 'todo'
-      }
-    ];
-
-    onTasksChange([...tasks, ...aiGeneratedTasks]);
+      });
+    }
+    
+    // Sponsorship for larger events
+    if (description.includes('fundraising') || description.includes('sponsor')) {
+      suggestedTasks.push({
+        id: crypto.randomUUID(),
+        title: "Sponsor Outreach",
+        description: "Contact potential sponsors and arrange sponsorship agreements",
+        category: 'sponsors',
+        dueDate: oneWeekBefore.toISOString().split('T')[0],
+        priority: 'low',
+        status: 'todo'
+      });
+    }
+    
+    onTasksChange([...tasks, ...suggestedTasks]);
     setIsGenerating(false);
   };
 
@@ -147,10 +202,10 @@ const PreEventTasksManager = ({
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-umma-100 text-umma-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'high': return 'bg-red-500/15 text-red-400';
+      case 'medium': return 'bg-gold-400/15 text-foreground';
+      case 'low': return 'bg-emerald-500/15 text-emerald-300';
+      default: return 'bg-white/10 text-foreground';
     }
   };
 
@@ -158,61 +213,73 @@ const PreEventTasksManager = ({
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-umma-800">Pre-Event Task Planning</h3>
-          <p className="text-umma-600 text-sm">Generate and assign tasks needed before your event</p>
+          <h3 className="text-lg font-semibold text-foreground">Pre-Event Task Planning</h3>
+          <p className="text-gold-400 text-sm">Create and assign tasks needed before your event. Add tasks manually or use AI suggestions.</p>
         </div>
         
         {tasks.length === 0 && (
-          <Button 
-            onClick={generateAITasks}
-            disabled={isGenerating || disabled}
-            className="bg-gradient-to-r from-umma-500 to-umma-700 hover:from-umma-600 hover:to-umma-800 text-white w-full sm:w-auto shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            {isGenerating ? (
-              <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-            ) : (
-              <Sparkles className="w-4 h-4 mr-2" />
-            )}
-            Generate AI Tasks
-          </Button>
+          <div className="space-y-2">
+            <div className="flex items-center justify-center space-x-2 text-gold-400">
+              <Users className="w-4 h-4" />
+              <span className="text-xs font-medium">Pre-Event Tasks</span>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button 
+                onClick={addCustomTask}
+                variant="default"
+                className="bg-gold-500 hover:bg-gold-200 text-white"
+                disabled={disabled}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Task Manually
+              </Button>
+              <Button 
+                onClick={generateAITasks}
+                variant="outline"
+                className="border-gold-400 text-gold-300 hover:bg-gold-400/10"
+                disabled={!eventDescription || !eventDate || isGenerating || disabled}
+              >
+                <AIIcon className="w-4 h-4 mr-2" />
+                {isGenerating ? "Generating..." : "Get AI Suggestions"}
+              </Button>
+            </div>
+          </div>
         )}
       </div>
 
       {isGenerating && (
-        <Card className="border-umma-200 bg-white">
-          <CardContent className="p-6 text-center">
-            <div className="animate-spin w-8 h-8 border-2 border-umma-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p className="text-umma-700">AI is analyzing your event and generating recommended tasks...</p>
-          </CardContent>
-        </Card>
+        <div className="text-center py-6">
+          <div className="animate-spin w-8 h-8 border-2 border-gold-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gold-300">Generating recommended tasks based on your event...</p>
+        </div>
       )}
 
       {tasks.length > 0 && (
         <div className="space-y-4">
           {tasks.map((task) => (
-            <Card key={task.id} className="overflow-hidden bg-white border-umma-200">
+            <Card key={task.id} className="overflow-hidden bg-white/5 border-white/10">
               <CardContent className="p-4">
                 <div className="grid gap-4">
                   <div className="space-y-2">
-                    <Label className="text-umma-700">Task Title</Label>
+                    <Label className="text-gold-300">Task Title</Label>
                     <Input
                       value={task.title}
                       onChange={(e) => updateTask(task.id, { title: e.target.value })}
                       placeholder="Task title"
-                      className="w-full border-umma-200 focus-visible:ring-umma-500"
+                      className="w-full border-white/10 focus-visible:ring-gold-400/50"
                       disabled={disabled}
                     />
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-umma-700">Category</Label>
+                      <Label className="text-gold-300">Category</Label>
                       <Select 
                         value={task.category} 
                         onValueChange={(value) => updateTask(task.id, { category: value as Task['category'] })}
                         disabled={disabled}
                       >
-                        <SelectTrigger className="border-umma-200">
+                        <SelectTrigger className="border-white/10">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -229,24 +296,24 @@ const PreEventTasksManager = ({
                     </div>
                     
                     <div className="space-y-2">
-                      <Label className="text-umma-700">Due Date</Label>
+                      <Label className="text-gold-300">Due Date</Label>
                       <Input
                         type="date"
                         value={task.dueDate}
                         onChange={(e) => updateTask(task.id, { dueDate: e.target.value })}
-                        className="border-umma-200 focus-visible:ring-umma-500"
+                        className="border-white/10 focus-visible:ring-gold-400/50"
                         disabled={disabled}
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label className="text-umma-700">Priority</Label>
+                      <Label className="text-gold-300">Priority</Label>
                       <Select 
                         value={task.priority} 
                         onValueChange={(value) => updateTask(task.id, { priority: value as Task['priority'] })}
                         disabled={disabled}
                       >
-                        <SelectTrigger className="border-umma-200">
+                        <SelectTrigger className="border-white/10">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -260,13 +327,13 @@ const PreEventTasksManager = ({
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-umma-700">Assignee (Optional)</Label>
+                      <Label className="text-gold-300">Assignee (Optional)</Label>
                       <Select 
                         value={task.assigneeId || ""} 
                         onValueChange={(value) => updateTask(task.id, { assigneeId: value })}
                         disabled={disabled}
                       >
-                        <SelectTrigger className="border-umma-200">
+                        <SelectTrigger className="border-white/10">
                           <SelectValue placeholder="Select assignee" />
                         </SelectTrigger>
                         <SelectContent>
@@ -290,7 +357,7 @@ const PreEventTasksManager = ({
                         size="sm"
                         variant="outline"
                         onClick={() => removeTask(task.id)}
-                        className="border-red-200 hover:border-red-300 hover:bg-red-50 text-red-600"
+                        className="border-white/10 hover:border-white/15 hover:bg-red-500/10 text-red-400"
                         disabled={disabled}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -299,13 +366,13 @@ const PreEventTasksManager = ({
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-umma-700">Description</Label>
+                    <Label className="text-gold-300">Description</Label>
                     <Textarea
                       value={task.description}
                       onChange={(e) => updateTask(task.id, { description: e.target.value })}
                       placeholder="Task description and requirements"
                       rows={2}
-                      className="border-umma-200 focus-visible:ring-umma-500"
+                      className="border-white/10 focus-visible:ring-gold-400/50"
                       disabled={disabled}
                     />
                   </div>
@@ -319,7 +386,7 @@ const PreEventTasksManager = ({
       <Button 
         variant="outline" 
         onClick={addCustomTask}
-        className="w-full border-umma-200 text-umma-800 hover:bg-umma-50 bg-gradient-to-r from-umma-600 hover:to-umma-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+        className="w-full border-white/10 text-foreground hover:bg-gold-400/10"
         disabled={disabled}
       >
         <Plus className="w-4 h-4 mr-2" />
@@ -327,29 +394,29 @@ const PreEventTasksManager = ({
       </Button>
 
       {tasks.length > 0 && (
-        <Card className="bg-umma-50 border-umma-200">
+        <Card className="bg-gold-400/10 border-white/10">
           <CardContent className="p-4">
-            <h4 className="font-medium mb-2 text-umma-800">Task Summary</h4>
+            <h4 className="font-medium mb-2 text-foreground">Task Summary</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <span className="text-umma-600">Total Tasks:</span>
-                <div className="font-semibold text-umma-800">{tasks.length}</div>
+                <span className="text-gold-400">Total Tasks:</span>
+                <div className="font-semibold text-foreground">{tasks.length}</div>
               </div>
               <div>
-                <span className="text-umma-600">High Priority:</span>
-                <div className="font-semibold text-red-600">
+                <span className="text-gold-400">High Priority:</span>
+                <div className="font-semibold text-red-400">
                   {tasks.filter(t => t.priority === 'high').length}
                 </div>
               </div>
               <div>
-                <span className="text-umma-600">Assigned:</span>
-                <div className="font-semibold text-green-600">
+                <span className="text-gold-400">Assigned:</span>
+                <div className="font-semibold text-emerald-400">
                   {tasks.filter(t => t.assigneeId).length}
                 </div>
               </div>
               <div>
-                <span className="text-umma-600">Categories:</span>
-                <div className="font-semibold text-umma-800">
+                <span className="text-gold-400">Categories:</span>
+                <div className="font-semibold text-foreground">
                   {new Set(tasks.map(t => t.category)).size}
                 </div>
               </div>

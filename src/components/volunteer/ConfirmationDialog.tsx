@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { VolunteerRole, Event } from "@/types/database";
-import { displayTimeInMichigan } from "@/utils/timezoneUtils";
+import { displayTimeInMichigan, formatTime24To12 } from "@/utils/timezoneUtils";
 
 interface ConfirmationDialogProps {
   isOpen: boolean;
@@ -28,19 +28,7 @@ interface ConfirmationDialogProps {
   };
 }
 
-const formatTime = (time: string) => {
-  // Since shift_start and shift_end are now TIME fields (HH:MM), 
-  // we can format them directly without timezone conversion
-  const [hours, minutes] = time.split(':');
-  const date = new Date();
-  date.setHours(parseInt(hours), parseInt(minutes));
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: 'America/Detroit'
-  });
-};
+
 
 const ConfirmationDialog = ({
   isOpen,
@@ -56,7 +44,7 @@ const ConfirmationDialog = ({
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-umma-800">
+          <AlertDialogTitle className="text-foreground">
             Confirm Your Volunteer Registration
           </AlertDialogTitle>
           <AlertDialogDescription>
@@ -65,20 +53,20 @@ const ConfirmationDialog = ({
         </AlertDialogHeader>
         
         <div className="space-y-4">
-          <div className="bg-umma-50 p-4 rounded-lg space-y-2 text-sm">
-            <div className="font-semibold text-umma-800">{role.role_label}</div>
+          <div className="bg-gold-400/10 p-4 rounded-lg space-y-2 text-sm">
+            <div className="font-semibold text-foreground">{role.role_label}</div>
             
-            <div className="flex items-center gap-2 text-umma-700">
+            <div className="flex items-center gap-2 text-gold-300">
               <Calendar className="w-4 h-4" />
               <span>{eventDate.toLocaleDateString()}</span>
             </div>
             
-            <div className="flex items-center gap-2 text-umma-700">
+            <div className="flex items-center gap-2 text-gold-300">
               <Clock className="w-4 h-4" />
-              <span>{formatTime(role.shift_start)} - {formatTime(role.shift_end)}</span>
+              <span>{formatTime24To12(role.shift_start)} - {formatTime24To12(role.shift_end)}</span>
             </div>
             
-            <div className="flex items-center gap-2 text-umma-700">
+            <div className="flex items-center gap-2 text-gold-300">
               <MapPin className="w-4 h-4" />
               <span>{event.location}</span>
             </div>
@@ -93,7 +81,7 @@ const ConfirmationDialog = ({
             )}
           </div>
           
-          <div className="text-umma-600 text-sm">
+          <div className="text-gold-400 text-sm">
             You will receive a confirmation SMS with event details.
           </div>
         </div>
@@ -102,7 +90,7 @@ const ConfirmationDialog = ({
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction 
             onClick={onConfirm}
-            className="bg-umma-500 hover:bg-umma-600"
+            className="bg-gold-400 hover:bg-gold-300"
           >
             Confirm Registration
           </AlertDialogAction>

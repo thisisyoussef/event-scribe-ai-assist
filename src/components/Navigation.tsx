@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Calendar, Phone, Settings, LogOut, Menu, X, Share2 } from "lucide-react";
+import { Calendar, Phone, Settings, LogOut, Menu, X, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { User } from "@supabase/supabase-js";
@@ -42,7 +42,7 @@ const Navigation = () => {
     try {
       // Sign out from Supabase
       const { error } = await supabase.auth.signOut();
-      
+
       if (error) {
         toast({
           title: "Sign Out Error",
@@ -52,12 +52,12 @@ const Navigation = () => {
       } else {
         // Clear any localStorage data
         localStorage.removeItem("user");
-        
+
         toast({
           title: "Signed Out",
           description: "You've been successfully signed out.",
         });
-        
+
         // Navigate to login page
         navigate("/login");
       }
@@ -75,33 +75,34 @@ const Navigation = () => {
 
   const navItems = [
     { label: "Events", path: "/dashboard", icon: Calendar },
-    { label: "Shared Events", path: "/shared-events", icon: Share2 },
+    { label: "Templates", path: "/templates", icon: FileText },
     { label: "Contacts", path: "/contacts", icon: Phone },
     { label: "Settings", path: "/settings", icon: Settings },
   ];
 
   // Get display name from user metadata or email
-  const displayName = user?.user_metadata?.full_name || 
-                     user?.user_metadata?.name || 
-                     user?.email?.split('@')[0] || 
+  const displayName = user?.user_metadata?.full_name ||
+                     user?.user_metadata?.name ||
+                     user?.email?.split('@')[0] ||
                      "Organizer";
 
   return (
-    <header className="bg-white/95 backdrop-blur-sm border-b border-brand-200 shadow-sm">
+    <header className="bg-navy-800/80 backdrop-blur-xl border-b border-gold-400/15 shadow-lg shadow-black/20">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center space-x-3">
-            <h1 
-              className="text-xl font-bold text-brand-600 cursor-pointer"
+        <div className="relative flex justify-between md:justify-between items-center h-16">
+          {/* Logo + Crescent */}
+          <div className="flex items-center space-x-3 flex-1 md:flex-none justify-center md:justify-start">
+            <button
               onClick={() => navigate("/dashboard")}
+              className="flex items-center space-x-3 hover:opacity-80 transition-opacity cursor-pointer"
             >
-              EasyEvent
-            </h1>
+              <div className="crescent-moon mr-1" />
+              <span className="text-lg font-semibold text-gold-300 tracking-wide">UMMA Stewards</span>
+            </button>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          {/* Desktop Navigation - Centered */}
+          <nav className="hidden md:flex items-center space-x-2 absolute left-1/2 transform -translate-x-1/2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -110,13 +111,13 @@ const Navigation = () => {
                   key={item.path}
                   onClick={() => navigate(item.path)}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-200 ${
-                    isActive 
-                      ? "bg-brand-100 text-brand-700 shadow-sm" 
-                      : "text-brand-600 hover:text-brand-700 hover:bg-brand-50"
+                    isActive
+                      ? "bg-gold-400/15 text-gold-300 shadow-sm golden-border"
+                      : "text-white/60 hover:text-gold-300 hover:bg-white/5"
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
-                  <span className="font-medium">{item.label}</span>
+                  <Icon className="w-4 h-4" />
+                  <span className="font-medium text-sm">{item.label}</span>
                 </button>
               );
             })}
@@ -124,15 +125,15 @@ const Navigation = () => {
 
           {/* User Menu */}
           <div className="hidden md:flex items-center space-x-4">
-            <span className="text-sm text-brand-700 font-medium">
+            <span className="text-sm text-gold-200/70 font-medium">
               {displayName}
             </span>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleLogout} 
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
               disabled={loading}
-              className="border-brand-300 text-brand-700 hover:bg-brand-50"
+              className="border-white/15 text-white/70 hover:bg-white/5 hover:text-gold-300 hover:border-gold-400/30 bg-transparent"
             >
               <LogOut className="w-4 h-4 mr-2" />
               {loading ? "Signing Out..." : "Sign Out"}
@@ -141,7 +142,7 @@ const Navigation = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-brand-600"
+            className="absolute right-4 md:relative md:right-auto md:hidden text-gold-300"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -150,8 +151,8 @@ const Navigation = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-brand-200 py-4 bg-white/95 backdrop-blur-sm">
-            <nav className="space-y-2">
+          <div className="md:hidden border-t border-gold-400/10 py-4 bg-navy-800/95 backdrop-blur-xl">
+            <nav className="space-y-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -163,9 +164,9 @@ const Navigation = () => {
                       setIsMobileMenuOpen(false);
                     }}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                      isActive 
-                        ? "bg-brand-100 text-brand-700" 
-                        : "text-brand-600 hover:text-brand-700 hover:bg-brand-50"
+                      isActive
+                        ? "bg-gold-400/15 text-gold-300"
+                        : "text-white/60 hover:text-gold-300 hover:bg-white/5"
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -173,14 +174,14 @@ const Navigation = () => {
                   </button>
                 );
               })}
-              <div className="border-t border-brand-200 pt-4 mt-4">
-                <p className="text-sm text-brand-700 px-4 pb-2 font-medium">
+              <div className="border-t border-gold-400/10 pt-4 mt-4">
+                <p className="text-sm text-gold-200/70 px-4 pb-2 font-medium">
                   {displayName}
                 </p>
                 <button
                   onClick={handleLogout}
                   disabled={loading}
-                  className="w-full flex items-center space-x-3 px-4 py-3 text-brand-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 disabled:opacity-50"
+                  className="w-full flex items-center space-x-3 px-4 py-3 text-white/60 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-200 disabled:opacity-50"
                 >
                   <LogOut className="w-5 h-5" />
                   <span className="font-medium">
