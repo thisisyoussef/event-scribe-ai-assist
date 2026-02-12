@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -91,11 +90,17 @@
   }
 
   body {
-    @apply bg-gradient-to-br from-white via-slate-50 to-stone-100 text-foreground font-sans;
+    @apply bg-gradient-to-br from-white via-umma-50/30 via-stone-50 to-gold-50/20 text-foreground;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji', ui-sans-serif, system-ui, sans-serif;
     background-attachment: fixed;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply text-stone-700;
   }
 
@@ -106,7 +111,35 @@
 
 @layer components {
   .glass-effect {
-    @apply bg-white/80 backdrop-blur-sm border border-stone-200;
+    @apply bg-white/70 backdrop-blur-md border border-white/60 shadow-sm;
+  }
+
+  .frosted-panel {
+    @apply bg-white/60 backdrop-blur-xl shadow-sm ring-1 ring-white/60 rounded-2xl;
+  }
+
+  .pill-badge {
+    @apply rounded-full px-3 py-1 text-xs font-medium shadow-sm transition-all duration-200;
+  }
+
+  .olive-pill {
+    @apply pill-badge bg-gradient-to-r from-umma-50/80 to-gold-50/40 text-umma-800 border border-umma-200/40;
+  }
+
+  .neutral-pill {
+    @apply pill-badge bg-stone-100/80 text-stone-700 border border-stone-200/50;
+  }
+
+  .success-pill {
+    @apply pill-badge bg-green-100/90 text-green-800 border border-green-200/50;
+  }
+
+  .warning-pill {
+    @apply pill-badge bg-gradient-to-r from-gold-100/80 to-orange-100/60 text-gold-800 border border-gold-200/40;
+  }
+
+  .danger-pill {
+    @apply pill-badge bg-red-100/90 text-red-800 border border-red-200/50;
   }
 
   .gradient-text {
@@ -117,15 +150,224 @@
     @apply shadow-lg hover:shadow-xl transition-all duration-300;
   }
 
-  .brand-primary {
+  .umma-primary {
     color: #9B9A6D;
   }
 
-  .brand-bg {
+  .umma-bg {
     background-color: #9B9A6D;
   }
 
-  .brand-border {
+  .umma-border {
     border-color: #9B9A6D;
+  }
+
+  /* Line clamp utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  /* Responsive hero background for Index page */
+  .hero-bg {
+    background-image: url('/images/umma_stewards_mobile.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+
+  @media (min-width: 640px) {
+
+    /* sm */
+    .hero-bg {
+      background-image: url('/images/umma_stewards_mobile.png');
+      background-size: cover;
+      background-position: center center;
+    }
+  }
+
+  @media (min-width: 768px) {
+
+    /* md - tablet */
+    .hero-bg {
+      background-image: url('/images/umma_stewards_mobile.png');
+      background-size: cover;
+      background-position: center center;
+    }
+  }
+
+  @media (min-width: 1024px) {
+
+    /* lg - desktop */
+    .hero-bg {
+      background-image: url('/images/umma_stewards_mobile.png');
+      background-size: cover;
+      background-position: center center;
+    }
+  }
+
+  /* Hide scrollbar for horizontal scrolling containers */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Section title for visual chunking */
+  .section-title {
+    @apply text-xs font-semibold uppercase tracking-wider text-stone-500;
+  }
+
+  /* Interactive card with press animation */
+  .card-interactive {
+    @apply cursor-pointer transition-all duration-200;
+    @apply hover:-translate-y-0.5 hover:shadow-xl;
+    @apply active:scale-[0.97] active:shadow-lg;
+  }
+
+  /* Safe area padding for iOS devices */
+  .pb-safe-bottom {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  .pt-safe-top {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+  }
+
+  /* Enhanced focus glow for inputs */
+  .input-focus-glow:focus {
+    @apply ring-2 ring-umma-400/50 ring-offset-2 border-umma-400;
+    box-shadow: 0 0 0 3px rgba(155, 154, 109, 0.15);
+  }
+
+  /* Micro-interaction: subtle hover lift */
+  .hover-lift {
+    @apply transition-all duration-200;
+    @apply hover:-translate-y-0.5 hover:shadow-lg;
+  }
+
+  /* Micro-interaction: press feedback */
+  .press-feedback {
+    @apply transition-transform duration-100;
+    @apply active:scale-[0.97];
+  }
+
+  /* Delight: subtle gradient header */
+  .gradient-header {
+    @apply bg-gradient-to-br from-umma-50/80 via-white to-gold-50/40;
+  }
+
+  /* Delight: Islamic geometric pattern accent (decorative dots) */
+  .geometric-accent {
+    background-image: radial-gradient(circle, rgba(155, 154, 109, 0.15) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  /* =============================================
+     MOBILE-FIRST UTILITIES
+     ============================================= */
+
+  /* Mobile typography scale */
+  .mobile-section-header {
+    @apply text-base font-semibold md:text-sm md:font-semibold;
+  }
+
+  .mobile-field-label {
+    @apply text-sm font-medium md:text-xs;
+  }
+
+  .mobile-input-text {
+    @apply text-base md:text-sm;
+  }
+
+  .mobile-cta-text {
+    @apply text-base font-bold md:text-sm md:font-semibold;
+  }
+
+  /* Mobile section card - soft shadow with tint */
+  .section-card-mobile {
+    @apply bg-stone-50/70 rounded-2xl p-4 md:p-5;
+    @apply border border-stone-200/60;
+    @apply shadow-sm;
+  }
+
+  /* Stepper button - large touch targets (44px minimum) */
+  .stepper-btn {
+    @apply w-11 h-11 flex items-center justify-center;
+    @apply rounded-full bg-stone-100 text-stone-700;
+    @apply transition-all duration-150;
+    @apply active:scale-95 active:bg-stone-200;
+    @apply touch-manipulation;
+  }
+
+  .stepper-btn:disabled {
+    @apply opacity-40 cursor-not-allowed;
+  }
+
+  /* Touch-friendly input wrapper */
+  .mobile-input-wrapper {
+    @apply min-h-[48px] md:min-h-0;
+  }
+
+  /* Mobile button - large touch target */
+  .mobile-btn {
+    @apply min-h-[48px] px-6 text-base font-semibold;
+    @apply rounded-xl transition-all duration-200;
+    @apply active:scale-[0.97];
+    @apply touch-manipulation;
+  }
+
+  /* Hide on mobile, show on larger screens */
+  .hide-mobile {
+    @apply hidden lg:block;
+  }
+
+  /* Show on mobile, hide on larger screens */
+  .show-mobile {
+    @apply block lg:hidden;
+  }
+
+  /* Expandable field - collapsed state */
+  .expandable-trigger {
+    @apply flex items-center gap-2 text-stone-500;
+    @apply py-3 px-4 rounded-xl bg-stone-50;
+    @apply border border-stone-200 border-dashed;
+    @apply cursor-pointer transition-all duration-200;
+    @apply hover:bg-stone-100 hover:border-stone-300;
+  }
+
+  /* Full-width on mobile, auto on desktop */
+  .mobile-full-width {
+    @apply w-full md:w-auto;
+  }
+
+  /* Stack on mobile, row on desktop */
+  .mobile-stack {
+    @apply flex flex-col gap-3 md:flex-row md:gap-4;
+  }
+
+  /* Mobile-friendly scrolling for horizontal content */
+  .mobile-scroll-x {
+    @apply overflow-x-auto scrollbar-hide;
+    @apply -mx-4 px-4 md:mx-0 md:px-0;
   }
 }

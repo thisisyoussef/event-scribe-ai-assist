@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { displayTimeInMichigan } from "@/utils/timezoneUtils";
 import { SharedEventAccess } from "@/types/database";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { createEventSlug } from "@/utils/eventUtils";
 
 const SharedEvents = () => {
   const navigate = useNavigate();
@@ -212,7 +213,7 @@ const SharedEvents = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => navigate(`/events/${sharedEvent.event.id}/roster`)}
+                      onClick={() => navigate(`/${createEventSlug(sharedEvent.event.title, sharedEvent.event.id)}/checkin`)}
                       className="flex-1"
                     >
                       <Eye className="w-4 h-4 mr-2" />

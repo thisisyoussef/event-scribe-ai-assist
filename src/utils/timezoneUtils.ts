@@ -58,8 +58,29 @@ export const formatDateTimeInMichigan = (dateTime: string): string => {
 export const displayTimeInMichigan = (dateTime: string): string => {
   const date = new Date(dateTime);
   return date.toLocaleTimeString('en-US', {
-    hour: '2-digit',
+    hour: 'numeric',
     minute: '2-digit',
+    hour12: true,
     timeZone: MICHIGAN_TIMEZONE
+  });
+};
+
+// Convert 24-hour time format (HH:MM) to 12-hour AM/PM format
+export const formatTime24To12 = (timeString: string): string => {
+  if (!timeString || timeString === '--:--') return timeString;
+  
+  const [hours, minutes] = timeString.split(':');
+  const hour = parseInt(hours, 10);
+  const minute = parseInt(minutes, 10);
+  
+  if (isNaN(hour) || isNaN(minute)) return timeString;
+  
+  const date = new Date();
+  date.setHours(hour, minute);
+  
+  return date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
   });
 };

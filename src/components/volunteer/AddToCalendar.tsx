@@ -9,19 +9,31 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Calendar, ChevronDown } from "lucide-react";
 import { Event, VolunteerRole } from "@/types/database";
-import { generateCalendarEvent, downloadICSFile } from "@/utils/calendarUtils";
+import { generateCalendarEvent, generateGeneralEventCalendar, downloadICSFile } from "@/utils/calendarUtils";
 
 interface AddToCalendarProps {
   event: Event;
-  role: VolunteerRole;
+  role: VolunteerRole | null;
   className?: string;
+  showText?: boolean;
 }
 
-const AddToCalendar = ({ event, role, className }: AddToCalendarProps) => {
+const AddToCalendar = ({ event, role, className, showText = false }: AddToCalendarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   
   const handleAddToCalendar = (type: 'google' | 'outlook' | 'ics') => {
-    const calendarData = generateCalendarEvent(event, role);
+    let calendarData;
+    let filename;
+    
+    if (role) {
+      // Role-specific calendar entry
+      calendarData = generateCalendarEvent(event, role);
+      filename = `${event.title}-${role.role_label}.ics`;
+    } else {
+      // General event calendar entry
+      calendarData = generateGeneralEventCalendar(event);
+      filename = `${event.title}.ics`;
+    }
     
     switch (type) {
       case 'google':
@@ -31,7 +43,7 @@ const AddToCalendar = ({ event, role, className }: AddToCalendarProps) => {
         window.open(calendarData.outlook, '_blank');
         break;
       case 'ics':
-        downloadICSFile(calendarData.ics, `${event.title}-${role.role_label}.ics`);
+        downloadICSFile(calendarData.ics, filename);
         break;
     }
     
@@ -44,10 +56,10 @@ const AddToCalendar = ({ event, role, className }: AddToCalendarProps) => {
         <Button
           variant="outline"
           size="sm"
-          className={`border-umma-300 text-umma-700 hover:bg-umma-50 ${className}`}
+          className={`border-umma-500 text-umma-700 hover:bg-umma-50 ${className}`}
         >
-          <Calendar className="w-4 h-4 mr-2" />
-          Add to Calendar
+          <Calendar className="w-4 h-4" />
+          {showText && <span className="mx-2">Add to Calendar</span>}
           <ChevronDown className="w-4 h-4 ml-2" />
         </Button>
       </DropdownMenuTrigger>
@@ -68,7 +80,7 @@ const AddToCalendar = ({ event, role, className }: AddToCalendarProps) => {
           onClick={() => handleAddToCalendar('ics')}
           className="hover:bg-umma-50 cursor-pointer"
         >
-          Download .ics file
+          Apple Calendar
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { VolunteerRole, Event } from "@/types/database";
-import { displayTimeInMichigan } from "@/utils/timezoneUtils";
+import { displayTimeInMichigan, formatTime24To12 } from "@/utils/timezoneUtils";
 
 interface ConfirmationDialogProps {
   isOpen: boolean;
@@ -28,19 +28,7 @@ interface ConfirmationDialogProps {
   };
 }
 
-const formatTime = (time: string) => {
-  // Since shift_start and shift_end are now TIME fields (HH:MM), 
-  // we can format them directly without timezone conversion
-  const [hours, minutes] = time.split(':');
-  const date = new Date();
-  date.setHours(parseInt(hours), parseInt(minutes));
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: 'America/Detroit'
-  });
-};
+
 
 const ConfirmationDialog = ({
   isOpen,
@@ -75,7 +63,7 @@ const ConfirmationDialog = ({
             
             <div className="flex items-center gap-2 text-umma-700">
               <Clock className="w-4 h-4" />
-              <span>{formatTime(role.shift_start)} - {formatTime(role.shift_end)}</span>
+              <span>{formatTime24To12(role.shift_start)} - {formatTime24To12(role.shift_end)}</span>
             </div>
             
             <div className="flex items-center gap-2 text-umma-700">

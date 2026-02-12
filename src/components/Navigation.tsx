@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Calendar, Phone, Settings, LogOut, Menu, X, Share2 } from "lucide-react";
+import { Calendar, Phone, Settings, LogOut, Menu, X, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { User } from "@supabase/supabase-js";
@@ -75,7 +75,7 @@ const Navigation = () => {
 
   const navItems = [
     { label: "Events", path: "/dashboard", icon: Calendar },
-    { label: "Shared Events", path: "/shared-events", icon: Share2 },
+    { label: "Templates", path: "/templates", icon: FileText },
     { label: "Contacts", path: "/contacts", icon: Phone },
     { label: "Settings", path: "/settings", icon: Settings },
   ];
@@ -87,21 +87,25 @@ const Navigation = () => {
                      "Organizer";
 
   return (
-    <header className="bg-white/95 backdrop-blur-sm border-b border-brand-200 shadow-sm">
+    <header className="bg-white/95 backdrop-blur-sm border-b border-umma-200 shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center space-x-3">
-            <h1 
-              className="text-xl font-bold text-brand-600 cursor-pointer"
+        <div className="relative flex justify-between md:justify-between items-center h-16">
+          {/* Logo - centered on mobile, left on desktop */}
+          <div className="flex items-center space-x-3 flex-1 md:flex-none justify-center md:justify-start">
+            <button 
               onClick={() => navigate("/dashboard")}
+              className="flex items-center space-x-3 hover:opacity-80 transition-opacity cursor-pointer"
             >
-              EasyEvent
-            </h1>
+              <img 
+                src="/images/umma_stewards.png" 
+                alt="UMMA Stewards" 
+                className="h-8 md:h-12 w-auto object-contain rounded shadow-sm"
+              />
+            </button>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          {/* Desktop Navigation - Centered */}
+          <nav className="hidden md:flex items-center space-x-6 absolute left-1/2 transform -translate-x-1/2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -111,8 +115,8 @@ const Navigation = () => {
                   onClick={() => navigate(item.path)}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-200 ${
                     isActive 
-                      ? "bg-brand-100 text-brand-700 shadow-sm" 
-                      : "text-brand-600 hover:text-brand-700 hover:bg-brand-50"
+                      ? "bg-umma-100 text-umma-700 shadow-sm" 
+                      : "text-umma-600 hover:text-umma-700 hover:bg-umma-50"
                   }`}
                 >
                   <Icon className="w-5 h-5" />
@@ -124,7 +128,7 @@ const Navigation = () => {
 
           {/* User Menu */}
           <div className="hidden md:flex items-center space-x-4">
-            <span className="text-sm text-brand-700 font-medium">
+            <span className="text-sm text-umma-700 font-medium">
               {displayName}
             </span>
             <Button 
@@ -132,16 +136,16 @@ const Navigation = () => {
               size="sm" 
               onClick={handleLogout} 
               disabled={loading}
-              className="border-brand-300 text-brand-700 hover:bg-brand-50"
+              className="border-umma-500 text-umma-700 hover:bg-umma-50"
             >
               <LogOut className="w-4 h-4 mr-2" />
               {loading ? "Signing Out..." : "Sign Out"}
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - absolutely positioned on mobile */}
           <button
-            className="md:hidden text-brand-600"
+            className="absolute right-4 md:relative md:right-auto md:hidden text-umma-600"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -150,7 +154,7 @@ const Navigation = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-brand-200 py-4 bg-white/95 backdrop-blur-sm">
+          <div className="md:hidden border-t border-umma-200 py-4 bg-white/95 backdrop-blur-sm">
             <nav className="space-y-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
@@ -164,8 +168,8 @@ const Navigation = () => {
                     }}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                       isActive 
-                        ? "bg-brand-100 text-brand-700" 
-                        : "text-brand-600 hover:text-brand-700 hover:bg-brand-50"
+                        ? "bg-umma-100 text-umma-700" 
+                        : "text-umma-600 hover:text-umma-700 hover:bg-umma-50"
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -173,14 +177,14 @@ const Navigation = () => {
                   </button>
                 );
               })}
-              <div className="border-t border-brand-200 pt-4 mt-4">
-                <p className="text-sm text-brand-700 px-4 pb-2 font-medium">
+              <div className="border-t border-umma-200 pt-4 mt-4">
+                <p className="text-sm text-umma-700 px-4 pb-2 font-medium">
                   {displayName}
                 </p>
                 <button
                   onClick={handleLogout}
                   disabled={loading}
-                  className="w-full flex items-center space-x-3 px-4 py-3 text-brand-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 disabled:opacity-50"
+                  className="w-full flex items-center space-x-3 px-4 py-3 text-umma-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 disabled:opacity-50"
                 >
                   <LogOut className="w-5 h-5" />
                   <span className="font-medium">

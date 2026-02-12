@@ -50,12 +50,12 @@ ALTER TABLE events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
 -- Event shares policies
-CREATE POLICY IF NOT EXISTS "Users can view their own shares and shares shared with them" ON event_shares
+CREATE POLICY "Users can view their own shares and shares shared with them" ON event_shares
   FOR SELECT USING (
     auth.uid() = shared_by OR auth.uid() = shared_with
   );
 
-CREATE POLICY IF NOT EXISTS "Users can create shares for events they own" ON event_shares
+CREATE POLICY "Users can create shares for events they own" ON event_shares
   FOR INSERT WITH CHECK (
     EXISTS (
       SELECT 1 FROM events 
@@ -63,14 +63,14 @@ CREATE POLICY IF NOT EXISTS "Users can create shares for events they own" ON eve
     )
   );
 
-CREATE POLICY IF NOT EXISTS "Users can update shares they created" ON event_shares
+CREATE POLICY "Users can update shares they created" ON event_shares
   FOR UPDATE USING (auth.uid() = shared_by);
 
-CREATE POLICY IF NOT EXISTS "Users can delete shares they created" ON event_shares
+CREATE POLICY "Users can delete shares they created" ON event_shares
   FOR DELETE USING (auth.uid() = shared_by);
 
 -- Events policies
-CREATE POLICY IF NOT EXISTS "Users can view events they own or have access to" ON events
+CREATE POLICY "Users can view events they own or have access to" ON events
   FOR SELECT USING (
     created_by = auth.uid() OR
     EXISTS (
@@ -79,10 +79,10 @@ CREATE POLICY IF NOT EXISTS "Users can view events they own or have access to" O
     )
   );
 
-CREATE POLICY IF NOT EXISTS "Users can create events" ON events
+CREATE POLICY "Users can create events" ON events
   FOR INSERT WITH CHECK (created_by = auth.uid());
 
-CREATE POLICY IF NOT EXISTS "Users can update events they own or have edit access to" ON events
+CREATE POLICY "Users can update events they own or have edit access to" ON events
   FOR UPDATE USING (
     created_by = auth.uid() OR
     EXISTS (
@@ -91,19 +91,17 @@ CREATE POLICY IF NOT EXISTS "Users can update events they own or have edit acces
     )
   );
 
-CREATE POLICY IF NOT EXISTS "Users can delete events they own" ON events
+CREATE POLICY "Users can delete events they own" ON events
   FOR DELETE USING (created_by = auth.uid());
 
 -- Profiles policies
-CREATE POLICY IF NOT EXISTS "Users can view their own profile" ON profiles
+CREATE POLICY "Users can view their own profile" ON profiles
   FOR SELECT USING (auth.uid() = id);
 
-
-
-CREATE POLICY IF NOT EXISTS "Users can update their own profile" ON profiles
+CREATE POLICY "Users can update their own profile" ON profiles
   FOR UPDATE USING (auth.uid() = id);
 
-CREATE POLICY IF NOT EXISTS "Users can insert their own profile" ON profiles
+CREATE POLICY "Users can insert their own profile" ON profiles
   FOR INSERT WITH CHECK (auth.uid() = id);
 
 -- Function to update updated_at timestamp

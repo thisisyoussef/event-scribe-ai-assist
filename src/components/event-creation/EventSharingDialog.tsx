@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useEventSharing } from '@/hooks/useEventSharing';
-import { EventShare } from '@/types/database';
+import { EventShare, PreviouslySharedUser } from '@/types/database';
 import { Share2, UserPlus, Trash2, Eye, Edit, Mail, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -16,23 +16,42 @@ interface EventSharingDialogProps {
   eventId: string;
   eventTitle: string;
   trigger?: React.ReactNode;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export default function EventSharingDialog({ eventId, eventTitle, trigger }: EventSharingDialogProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function EventSharingDialog({ eventId, eventTitle, trigger, open, onOpenChange }: EventSharingDialogProps) {
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newPermissionLevel, setNewPermissionLevel] = useState<'view' | 'edit'>('view');
   const [shares, setShares] = useState<EventShare[]>([]);
   const [isLoadingShares, setIsLoadingShares] = useState(false);
+  const [previouslySharedUsers, setPreviouslySharedUsers] = useState<PreviouslySharedUser[]>([]);
+  const [isLoadingPreviouslyShared, setIsLoadingPreviouslyShared] = useState(false);
   
-  const { shareEvent, getEventShares, removeShare, isLoading } = useEventSharing();
+  const { shareEvent, getEventShares, removeShare, getPreviouslySharedUsers, isLoading } = useEventSharing();
   const { toast } = useToast();
 
+  // This component is now fully controlled - it must receive open and onOpenChange props
+  if (open === undefined || !onOpenChange) {
+    console.error('EventSharingDialog requires open and onOpenChange props');
+    return null;
+  }
+
+  // Debug logging
+  console.log('EventSharingDialog render:', { eventId, eventTitle, open, onOpenChange });
+
+  // Handle open/close state
+  const handleOpenChange = (open: boolean) => {
+    console.log('EventSharingDialog handleOpenChange:', open);
+    onOpenChange(open);
+  };
+
   useEffect(() => {
-    if (isOpen) {
+    if (open && eventId) {
       loadShares();
+      loadPreviouslySharedUsers();
     }
-  }, [isOpen, eventId]);
+  }, [open, eventId]);
 
   const loadShares = async () => {
     setIsLoadingShares(true);
@@ -45,6 +64,20 @@ export default function EventSharingDialog({ eventId, eventTitle, trigger }: Eve
       console.error('Error loading shares:', error);
     } finally {
       setIsLoadingShares(false);
+    }
+  };
+
+  const loadPreviouslySharedUsers = async () => {
+    setIsLoadingPreviouslyShared(true);
+    try {
+      console.log('Loading previously shared users...');
+      const users = await getPreviouslySharedUsers();
+      console.log('Received previously shared users:', users);
+      setPreviouslySharedUsers(users);
+    } catch (error) {
+      console.error('Error loading previously shared users:', error);
+    } finally {
+      setIsLoadingPreviouslyShared(false);
     }
   };
 
@@ -74,7 +107,7 @@ export default function EventSharingDialog({ eventId, eventTitle, trigger }: Eve
   };
 
   const handlePermissionChange = async (share: EventShare, newLevel: 'view' | 'edit') => {
-    const email = (share as any)?.shared_with_profile?.email;
+    const email = share.shared_with_profile?.email;
     if (!email) {
       toast({
         title: "Email unavailable",
@@ -90,19 +123,25 @@ export default function EventSharingDialog({ eventId, eventTitle, trigger }: Eve
     }
   };
 
+  const handleQuickShare = async (user: PreviouslySharedUser, permissionLevel: 'view' | 'edit') => {
+    const success = await shareEvent(eventId, user.email, permissionLevel);
+    if (success) {
+      await loadShares();
+      toast({
+        title: "Event shared",
+        description: `Event shared with ${user.full_name || user.email} (${permissionLevel} access).`,
+      });
+    }
+  };
 
+  // Don't render if no event is selected
+  if (!eventId) {
+    return null;
+  }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button variant="outline" size="sm">
-            <Share2 className="w-4 h-4 mr-2" />
-            Share Event
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Share2 className="w-5 h-5" />
@@ -171,6 +210,82 @@ export default function EventSharingDialog({ eventId, eventTitle, trigger }: Eve
             </CardContent>
           </Card>
 
+          {/* Previously Shared Users - Only show if user has shared events before */}
+          {previouslySharedUsers.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <UserPlus className="w-5 h-5" />
+                  Quick Share with Previous Users
+                </CardTitle>
+                <CardDescription>
+                  Quickly share with users you've shared events with before.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingPreviouslyShared ? (
+                  <div className="text-center py-4 text-muted-foreground">
+                    Loading previous users...
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {(() => {
+                      console.log('Debug - previouslySharedUsers:', previouslySharedUsers);
+                      console.log('Debug - shares:', shares);
+                      const filteredUsers = previouslySharedUsers.filter(user => {
+                        const isAlreadyShared = shares.some(share => share.shared_with_profile?.email === user.email);
+                        console.log(`User ${user.email} already shared: ${isAlreadyShared}`);
+                        return !isAlreadyShared;
+                      });
+                      console.log('Debug - filteredUsers:', filteredUsers);
+                      return filteredUsers.map((user) => (
+                        <div key={user.user_id} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
+                              <Mail className="w-4 h-4 text-muted-foreground" />
+                              <div className="flex flex-col">
+                                <span className="font-medium">
+                                  {user.full_name || user.email}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Select
+                              value="view"
+                              onValueChange={(value: 'view' | 'edit') => handleQuickShare(user, value)}
+                            >
+                              <SelectTrigger className="h-8 w-20">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="view">
+                                  <Eye className="w-4 h-4" />
+                                </SelectItem>
+                                <SelectItem value="edit">
+                                  <Edit className="w-4 h-4" />
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleQuickShare(user, 'view')}
+                              className="flex items-center gap-2"
+                            >
+                              <UserPlus className="w-4 h-4" />
+                              Share
+                            </Button>
+                          </div>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           <Separator />
 
           {/* Existing shares */}
@@ -196,6 +311,8 @@ export default function EventSharingDialog({ eventId, eventTitle, trigger }: Eve
                 <div className="space-y-3">
                   {shares.map((share) => {
                     console.log('Rendering share:', share);
+                    console.log('Share shared_with_profile:', share.shared_with_profile);
+                    console.log('Share shared_with_user:', share.shared_with_user);
                     return (
                       <div key={share.id} className="flex items-center justify-between p-3 border rounded-lg">
                         <div className="flex items-center gap-3">
@@ -205,11 +322,9 @@ export default function EventSharingDialog({ eventId, eventTitle, trigger }: Eve
                               <span className="font-medium">
                                 {share.shared_with_profile?.email ?? 'Email unavailable'}
                               </span>
-                              {share.shared_with_profile?.full_name && (
-                                <span className="text-sm text-muted-foreground">
-                                  {share.shared_with_profile.full_name}
-                                </span>
-                              )}
+                              <span className="text-sm text-muted-foreground">
+                                {share.permission_level === 'edit' ? 'Can Edit' : 'View Only'}
+                              </span>
                             </div>
                           </div>
                           <div className="ml-2">

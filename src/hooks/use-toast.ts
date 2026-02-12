@@ -6,7 +6,18 @@ import type {
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const TOAST_REMOVE_DELAY = 5000
+const TOAST_AUTO_DISMISS_DELAY = 5000
+
+// Check if mobile for shorter toast duration
+const isMobileDevice = () => {
+  if (typeof window === 'undefined') return false
+  return window.innerWidth < 768
+}
+
+const getToastDelay = () => {
+  return isMobileDevice() ? 3500 : TOAST_AUTO_DISMISS_DELAY
+}
 
 type ToasterToast = ToastProps & {
   id: string
@@ -160,6 +171,15 @@ function toast({ ...props }: Toast) {
       },
     },
   })
+
+  // Ensure auto-dismiss even on mobile browsers where focus/hover can pause timers
+  // This explicitly triggers a dismiss after a delay, independent of the UI timer
+  // Mobile toasts dismiss 1.5 seconds earlier (3.5s vs 5s)
+  try {
+    setTimeout(() => {
+      dismiss()
+    }, getToastDelay())
+  } catch {}
 
   return {
     id: id,

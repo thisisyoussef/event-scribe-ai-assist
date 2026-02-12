@@ -7,7 +7,7 @@ import { VolunteerRole, Volunteer } from "@/types/database";
 import VolunteerTable from "./VolunteerTable";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { displayTimeInMichigan } from "@/utils/timezoneUtils";
+import { displayTimeInMichigan, formatTime24To12 } from "@/utils/timezoneUtils";
 
 interface VolunteerRolesListProps {
   volunteerRoles: VolunteerRole[];
@@ -17,19 +17,7 @@ interface VolunteerRolesListProps {
   getRemainingSlots: (role: VolunteerRole, gender?: "brother" | "sister") => number;
 }
 
-const formatTime = (time: string) => {
-  // Since shift_start and shift_end are now TIME fields (HH:MM), 
-  // we can format them directly without timezone conversion
-  const [hours, minutes] = time.split(':');
-  const date = new Date();
-  date.setHours(parseInt(hours), parseInt(minutes));
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: 'America/Detroit'
-  });
-};
+
 
 const VolunteerRolesList = ({
   volunteerRoles,
@@ -82,7 +70,7 @@ const VolunteerRolesList = ({
             onClick={copySignupLink}
             variant="outline"
             size={isMobile ? "sm" : "default"}
-            className="border-umma-300 text-umma-700 hover:bg-umma-50"
+            className="border-umma-500 text-umma-700 hover:bg-umma-50"
           >
             <Copy className="w-4 h-4 mr-2" />
             Copy Link
@@ -91,7 +79,7 @@ const VolunteerRolesList = ({
             onClick={shareSignupLink}
             variant="outline"
             size={isMobile ? "sm" : "default"}
-            className="border-umma-300 text-umma-700 hover:bg-umma-50"
+            className="border-umma-500 text-umma-700 hover:bg-umma-50"
           >
             <Share2 className="w-4 h-4 mr-2" />
             Share
@@ -114,7 +102,7 @@ const VolunteerRolesList = ({
                     <div className="flex flex-wrap items-center gap-4 text-sm text-umma-600">
                       <div className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
-                        <span>{formatTime(role.shift_start)} - {formatTime(role.shift_end)}</span>
+                        <span>{formatTime24To12(role.shift_start)} - {formatTime24To12(role.shift_end)}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Users className="w-4 h-4" />

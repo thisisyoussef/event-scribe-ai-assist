@@ -39,7 +39,7 @@ const SignupPageMeta = ({ event }: SignupPageMetaProps) => {
     };
 
     // Update page title
-    document.title = `🤝 Volunteer for ${event.title} - Sign Up Now`;
+    document.title = `Volunteer for ${event.title}`;
 
     // Remove existing meta tags to ensure fresh data
     const removeExistingMeta = (selector: string) => {
@@ -74,17 +74,17 @@ const SignupPageMeta = ({ event }: SignupPageMetaProps) => {
       : `Join us as a volunteer and help make ${event.title} a success!`;
 
     // Enhanced meta description for WhatsApp
-    const metaDescription = `🤝 Volunteer Signup: ${event.title}\n📅 ${eventDate} at ${eventTime}\n📍 ${event.location || 'Location TBA'}\n\nSign up now to volunteer!`;
+    const metaDescription = `Volunteer Signup: ${event.title}\n📅 ${eventDate} at ${eventTime}\n📍 ${event.location || 'Location TBA'}\n\nSign up now to volunteer!`;
 
     // Basic meta tags - force override
     updateMetaTag('description', metaDescription);
     
     // Open Graph tags for rich link previews (WhatsApp uses these)
-    updateMetaTag('og:title', `🤝 Volunteer Signup: ${event.title}`);
+    updateMetaTag('og:title', `Volunteer Signup: ${event.title}`);
     updateMetaTag('og:description', `📅 ${eventDateTime}\n📍 ${event.location || 'Location TBA'}\n\n${description}\n\n✅ Sign up now to volunteer and be part of something amazing!`);
     updateMetaTag('og:type', 'website');
     updateMetaTag('og:url', window.location.href);
-    updateMetaTag('og:site_name', 'EasyEvent Volunteers');
+    updateMetaTag('og:site_name', 'UMMA Event Volunteers');
     updateMetaTag('og:locale', 'en_US');
     updateMetaTag('og:image', 'https://via.placeholder.com/1200x630/9B9A6D/FFFFFF?text=Volunteer+Signup');
     updateMetaTag('og:image:width', '1200');
@@ -93,15 +93,15 @@ const SignupPageMeta = ({ event }: SignupPageMetaProps) => {
     
     // Twitter Card tags (fallback for some platforms)
     updateMetaTag('twitter:card', 'summary_large_image');
-    updateMetaTag('twitter:title', `🤝 Volunteer for ${event.title}`);
+    updateMetaTag('twitter:title', `Volunteer for ${event.title}`);
     updateMetaTag('twitter:description', `📅 ${eventDate} at ${eventTime}\n📍 ${event.location || 'Location TBA'}\n\n${description}\n\nSign up to volunteer today!`);
-    updateMetaTag('twitter:site', '@easyevent');
-    updateMetaTag('twitter:creator', '@easyevent');
+    updateMetaTag('twitter:site', '@umma');
+    updateMetaTag('twitter:creator', '@umma');
     updateMetaTag('twitter:image', 'https://via.placeholder.com/1200x630/9B9A6D/FFFFFF?text=Volunteer+Signup');
 
     // Additional structured data for better SEO and previews
     updateMetaTag('article:section', 'Volunteer Opportunities');
-    updateMetaTag('article:tag', 'volunteer,community,event,signup');
+    updateMetaTag('article:tag', 'volunteer,community,event,signup,umma');
     updateMetaTag('event:start_time', event.start_datetime);
     updateMetaTag('event:location:latitude', '');
     updateMetaTag('event:location:longitude', '');
@@ -118,7 +118,7 @@ const SignupPageMeta = ({ event }: SignupPageMetaProps) => {
 
     // Cleanup function to restore original title
     return () => {
-      document.title = 'EasyEvent';
+      document.title = 'UMMA Event Management';
     };
   }, [event]);
 

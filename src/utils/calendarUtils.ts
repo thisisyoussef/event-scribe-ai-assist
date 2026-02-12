@@ -100,6 +100,92 @@ const getMichiganTimezoneOffset = (date: Date): number => {
   return (utcTime.getTime() - michiganTime.getTime()) / (1000 * 60);
 };
 
+export const generateGeneralEventCalendar = (event: Event) => {
+  // Convert event date to Michigan time first
+  const eventDate = toMichiganTime(event.start_datetime);
+  
+  // Use the event's start and end times directly
+  const startDate = new Date(eventDate);
+  const endDate = new Date(eventDate);
+  
+  // If the event has an end_datetime, use it; otherwise, assume it's a 2-hour event
+  if (event.end_datetime) {
+    const eventEndDate = toMichiganTime(event.end_datetime);
+    endDate.setTime(eventEndDate.getTime());
+  } else {
+    // Default to 2 hours if no end time is specified
+    endDate.setHours(startDate.getHours() + 2);
+  }
+  
+  // Format dates for calendar (YYYYMMDDTHHMMSSZ) - convert to UTC for calendar standards
+  const formatCalendarDate = (date: Date) => {
+    // Convert Michigan time to UTC for calendar compatibility
+    const utcDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+    // Apply Michigan timezone offset
+    const michiganOffset = getMichiganTimezoneOffset(date);
+    const adjustedDate = new Date(utcDate.getTime() + (michiganOffset * 60000));
+    return adjustedDate.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  };
+  
+  const title = encodeURIComponent(event.title);
+  const details = encodeURIComponent(
+    `Event: ${event.title}\n` +
+    `Location: ${event.location}\n` +
+    (event.description ? `Description: ${event.description}` : '') +
+    `\n\nVolunteer opportunities available. Visit the signup page to select a specific role.`
+  );
+  const location = encodeURIComponent(event.location);
+  
+  const startTime = formatCalendarDate(startDate);
+  const endTime = formatCalendarDate(endDate);
+  
+  // Google Calendar URL with timezone parameter
+  const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startTime}/${endTime}&details=${details}&location=${location}&ctz=${MICHIGAN_TIMEZONE}`;
+  
+  // Outlook Calendar URL with timezone
+  const outlookUrl = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${title}&startdt=${startTime}&enddt=${endTime}&body=${details}&location=${location}`;
+  
+  // Generic calendar file content (ICS format) with timezone
+  const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//EasyEvent//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VTIMEZONE
+TZID:${MICHIGAN_TIMEZONE}
+BEGIN:DAYLIGHT
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+TZNAME:EDT
+DTSTART:20070311T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+TZNAME:EST
+DTSTART:20071104T020000
+RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:${event.id}@easyevent.com
+DTSTART;TZID=${MICHIGAN_TIMEZONE}:${startTime}
+DTEND;TZID=${MICHIGAN_TIMEZONE}:${endTime}
+SUMMARY:${decodeURIComponent(title)}
+DESCRIPTION:${decodeURIComponent(details)}
+LOCATION:${decodeURIComponent(location)}
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')}
+END:VEVENT
+END:VCALENDAR`;
+  
+  return {
+    google: googleUrl,
+    outlook: outlookUrl,
+    ics: icsContent
+  };
+};
+
 export const downloadICSFile = (icsContent: string, filename: string) => {
   const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
   const link = document.createElement('a');

@@ -5,29 +5,62 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
 import { useParams, useNavigate } from "react-router-dom";
-import { Calendar, Clock, MapPin, Users, ArrowLeft, Phone, Trash2 } from "lucide-react";
+import { ArrowLeft, Phone, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Event, VolunteerRole, Volunteer } from "@/types/database";
-import { formatDateInMichigan, formatTimeInMichigan } from "@/utils/timezoneUtils";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useVolunteerDeletion } from "@/hooks/useVolunteerDeletion";
 import VolunteerDeletionDialog from "@/components/volunteer/VolunteerDeletionDialog";
 import { useEventSharing } from "@/hooks/useEventSharing";
+import { useAdminStatus } from "@/hooks/useAdminStatus";
+import CheckInManager from "@/components/volunteer/CheckInManager";
+import NoShowCleanup from "@/components/volunteer/NoShowCleanup";
+import { useVolunteerCheckIn } from "@/hooks/useVolunteerCheckIn";
+import { createEventSlug } from "@/utils/eventUtils";
+
+// Function to create a stable slug that won't change when title is edited
+const createStableEventSlug = (id: string): string => {
+  return `event-${id.slice(-8)}`;
+};
+
+// Normalize various stored formats of suggested_poc into an array of contact IDs
+// Handles:
+// - string[] (already parsed)
+// - string with JSON array (e.g., "[\"id1\",\"id2\"]")
+// - CSV string (e.g., "id1,id2")
+// - Postgres array text (e.g., "{id1,id2}")
+const normalizeSuggestedPocToIds = (value: unknown): string[] => {
+  if (!value) return [];
+  if (Array.isArray(value)) {
+    return (value as unknown[]).map(v => String(v)).filter(Boolean);
+  }
+  if (typeof value === 'string') {
+    const raw = value.trim();
+    if (!raw) return [];
+    // Try JSON array first
+    if (raw.startsWith('[') && raw.endsWith(']')) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          return parsed.map(v => String(v)).filter(Boolean);
+        }
+      } catch {}
+    }
+    // Handle Postgres array or CSV
+    const cleaned = raw.replace(/[{}\[\]"]+/g, '');
+    return cleaned.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  return [];
+};
 
 const EventRoster = () => {
-  const { eventId } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { deleteVolunteer, isDeleting } = useVolunteerDeletion();
   const { checkEventAccess } = useEventSharing();
+  const { isAdmin } = useAdminStatus();
+  const { updateVolunteerCheckInStatus } = useVolunteerCheckIn();
   const [event, setEvent] = useState<(Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] }) | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasEditPermission, setHasEditPermission] = useState(false);
@@ -51,15 +84,81 @@ const EventRoster = () => {
     };
     
     checkUser();
-  }, [eventId, navigate]);
+  }, [slug, navigate]);
 
   const loadEvent = async () => {
-    if (!eventId) return;
+    if (!slug) return;
     
     try {
-      console.log("Loading event with ID:", eventId);
+      console.log("Loading event with slug:", slug);
       
-      // Try normal fetch first (owner). If 406 or no rows, fallback to RPC for shared recipients
+      // Fetch all events the user has access to (owned or shared)
+      let events: Event[] | null = null;
+      const { data: eventsData, error: eventsError } = await supabase
+        .from('events')
+        .select('*')
+        .is('deleted_at', null)
+        .order('start_datetime', { ascending: false });
+
+      if (eventsError) {
+        console.error('Error loading events:', eventsError);
+        // Try RPC as fallback
+        const { data: sharedEvents } = await supabase
+          .rpc('get_shared_events');
+        
+        if (!sharedEvents) {
+          setEvent(null);
+          return;
+        }
+        events = sharedEvents.map((row: any) => row.event);
+      } else {
+        events = eventsData;
+      }
+
+      // Find the event that matches the slug
+      let matchingEvent = events?.find(event => {
+        // First try to match by title-based slug (new format)
+        const eventSlugGenerated = createEventSlug(event.title, event.id);
+        if (eventSlugGenerated === slug) {
+          return true;
+        }
+        
+        // Then try to match by legacy stable slug (event-xxxxxxxx format) for backward compatibility
+        const stableSlug = createStableEventSlug(event.id);
+        if (stableSlug === slug) {
+          return true;
+        }
+        
+        return false;
+      });
+
+      // Fallback: match by unique id suffix for both formats
+      if (!matchingEvent && slug) {
+        if (slug.startsWith('event-')) {
+          // Legacy stable slug format: event-xxxxxxxx
+          const suffix = slug.replace('event-', '');
+          if (suffix.length === 8) {
+            matchingEvent = events?.find(e => e.id.endsWith(suffix));
+          }
+        } else {
+          // Title-based slug format: title-xxxx
+          const parts = slug.split('-');
+          const suffix = parts[parts.length - 1] || '';
+          if (suffix.length === 4) {
+            matchingEvent = events?.find(e => e.id.endsWith(suffix));
+          }
+        }
+      }
+
+      if (!matchingEvent) {
+        console.log("Event not found for slug:", slug);
+        setEvent(null);
+        return;
+      }
+
+      const eventId = matchingEvent.id;
+
+      // Now fetch the full event data with volunteers and roles
       const { data: eventData, error } = await supabase
         .from('events')
         .select(`
@@ -72,7 +171,7 @@ const EventRoster = () => {
 
       if (error || !eventData) {
         if (error) {
-          console.error('Error loading event:', error);
+          console.error('Error loading event details:', error);
         } else {
           console.log('No event found via direct select; trying RPC');
         }
@@ -99,6 +198,45 @@ const EventRoster = () => {
           volunteers: (row.volunteers as any[]) || [],
         } as Event & { volunteer_roles?: VolunteerRole[]; volunteers?: Volunteer[] };
 
+        // Populate POC contacts for volunteer roles (shared event)
+        if (merged.volunteer_roles && merged.volunteer_roles.length > 0) {
+          // Collect all unique POC IDs from all roles (normalized)
+          const uniquePocIds: string[] = [];
+          merged.volunteer_roles.forEach(role => {
+            const ids = normalizeSuggestedPocToIds((role as any).suggested_poc);
+            ids.forEach(id => {
+              if (id && !uniquePocIds.includes(id)) uniquePocIds.push(id);
+            });
+          });
+
+          // Fetch POC contacts if there are any
+          if (uniquePocIds.length > 0) {
+            console.log("Fetching POC contacts for shared event IDs:", uniquePocIds);
+            const { data: contacts, error: contactsError } = await supabase
+              .from('contacts')
+              .select('id, name, phone, email')
+              .in('id', uniquePocIds);
+            
+            if (!contactsError && contacts) {
+              console.log("Fetched POC contacts for shared event:", contacts);
+              // Map contact names to the volunteer roles
+              merged.volunteer_roles = merged.volunteer_roles.map(role => {
+                const ids = normalizeSuggestedPocToIds((role as any).suggested_poc);
+                const pocContacts = ids
+                  .map(pocId => contacts.find(contact => contact.id === pocId))
+                  .filter(Boolean) as any[];
+                return {
+                  ...role,
+                  poc_contacts: pocContacts,
+                  poc_contact: pocContacts[0]
+                };
+              });
+            } else {
+              console.error("Error fetching POC contacts for shared event:", contactsError);
+            }
+          }
+        }
+
         console.log('Loaded shared event via RPC:', merged);
         setEvent(merged);
         // Check permissions for this event
@@ -108,10 +246,53 @@ const EventRoster = () => {
       }
 
       console.log("Found event:", eventData);
+      console.log("📊 Volunteers data:", eventData.volunteers);
+      console.log("📊 Volunteer roles data:", eventData.volunteer_roles);
+      
+      // Populate POC contacts for volunteer roles
+      if (eventData.volunteer_roles && eventData.volunteer_roles.length > 0) {
+        // Collect all unique POC IDs from all roles (normalized)
+        const uniquePocIds: string[] = [];
+        eventData.volunteer_roles.forEach(role => {
+          const ids = normalizeSuggestedPocToIds((role as any).suggested_poc);
+          ids.forEach(id => {
+            if (id && !uniquePocIds.includes(id)) uniquePocIds.push(id);
+          });
+        });
+
+        // Fetch POC contacts if there are any
+        if (uniquePocIds.length > 0) {
+          console.log("Fetching POC contacts for IDs:", uniquePocIds);
+          const { data: contacts, error: contactsError } = await supabase
+            .from('contacts')
+            .select('id, name, phone, email')
+            .in('id', uniquePocIds);
+          
+          if (!contactsError && contacts) {
+            console.log("Fetched POC contacts:", contacts);
+            // Map contact names to the volunteer roles
+            eventData.volunteer_roles = eventData.volunteer_roles.map(role => {
+              const ids = normalizeSuggestedPocToIds((role as any).suggested_poc);
+              const pocContacts = ids
+                .map(pocId => contacts.find(contact => contact.id === pocId))
+                .filter(Boolean) as any[];
+              return {
+                ...role,
+                poc_contacts: pocContacts,
+                poc_contact: pocContacts[0] // Keep legacy field for backward compatibility
+              };
+            });
+          } else {
+            console.error("Error fetching POC contacts:", contactsError);
+          }
+        }
+      }
+      
       setEvent(eventData as Event & { volunteer_roles?: VolunteerRole[], volunteers?: Volunteer[] });
       
       // Check permissions for this event
       const { hasAccess, permissionLevel } = await checkEventAccess(eventId, 'edit');
+      console.log('🔐 Permission check:', { hasAccess, permissionLevel, eventId });
       setHasEditPermission(hasAccess && permissionLevel === 'edit');
     } catch (error) {
       console.error('Error:', error);
@@ -154,9 +335,49 @@ const EventRoster = () => {
     }
   };
 
-  const getVolunteersForRole = (roleId: string) => {
-    return event?.volunteers?.filter((v: Volunteer) => v.role_id === roleId) || [];
+  const handleVolunteerUpdate = (updatedVolunteer: Volunteer) => {
+    setEvent(prev => prev ? {
+      ...prev,
+      volunteers: prev.volunteers?.map(v => 
+        v.id === updatedVolunteer.id ? updatedVolunteer : v
+      ) || []
+    } : null);
   };
+
+  // Fallback polling: periodically refresh volunteers to reflect changes across POCs
+  useEffect(() => {
+    if (!event?.id) return;
+
+    let intervalId: any;
+    let isActive = true;
+
+    const pollVolunteers = async () => {
+      if (document.visibilityState !== 'visible') return;
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select(`id, volunteers(*)`)
+          .eq('id', event.id)
+          .maybeSingle();
+
+        if (!error && data && isActive && Array.isArray((data as any).volunteers)) {
+          const latestVolunteers = (data as any).volunteers as Volunteer[];
+          setEvent(prev => prev ? { ...prev, volunteers: latestVolunteers } : prev);
+        }
+      } catch (e) {
+        // swallow errors during polling
+      }
+    };
+
+    // initial poll and interval
+    pollVolunteers();
+    intervalId = setInterval(pollVolunteers, 4000);
+
+    return () => {
+      isActive = false;
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [event?.id]);
 
   if (loading) {
     return (
@@ -165,7 +386,7 @@ const EventRoster = () => {
         <main className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center">
             <div className="text-center">
-              <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+              <div className="animate-spin w-8 h-8 border-2 border-umma-700 border-t-transparent rounded-full mx-auto mb-4"></div>
               <p>Loading event details...</p>
             </div>
           </div>
@@ -197,165 +418,62 @@ const EventRoster = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Navigation />
       
-      <main className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center mb-6">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate("/dashboard")}
-            className="mr-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{event.title}</h1>
-            <div className="flex flex-wrap items-center gap-4 text-gray-600 mt-2">
-              <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4" />
-                <span>{formatDateInMichigan(event.start_datetime)}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4" />
-                <span>
-                  {formatTimeInMichigan(event.start_datetime)} - {formatTimeInMichigan(event.end_datetime)} (Michigan Time)
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <MapPin className="w-4 h-4" />
-                <span>{event.location}</span>
-              </div>
-            </div>
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 md:py-6 max-w-7xl">
+        {/* Breadcrumb Navigation */}
+        <div className="mb-3 sm:mb-4">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/dashboard")}
+              className="h-8 px-2 sm:px-3 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Dashboard
+            </Button>
+            <span className="text-gray-400">/</span>
+            <span className="text-gray-900 font-medium">Check In</span>
           </div>
         </div>
 
-        {/* Event Description */}
-        {event.description && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Event Description</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-gray-600">{event.description}</div>
-            </CardContent>
-          </Card>
+        {/* Header */}
+        <div className="frosted-panel p-4 sm:p-5 mb-4 sm:mb-5">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl md:text-2xl font-semibold tracking-tight text-stone-800 break-words">{event.title}</h1>
+            <p className="mt-1.5 sm:mt-2 text-sm text-gray-600">
+              Manage volunteer attendance and track who has arrived, marked themselves as running late, or needs special attention
+            </p>
+          </div>
+        </div>
+
+        {/* Check-In Manager */}
+        {event.volunteers && event.volunteer_roles && (
+          <div className="mb-4 sm:mb-5">
+            <CheckInManager
+              eventId={event.id}
+              volunteers={event.volunteers}
+              volunteerRoles={event.volunteer_roles}
+              onVolunteerUpdate={handleVolunteerUpdate}
+            />
+          </div>
         )}
 
-        {/* Volunteer Roles and Signups */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Volunteer Roster</CardTitle>
-            <CardDescription>
-              View and manage volunteer signups for this event
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {event.volunteer_roles && event.volunteer_roles.length > 0 ? (
-              <div className="space-y-6">
-                {event.volunteer_roles.map((role: VolunteerRole) => {
-                  const volunteers = getVolunteersForRole(role.id);
-                  const totalSlots = (role.slots_brother || 0) + (role.slots_sister || 0);
-                  const filledSlots = volunteers.length;
-                  const remainingSlots = totalSlots - filledSlots;
-                  
-                  return (
-                    <div key={role.id} className="border rounded-lg p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h3 className="text-lg font-semibold">{role.role_label}</h3>
-                          <div className="flex items-center space-x-4 text-sm text-gray-600 mt-2">
-                            <div className="flex items-center space-x-2">
-                              <Clock className="w-4 h-4" />
-                              <span>{role.shift_start} - {role.shift_end}</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Users className="w-4 h-4" />
-                              <span>{filledSlots} / {totalSlots} filled</span>
-                            </div>
-                          </div>
-                          {role.notes && (
-                            <div className="text-sm text-gray-600 mt-2 italic">
-                              {role.notes}
-                            </div>
-                          )}
-                        </div>
-                        <Badge variant={remainingSlots > 0 ? "default" : "secondary"}>
-                          {remainingSlots > 0 ? `${remainingSlots} spots open` : "Full"}
-                        </Badge>
-                      </div>
-
-                      {volunteers.length > 0 ? (
-                        <div className="mt-4">
-                          <h4 className="font-medium mb-3">Signed Up Volunteers:</h4>
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Phone</TableHead>
-                                <TableHead>Gender</TableHead>
-                                <TableHead>Signup Date</TableHead>
-                                <TableHead>Notes</TableHead>
-                                <TableHead>Actions</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {volunteers.map((volunteer: Volunteer) => (
-                                <TableRow key={volunteer.id}>
-                                  <TableCell className="font-medium">{volunteer.name}</TableCell>
-                                  <TableCell>
-                                    <div className="flex items-center space-x-2">
-                                      <Phone className="w-4 h-4" />
-                                      <span>{volunteer.phone}</span>
-                                    </div>
-                                  </TableCell>
-                                  <TableCell>
-                                    <Badge variant={volunteer.gender === 'brother' ? 'default' : 'secondary'}>
-                                      {volunteer.gender}
-                                    </Badge>
-                                  </TableCell>
-                                  <TableCell>
-                                    {volunteer.signup_date ? formatDateInMichigan(volunteer.signup_date) : 'N/A'}
-                                  </TableCell>
-                                  <TableCell>{volunteer.notes || '-'}</TableCell>
-                                  <TableCell>
-                                    {hasEditPermission && (
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => handleDeleteClick(volunteer)}
-                                        className="text-red-600 hover:text-red-700"
-                                        disabled={isDeleting}
-                                      >
-                                        <Trash2 className="w-4 h-4" />
-                                      </Button>
-                                    )}
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </div>
-                      ) : (
-                        <div className="text-center py-4 text-gray-500">
-                          No volunteers signed up yet
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Roles Defined</h3>
-                <div className="text-gray-500">This event doesn't have any volunteer roles set up yet.</div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* No-Show Cleanup - Super Admin Only */}
+        {isAdmin && event.volunteers && event.volunteers.length > 0 && (
+          <div className="mb-4 sm:mb-5">
+            <NoShowCleanup
+              eventId={event.id}
+              eventTitle={event.title}
+              onCleanupComplete={() => {
+                // Reload event data after cleanup
+                loadEvent();
+              }}
+            />
+          </div>
+        )}
 
         <VolunteerDeletionDialog
           isOpen={deleteDialog.isOpen}

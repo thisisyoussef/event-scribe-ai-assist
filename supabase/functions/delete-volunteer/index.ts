@@ -21,20 +21,34 @@ serve(async (req) => {
       );
     }
 
-    const { volunteerId, volunteerName, adminPassword } = await req.json();
+    const { volunteerId, volunteerName, adminPassword, phoneVerification, volunteerPhone } = await req.json();
 
-    if (!volunteerId || !volunteerName || !adminPassword) {
+    if (!volunteerId || !volunteerName) {
       return new Response(
-        JSON.stringify({ error: "Missing required fields: volunteerId, volunteerName, adminPassword" }),
+        JSON.stringify({ error: "Missing required fields: volunteerId, volunteerName" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Verify admin password
-    const expectedPassword = "admin123"; // This should match the frontend
-    if (adminPassword !== expectedPassword) {
+    // Verify either admin password or phone verification
+    let isAuthorized = false;
+    
+    if (adminPassword) {
+      // Admin override path
+      const expectedPassword = "admin123"; // This should match the frontend
+      if (adminPassword === expectedPassword) {
+        isAuthorized = true;
+      }
+    } else if (phoneVerification && volunteerPhone) {
+      // Self-deletion path - verify phone number matches
+      if (phoneVerification === volunteerPhone) {
+        isAuthorized = true;
+      }
+    }
+
+    if (!isAuthorized) {
       return new Response(
-        JSON.stringify({ error: "Incorrect admin password" }),
+        JSON.stringify({ error: "Unauthorized: Invalid admin password or phone verification" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -71,6 +85,57 @@ serve(async (req) => {
     }
 
     console.log(`[DELETION] Volunteer found in database:`, existingVolunteer);
+
+    // First, find and delete the corresponding volunteer_signups record
+    // This ensures the volunteer no longer appears in Contacts filtering
+    console.log(`[DELETION] Looking for volunteer_signups record for volunteer ${volunteerId}`);
+    
+    // Find the contact that matches this volunteer's name and phone
+    const { data: contact, error: contactLookupError } = await supabaseServiceRole
+      .from('contacts')
+      .select('id')
+      .eq('name', existingVolunteer.name)
+      .eq('phone', existingVolunteer.phone)
+      .maybeSingle();
+
+    if (contactLookupError) {
+      console.error(`[DELETION] Error looking up contact:`, contactLookupError);
+    } else if (contact) {
+      console.log(`[DELETION] Found matching contact:`, contact);
+      
+      // Now find the volunteer_signups record
+      const { data: signupRecord, error: signupLookupError } = await supabaseServiceRole
+        .from('volunteer_signups')
+        .select('id, contact_id, event_id, role_id')
+        .eq('contact_id', contact.id)
+        .eq('event_id', existingVolunteer.event_id)
+        .eq('role_id', existingVolunteer.role_id)
+        .maybeSingle();
+
+      if (signupLookupError) {
+        console.error(`[DELETION] Error looking up volunteer_signups record:`, signupLookupError);
+        // Continue with volunteer deletion even if signup lookup fails
+      } else if (signupRecord) {
+        console.log(`[DELETION] Found volunteer_signups record:`, signupRecord);
+        
+        // Delete the volunteer_signups record
+        const { error: signupDeleteError, count: signupDeleteCount } = await supabaseServiceRole
+          .from('volunteer_signups')
+          .delete({ count: 'exact' })
+          .eq('id', signupRecord.id);
+
+        if (signupDeleteError) {
+          console.error(`[DELETION] Error deleting volunteer_signups record:`, signupDeleteError);
+          // Continue with volunteer deletion even if signup deletion fails
+        } else {
+          console.log(`[DELETION] Successfully deleted volunteer_signups record. Rows affected: ${signupDeleteCount}`);
+        }
+      } else {
+        console.log(`[DELETION] No volunteer_signups record found for volunteer ${volunteerId}`);
+      }
+    } else {
+      console.log(`[DELETION] No matching contact found for volunteer ${volunteerId}`);
+    }
 
     // Perform the actual deletion using service role (bypasses RLS)
     const { error: deleteError, count } = await supabaseServiceRole
@@ -119,12 +184,12 @@ serve(async (req) => {
       );
     }
 
-    console.log(`[DELETION] SUCCESS: Volunteer ${volunteerId} (${volunteerName}) has been completely removed from the database`);
+    console.log(`[DELETION] SUCCESS: Volunteer ${volunteerId} (${volunteerName}) has been completely removed from the database and volunteer signup history`);
     
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: `${volunteerName} has been successfully removed from the event` 
+        message: `${volunteerName} has been successfully removed from the event and will no longer appear in contact filters` 
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

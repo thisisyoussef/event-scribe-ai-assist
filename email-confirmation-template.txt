@@ -1,0 +1,26 @@
+Welcome to UMMA Stewards!
+Your journey as a Point of Contact (POC) starts here
+
+Welcome to our POC community! We're thrilled you've joined us as a Point of Contact and look forward to seeing the wonderful events you'll organize for your community.
+
+COMPLETE YOUR REGISTRATION
+To finish setting up your POC account and begin organizing events, please verify your email by clicking the link below. This step helps us keep you informed about platform updates and new features.
+
+VERIFY YOUR EMAIL ADDRESS:
+{{ .ConfirmationURL }}
+
+IMPORTANT: This verification link expires in 24 hours. If you didn't sign up for our POC platform, please disregard this message.
+
+GET STARTED ORGANIZING
+After verification, you'll be able to:
+- Create and manage volunteer events
+- Coordinate volunteer roles and schedules
+- Track volunteer participation and contributions
+- Communicate with your volunteer community
+- Access event templates and best practices
+
+UMMA Stewards
+Building stronger communities through organized volunteerism
+
+Need help? Contact our support team.
+This message was sent to verify your POC account registration.
