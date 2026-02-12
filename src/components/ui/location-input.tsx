@@ -135,8 +135,8 @@ export function LocationInput({
             className="relative cursor-text"
             onClick={handleContainerClick}
           >
-            <div className="flex items-center space-x-2 min-w-0 w-full border border-stone-200 rounded-2xl bg-white/80 px-5 py-3 focus-within:ring-2 focus-within:ring-[#5c5b2f]/20 focus-within:border-[#5c5b2f] transition-all hover:border-stone-300 hover:shadow-sm shadow-sm">
-              <MapPin className="h-4 w-4 text-gray-500 shrink-0" />
+            <div className="flex items-center space-x-2 min-w-0 w-full border border-white/15 rounded-2xl bg-white/5 px-5 py-3 focus-within:ring-2 focus-within:ring-gold-400/20 focus-within:border-gold-400 transition-all hover:border-white/25 shadow-lg">
+              <MapPin className="h-4 w-4 text-white/40 shrink-0" />
               <input
                 ref={inputRef}
                 type="text"
@@ -146,7 +146,7 @@ export function LocationInput({
                 onBlur={handleInputBlur}
                 placeholder={placeholder}
                 disabled={disabled}
-                className="flex-1 min-w-0 border-none outline-none bg-transparent text-sm font-semibold text-umma-700 placeholder:text-gray-400 cursor-text"
+                className="flex-1 min-w-0 border-none outline-none bg-transparent text-sm font-semibold text-gold-50 placeholder:text-white/30 cursor-text"
               />
             </div>
           </div>
@@ -184,7 +184,7 @@ export function LocationInput({
                       />
                       <div className="flex flex-col">
                         <span className="font-medium">{location.label}</span>
-                        <span className="text-sm text-gray-500">{location.description}</span>
+                        <span className="text-sm text-white/50">{location.description}</span>
                       </div>
                     </CommandItem>
                   ))}
@@ -196,7 +196,7 @@ export function LocationInput({
       </Popover>
 
       {value && (
-        <div className="text-xs text-gray-500 flex items-center space-x-1">
+        <div className="text-xs text-white/40 flex items-center space-x-1">
           <MapPin className="h-3 w-3" />
           <span>
             {isPredefined ? "Predefined location" : "Custom location"}

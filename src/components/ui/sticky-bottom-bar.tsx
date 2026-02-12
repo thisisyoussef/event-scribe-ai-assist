@@ -23,7 +23,7 @@ const StickyBottomBar = React.forwardRef<HTMLDivElement, StickyBottomBarProps>(
                 ref={ref}
                 className={cn(
                     "fixed bottom-0 left-0 right-0 z-50",
-                    "bg-white/95 md:bg-white/80 backdrop-blur-xl border-t border-stone-200 md:border-umma-100",
+                    "bg-white/95 md:bg-white/80 backdrop-blur-xl border-t border-white/10 md:border-umma-100",
                     "px-4 py-4 md:py-3",
                     "shadow-[0_-4px_20px_rgba(0,0,0,0.1)] md:shadow-[0_-4px_20px_rgba(0,0,0,0.08)]",
                     "animate-in slide-in-from-bottom-2 duration-300",
@@ -60,7 +60,7 @@ const StickyBottomBar = React.forwardRef<HTMLDivElement, StickyBottomBarProps>(
                                     variant="ghost"
                                     size="sm"
                                     onClick={secondaryAction.onClick}
-                                    className="text-stone-600 h-10 px-3 text-sm touch-manipulation font-medium"
+                                    className="text-white/50 h-10 px-3 text-sm touch-manipulation font-medium"
                                 >
                                     {secondaryAction.label}
                                 </Button>
@@ -68,7 +68,7 @@ const StickyBottomBar = React.forwardRef<HTMLDivElement, StickyBottomBarProps>(
 
                             <div className="flex items-center gap-2 flex-1 justify-center">
                                 {statusText && (
-                                    <span className="text-xs text-stone-500 font-medium truncate">
+                                    <span className="text-xs text-white/40 font-medium truncate">
                                         {statusText}
                                     </span>
                                 )}
@@ -97,7 +97,7 @@ const StickyBottomBar = React.forwardRef<HTMLDivElement, StickyBottomBarProps>(
                                     variant="ghost"
                                     size="sm"
                                     onClick={secondaryAction.onClick}
-                                    className="text-stone-600 h-9 px-3 text-sm touch-manipulation"
+                                    className="text-white/50 h-9 px-3 text-sm touch-manipulation"
                                 >
                                     {secondaryAction.label}
                                 </Button>

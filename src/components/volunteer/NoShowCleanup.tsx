@@ -137,24 +137,24 @@ const NoShowCleanup: React.FC<NoShowCleanupProps> = ({
           {/* Mobile Card View */}
           <div className="md:hidden space-y-3">
             {noShowVolunteers.map((volunteer) => (
-              <div key={volunteer.volunteer_id} className="rounded-xl bg-red-500/10/50 backdrop-blur-sm ring-1 ring-red-100 p-4 space-y-2">
+              <div key={volunteer.volunteer_id} className="rounded-xl bg-red-500/10 backdrop-blur-sm ring-1 ring-red-100 p-4 space-y-2">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <h5 className="font-semibold text-stone-900 text-sm mb-1">{volunteer.volunteer_name}</h5>
+                    <h5 className="font-semibold text-foreground text-sm mb-1">{volunteer.volunteer_name}</h5>
                     <Badge variant="destructive" className="text-xs mt-1">No Show</Badge>
                   </div>
                 </div>
-                <div className="space-y-1.5 text-xs text-stone-600">
+                <div className="space-y-1.5 text-xs text-white/50">
                   <div className="flex items-center gap-2">
-                    <span className="text-stone-400 shrink-0">Phone:</span>
+                    <span className="text-white/30 shrink-0">Phone:</span>
                     <a href={`tel:${volunteer.volunteer_phone}`} className="text-umma-700 hover:text-umma-800 hover:underline">{volunteer.volunteer_phone}</a>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-stone-400 shrink-0">Role:</span>
-                    <span className="text-stone-700">{volunteer.role_label}</span>
+                    <span className="text-white/30 shrink-0">Role:</span>
+                    <span className="text-white/70">{volunteer.role_label}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-stone-400 shrink-0">Signed up:</span>
+                    <span className="text-white/30 shrink-0">Signed up:</span>
                     <span>{new Date(volunteer.signup_date).toLocaleDateString()}</span>
                   </div>
                 </div>

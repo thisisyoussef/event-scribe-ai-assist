@@ -1399,8 +1399,8 @@ const Contacts = () => {
                                   variant="outline" 
                                   className={`text-xs ${
                                     contact.gender === 'brother' 
-                                      ? 'bg-blue-500/15 text-blue-300 border-blue-200' 
-                                      : 'bg-pink-50 text-pink-700 border-pink-200'
+                                      ? 'bg-blue-500/15 text-blue-300 border-blue-500/20' 
+                                      : 'bg-pink-500/15 text-pink-300 border-pink-500/20'
                                   }`}
                                 >
                                   {contact.gender === 'brother' ? 'Brother' : 'Sister'}
@@ -1414,7 +1414,7 @@ const Contacts = () => {
                                 variant="outline" 
                                 className={`text-xs font-medium ${
                                   contact.total_events_volunteered && contact.total_events_volunteered > 0
-                                    ? 'bg-green-50 text-green-700 border-green-200'
+                                    ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/20'
                                     : 'bg-background text-white/40 border-white/10'
                                 }`}
                               >
@@ -1425,7 +1425,7 @@ const Contacts = () => {
                                 variant="outline" 
                                 className={`text-xs font-medium ${
                                   contact.total_roles_volunteered && contact.total_roles_volunteered > 0
-                                    ? 'bg-blue-500/15 text-blue-300 border-blue-200'
+                                    ? 'bg-blue-500/15 text-blue-300 border-blue-500/20'
                                     : 'bg-background text-white/40 border-white/10'
                                 }`}
                               >
@@ -1522,8 +1522,8 @@ const Contacts = () => {
                                     variant="outline" 
                                     className={`text-xs ${
                                       contact.gender === 'brother' 
-                                        ? 'bg-blue-500/15 text-blue-300 border-blue-200' 
-                                        : 'bg-pink-50 text-pink-700 border-pink-200'
+                                        ? 'bg-blue-500/15 text-blue-300 border-blue-500/20' 
+                                        : 'bg-pink-500/15 text-pink-300 border-pink-500/20'
                                     }`}
                                   >
                                     {contact.gender === 'brother' ? 'Brother' : 'Sister'}
@@ -1575,7 +1575,7 @@ const Contacts = () => {
                                   variant="outline" 
                                   className={`text-xs font-medium ${
                                     contact.total_events_volunteered && contact.total_events_volunteered > 0
-                                      ? 'bg-green-50 text-green-700 border-green-200'
+                                      ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/20'
                                       : 'bg-background text-white/40 border-white/10'
                                   }`}
                                 >
@@ -1586,7 +1586,7 @@ const Contacts = () => {
                                   variant="outline" 
                                   className={`text-xs font-medium ${
                                     contact.total_roles_volunteered && contact.total_roles_volunteered > 0
-                                      ? 'bg-blue-500/15 text-blue-300 border-blue-200'
+                                      ? 'bg-blue-500/15 text-blue-300 border-blue-500/20'
                                       : 'bg-background text-white/40 border-white/10'
                                   }`}
                                 >

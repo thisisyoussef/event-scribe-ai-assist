@@ -73,8 +73,8 @@ const TodayEvents = ({ onEventSelect }: TodayEventsProps) => {
     return (
       <div className="space-y-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5c5b47] mx-auto"></div>
-          <p className="text-gray-600 mt-2">Loading today's events...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-400 mx-auto"></div>
+          <p className="text-white/50 mt-2">Loading today's events...</p>
         </div>
       </div>
     );
@@ -83,9 +83,9 @@ const TodayEvents = ({ onEventSelect }: TodayEventsProps) => {
   if (events.length === 0) {
     return (
       <div className="text-center py-8">
-        <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Events Today</h3>
-        <p className="text-gray-600">There are no volunteer events scheduled for today.</p>
+        <Calendar className="w-12 h-12 text-white/30 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-foreground mb-2">No Events Today</h3>
+        <p className="text-white/50">There are no volunteer events scheduled for today.</p>
       </div>
     );
   }
@@ -93,8 +93,8 @@ const TodayEvents = ({ onEventSelect }: TodayEventsProps) => {
   return (
     <div className="space-y-3 sm:space-y-4">
       <div className="text-center mb-4 sm:mb-6 px-2">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Today's Volunteer Events</h2>
-        <p className="text-sm sm:text-base text-gray-600">Join us in serving the community today!</p>
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">Today's Volunteer Events</h2>
+        <p className="text-sm sm:text-base text-white/50">Join us in serving the community today!</p>
       </div>
       
       {events.map((event) => {
@@ -106,13 +106,13 @@ const TodayEvents = ({ onEventSelect }: TodayEventsProps) => {
           <Card 
             key={event.id} 
             onClick={() => handleEventClick(event)}
-            className="hover:shadow-lg transition-shadow duration-200 cursor-pointer border-2 border-[#5c5b47]/20 hover:border-[#5c5b47]/40 mx-2 sm:mx-0"
+            className="hover:shadow-lg transition-shadow duration-200 cursor-pointer border-2 border-gold-400/20 hover:border-gold-400/40 mx-2 sm:mx-0"
           >
             <CardHeader className="pb-3 px-4 sm:px-6">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  <CardTitle className="text-lg sm:text-xl text-gray-900 mb-2 break-words">{event.title}</CardTitle>
-                  <div className="flex flex-col sm:flex-row sm:items-center text-gray-600 text-xs sm:text-sm space-y-1 sm:space-y-0 sm:space-x-4">
+                  <CardTitle className="text-lg sm:text-xl text-foreground mb-2 break-words">{event.title}</CardTitle>
+                  <div className="flex flex-col sm:flex-row sm:items-center text-white/50 text-xs sm:text-sm space-y-1 sm:space-y-0 sm:space-x-4">
                     <div className="flex items-center">
                       <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
                       <span className="truncate">{formatDateInMichigan(event.start_datetime)}</span>
@@ -135,18 +135,18 @@ const TodayEvents = ({ onEventSelect }: TodayEventsProps) => {
             
             <CardContent className="pt-0 px-4 sm:px-6">
               {event.description && (
-                <CardDescription className="text-gray-600 mb-3 sm:mb-4 text-sm sm:text-base">
+                <CardDescription className="text-white/50 mb-3 sm:mb-4 text-sm sm:text-base">
                   {event.description}
                 </CardDescription>
               )}
               
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="flex items-center text-xs sm:text-sm text-gray-600">
+                <div className="flex items-center text-xs sm:text-sm text-white/50">
                   <Users className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
                   <span className="break-words">
                     {totalVolunteers} of {totalSlots} volunteers signed up
                     {remainingSlots > 0 && (
-                      <span className="text-green-600 font-medium"> ({remainingSlots} spots remaining)</span>
+                      <span className="text-emerald-400 font-medium"> ({remainingSlots} spots remaining)</span>
                     )}
                   </span>
                 </div>
@@ -156,7 +156,7 @@ const TodayEvents = ({ onEventSelect }: TodayEventsProps) => {
                     e.stopPropagation();
                     handleEventClick(event);
                   }}
-                  className="w-full sm:w-auto bg-[#5c5b47] hover:bg-[#7c7b55] text-white"
+                  className="w-full sm:w-auto bg-gold-400 hover:bg-gold-300 text-white"
                 >
                   <span className="text-sm sm:text-base">Volunteer Now</span>
                   <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />

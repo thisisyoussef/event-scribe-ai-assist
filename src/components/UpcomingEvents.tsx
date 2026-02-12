@@ -142,8 +142,8 @@ const UpcomingEvents = ({ onEventSelect }: UpcomingEventsProps) => {
         label: "Today", 
         variant: "default" as const, 
         className: isWithin5Hours 
-          ? "bg-white text-[#5c5b47] border-[#5c5b47] font-semibold" 
-          : "bg-white text-[#5c5b47] border-[#5c5b47]",
+          ? "bg-white text-gold-400 border-gold-400 font-semibold" 
+          : "bg-white text-gold-400 border-gold-400",
         isUrgent: isWithin5Hours
       };
     } else if (eventDate.toDateString() === tomorrow.toDateString()) {
@@ -151,7 +151,7 @@ const UpcomingEvents = ({ onEventSelect }: UpcomingEventsProps) => {
         label: "Tomorrow", 
         variant: "secondary" as const, 
         className: isWithin5Hours 
-          ? "bg-white text-[#5c5b47] border-[#5c5b47] font-semibold" 
+          ? "bg-white text-gold-400 border-gold-400 font-semibold" 
           : "bg-blue-100 text-blue-800 border-blue-200",
         isUrgent: isWithin5Hours
       };
@@ -160,8 +160,8 @@ const UpcomingEvents = ({ onEventSelect }: UpcomingEventsProps) => {
         label: "Upcoming", 
         variant: "outline" as const, 
         className: isWithin5Hours 
-          ? "bg-white text-[#5c5b47] border-[#5c5b47] font-semibold" 
-          : "bg-gray-100 text-gray-800 border-gray-200",
+          ? "bg-white text-gold-400 border-gold-400 font-semibold" 
+          : "bg-white/10 text-foreground border-white/10",
         isUrgent: isWithin5Hours
       };
     }
@@ -171,8 +171,8 @@ const UpcomingEvents = ({ onEventSelect }: UpcomingEventsProps) => {
     return (
       <div className="space-y-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5c5b47] mx-auto"></div>
-          <p className="text-gray-600 mt-2">Loading upcoming events...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gold-400 mx-auto"></div>
+          <p className="text-white/50 mt-2">Loading upcoming events...</p>
         </div>
       </div>
     );
@@ -181,9 +181,9 @@ const UpcomingEvents = ({ onEventSelect }: UpcomingEventsProps) => {
   if (events.length === 0) {
     return (
       <div className="text-center py-8">
-        <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Upcoming Events</h3>
-        <p className="text-gray-600">There are no volunteer events scheduled at this time.</p>
+        <Calendar className="w-12 h-12 text-white/30 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold text-foreground mb-2">No Upcoming Events</h3>
+        <p className="text-white/50">There are no volunteer events scheduled at this time.</p>
       </div>
     );
   }
@@ -191,8 +191,8 @@ const UpcomingEvents = ({ onEventSelect }: UpcomingEventsProps) => {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="text-center mb-4 sm:mb-6 px-2">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Upcoming Volunteer Events</h2>
-        <p className="text-sm sm:text-base text-gray-600">We are excited to have you as part of our volunteer network. Our stewards play a vital role in serving the community with trust, hospitality, and dedication.</p>
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">Upcoming Volunteer Events</h2>
+        <p className="text-sm sm:text-base text-white/50">We are excited to have you as part of our volunteer network. Our stewards play a vital role in serving the community with trust, hospitality, and dedication.</p>
       </div>
       
       <div className="grid gap-3 sm:gap-4">
@@ -210,22 +210,22 @@ const UpcomingEvents = ({ onEventSelect }: UpcomingEventsProps) => {
               onClick={() => handleEventClick(event)}
               className={`hover:shadow-lg transition-all duration-200 cursor-pointer border-2 mx-2 sm:mx-0 ${
                 isUrgent
-                  ? 'border-[#5c5b47] bg-[#5c5b47] text-white hover:border-[#4b4a39] shadow-[#5c5b47]/30 shadow-lg'
+                  ? 'border-gold-400 bg-gold-400 text-white hover:border-gold-300 shadow-gold-400/30 shadow-lg'
                   : isToday 
-                    ? 'border-[#5c5b47] hover:border-[#4b4a39] bg-[#5c5b47] text-white' 
-                    : 'border-[#5c5b47]/20 hover:border-[#5c5b47]/40'
+                    ? 'border-gold-400 hover:border-gold-300 bg-gold-400 text-white' 
+                    : 'border-gold-400/20 hover:border-gold-400/40'
               }`}
             >
               <CardHeader className="pb-3 px-4 sm:px-6">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
-                      <CardTitle className={`text-lg sm:text-xl ${isUrgent || isToday ? 'text-white font-bold' : 'text-gray-900'} break-words`}>
+                      <CardTitle className={`text-lg sm:text-xl ${isUrgent || isToday ? 'text-white font-bold' : 'text-foreground'} break-words`}>
                         {event.title}
                       </CardTitle>
                       {isUrgent && <Clock3 className="w-4 h-4 sm:w-5 sm:h-5 text-white fill-current animate-pulse flex-shrink-0" />}
                     </div>
-                    <div className={`flex flex-col sm:flex-row sm:items-center text-xs sm:text-sm space-y-1 sm:space-y-0 sm:space-x-4 ${isUrgent || isToday ? 'text-white/80' : 'text-gray-600'}`}>
+                    <div className={`flex flex-col sm:flex-row sm:items-center text-xs sm:text-sm space-y-1 sm:space-y-0 sm:space-x-4 ${isUrgent || isToday ? 'text-white/80' : 'text-white/50'}`}>
                       <div className="flex items-center">
                         <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
                         <span className="truncate">{formatDateInMichigan(event.start_datetime)}</span>
@@ -248,18 +248,18 @@ const UpcomingEvents = ({ onEventSelect }: UpcomingEventsProps) => {
               
               <CardContent className="pt-0 px-4 sm:px-6">
                 {event.description && (
-                  <CardDescription className={`${isUrgent || isToday ? 'text-white/85' : 'text-gray-600'} mb-3 sm:mb-4 text-sm sm:text-base`}>
+                  <CardDescription className={`${isUrgent || isToday ? 'text-white/85' : 'text-white/50'} mb-3 sm:mb-4 text-sm sm:text-base`}>
                     {event.description}
                   </CardDescription>
                 )}
                 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div className={`flex items-center text-xs sm:text-sm ${isUrgent || isToday ? 'text-white/85' : 'text-gray-600'}`}>
+                  <div className={`flex items-center text-xs sm:text-sm ${isUrgent || isToday ? 'text-white/85' : 'text-white/50'}`}>
                     <Users className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
                     <span className={`${isUrgent || isToday ? 'text-white/90' : ''} break-words`}>
                       {totalVolunteers} of {totalSlots} volunteers signed up
                       {remainingSlots > 0 && (
-                        <span className={`font-medium ${isUrgent || isToday ? 'text-white' : 'text-[#5c5b47]'}`}>
+                        <span className={`font-medium ${isUrgent || isToday ? 'text-white' : 'text-gold-400'}`}>
                           {isUrgent ? ` (${remainingSlots} spots remaining - Starting Soon!)` : ` (${remainingSlots} spots remaining)`}
                         </span>
                       )}
@@ -273,10 +273,10 @@ const UpcomingEvents = ({ onEventSelect }: UpcomingEventsProps) => {
                     }}
                     className={`w-full sm:w-auto ${
                       isUrgent
-                        ? 'bg-white hover:bg-white/90 text-[#5c5b47] border border-white font-semibold shadow-lg'
+                        ? 'bg-white hover:bg-white/90 text-gold-400 border border-white font-semibold shadow-lg'
                         : isToday 
-                          ? 'bg-white hover:bg-white/90 text-[#5c5b47] border border-white font-semibold' 
-                          : 'bg-[#5c5b47] hover:bg-[#7c7b55] text-white'
+                          ? 'bg-white hover:bg-white/90 text-gold-400 border border-white font-semibold' 
+                          : 'bg-gold-400 hover:bg-gold-300 text-white'
                     }`}
                   >
                     <span className="text-sm sm:text-base">

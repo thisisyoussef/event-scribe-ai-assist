@@ -166,7 +166,7 @@ const VolunteerDeletionDialog = ({
             <AlertDialogAction 
               onClick={handleConfirm}
               disabled={!canInteract || !password.trim()}
-              className="bg-red-500/100 hover:bg-red-600"
+              className="bg-red-500 hover:bg-red-600"
             >
               {isProcessing || isDeleting ? "Removing..." : "Yes, Remove"}
             </AlertDialogAction>

@@ -318,24 +318,24 @@ const ItineraryEditor = ({
   };
 
   return (
-    <Card className="border-stone-200 md:border-umma-200 bg-white shadow-sm md:shadow-none">
+    <Card className="border-white/10 md:border-umma-200 bg-white/5 shadow-sm md:shadow-none">
       <CardHeader className="pb-3 md:pb-2 px-3 md:px-6">
-        <CardTitle className="flex items-center space-x-2 text-stone-800 md:text-umma-800 text-lg md:text-base">
+        <CardTitle className="flex items-center space-x-2 text-foreground md:text-umma-800 text-lg md:text-base">
           <Clock className="w-5 h-5" />
           <span>Event Timeline & Roles</span>
         </CardTitle>
-        <p className="text-sm md:text-xs text-stone-500 md:text-umma-600 mt-1">
+        <p className="text-sm md:text-xs text-white/40 md:text-umma-600 mt-1">
           Build your event schedule and assign volunteer roles.
         </p>
       </CardHeader>
       <CardContent className="space-y-4 px-3 md:px-6">
         {itinerary.length === 0 ? (
-          <div className="text-center py-10 md:py-8 bg-stone-50 md:bg-umma-50 rounded-3xl md:rounded-xl border border-stone-200 md:border-umma-200">
-            <div className="w-16 h-16 md:w-12 md:h-12 rounded-full bg-stone-100 md:bg-umma-100 mx-auto mb-4 flex items-center justify-center">
-              <Clock className="w-8 h-8 md:w-6 md:h-6 text-stone-400 md:text-umma-400" />
+          <div className="text-center py-10 md:py-8 bg-white/5 md:bg-umma-50 rounded-3xl md:rounded-xl border border-white/10 md:border-umma-200">
+            <div className="w-16 h-16 md:w-12 md:h-12 rounded-full bg-white/10 md:bg-umma-100 mx-auto mb-4 flex items-center justify-center">
+              <Clock className="w-8 h-8 md:w-6 md:h-6 text-white/30 md:text-umma-400" />
             </div>
-            <h3 className="text-lg md:text-base font-semibold text-stone-700 md:text-umma-700 mb-2">No activities yet</h3>
-            <p className="text-stone-500 md:text-umma-600 mb-6 text-sm px-4">Start by adding your first activity with volunteer roles</p>
+            <h3 className="text-lg md:text-base font-semibold text-white/70 md:text-umma-700 mb-2">No activities yet</h3>
+            <p className="text-white/40 md:text-umma-600 mb-6 text-sm px-4">Start by adding your first activity with volunteer roles</p>
 
             <div className="flex flex-col gap-3 px-6 md:px-0 md:flex-row md:justify-center">
               <Button
@@ -352,7 +352,7 @@ const ItineraryEditor = ({
                 <Button
                   onClick={onGenerateItinerary}
                   variant="outline"
-                  className="h-14 md:h-11 text-base md:text-sm font-medium border border-stone-200 md:border-umma-500 text-stone-700 md:text-umma-700 hover:bg-stone-50 md:hover:bg-umma-50 rounded-3xl md:rounded-lg touch-manipulation"
+                  className="h-14 md:h-11 text-base md:text-sm font-medium border border-white/10 md:border-umma-500 text-white/70 md:text-umma-700 hover:bg-white/5 md:hover:bg-umma-50 rounded-3xl md:rounded-lg touch-manipulation"
                   disabled={!canGenerateItinerary || isGenerating || disabled}
                 >
                   <Sparkles className="w-5 h-5 md:w-4 md:h-4 mr-2" />
@@ -367,7 +367,7 @@ const ItineraryEditor = ({
               {itinerary.map((item, index) => {
                 const overlappingIds = getOverlappingRoleIds(item.volunteerRoles);
                 return (
-                  <div key={item.id} className="bg-stone-50 md:bg-umma-50 rounded-3xl md:rounded-xl border border-stone-200 md:border-umma-200 overflow-hidden">
+                  <div key={item.id} className="bg-white/5 md:bg-umma-50 rounded-3xl md:rounded-xl border border-white/10 md:border-umma-200 overflow-hidden">
                     {/* Main Itinerary Item */}
                     <div className="p-3 md:p-4 space-y-4 overflow-visible">
                       {/* Mobile: Compact header */}
@@ -377,7 +377,7 @@ const ItineraryEditor = ({
                             value={item.title}
                             onChange={(e) => updateItineraryItem(item.id, 'title', e.target.value)}
                             placeholder="Activity name..."
-                            className="text-lg font-semibold h-12 border-0 bg-transparent focus-visible:ring-0 placeholder:text-stone-400 px-0 md:px-0"
+                            className="text-lg font-semibold h-12 border-0 bg-transparent focus-visible:ring-0 placeholder:text-white/30 px-0 md:px-0"
                             disabled={disabled}
                           />
                         </div>
@@ -385,7 +385,7 @@ const ItineraryEditor = ({
                           size="sm"
                           variant="ghost"
                           onClick={() => removeItineraryItem(item.id)}
-                          className="h-9 w-9 p-0 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-full"
+                          className="h-9 w-9 p-0 text-white/30 hover:text-red-400 hover:bg-red-500/10 rounded-full"
                           disabled={disabled}
                         >
                           <Trash2 className="w-4 h-4" />
@@ -394,12 +394,12 @@ const ItineraryEditor = ({
 
                       {/* Mobile: Native iOS Time Picker */}
                       <div className="md:hidden space-y-2">
-                        <Label className="text-sm font-semibold text-stone-600">Time</Label>
+                        <Label className="text-sm font-semibold text-white/50">Time</Label>
                         <Input
                           type="time"
                           value={item.time}
                           onChange={(e) => updateItineraryItemTime(item.id, e.target.value)}
-                          className="h-12 border border-stone-200 focus-visible:ring-umma-500 rounded-2xl text-base font-medium"
+                          className="h-12 border border-white/10 focus-visible:ring-umma-500 rounded-2xl text-base font-medium"
                           disabled={disabled}
                         />
                       </div>
@@ -436,7 +436,7 @@ const ItineraryEditor = ({
                             size="sm"
                             variant="ghost"
                             onClick={() => removeItineraryItem(item.id)}
-                            className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                            className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-500/10"
                             disabled={disabled}
                           >
                             <Trash2 className="w-3 h-3" />
@@ -447,18 +447,18 @@ const ItineraryEditor = ({
                           onChange={(e) => updateItineraryItem(item.id, 'description', e.target.value)}
                           placeholder="What happens during this time? (optional)"
                           rows={2}
-                          className="text-base md:text-sm resize-none border-stone-200 md:border-umma-200 focus-visible:ring-umma-500 rounded-2xl md:rounded-lg"
+                          className="text-base md:text-sm resize-none border-white/10 md:border-umma-200 focus-visible:ring-umma-500 rounded-2xl md:rounded-lg"
                           disabled={disabled}
                         />
                       </div>
                     </div>
 
                     {/* Volunteer Roles Section */}
-                    <div className="border-t border-stone-200 md:border-umma-200 bg-white p-3 md:p-4">
+                    <div className="border-t border-white/10 md:border-umma-200 bg-white/5 p-3 md:p-4">
                       <div className="flex items-center justify-between mb-4 md:mb-3">
                         <div className="flex items-center gap-2">
-                          <Users className="w-5 h-5 md:w-4 md:h-4 text-stone-500 md:text-umma-600" />
-                          <Label className="text-base md:text-sm font-semibold text-stone-700 md:text-umma-700">Roles</Label>
+                          <Users className="w-5 h-5 md:w-4 md:h-4 text-white/40 md:text-umma-600" />
+                          <Label className="text-base md:text-sm font-semibold text-white/70 md:text-umma-700">Roles</Label>
                           {item.volunteerRoles.length > 0 && (
                             <Badge variant="secondary" className="text-xs bg-umma-100 text-umma-700 border-0">
                               {getTotalVolunteerSlots(item.volunteerRoles)} volunteers
@@ -491,10 +491,10 @@ const ItineraryEditor = ({
 
                       {item.volunteerRoles.length === 0 ? (
                         <div className="text-center py-6 md:py-4">
-                          <div className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-stone-100 mx-auto mb-3 flex items-center justify-center">
-                            <Users className="w-6 h-6 md:w-5 md:h-5 text-stone-400" />
+                          <div className="w-12 h-12 md:w-10 md:h-10 rounded-full bg-white/10 mx-auto mb-3 flex items-center justify-center">
+                            <Users className="w-6 h-6 md:w-5 md:h-5 text-white/30" />
                           </div>
-                          <p className="text-sm text-stone-500 md:text-umma-500">
+                          <p className="text-sm text-white/40 md:text-umma-500">
                             No roles yet. Tap "Add Role" to get started.
                           </p>
                         </div>
@@ -680,7 +680,7 @@ const ItineraryEditor = ({
                                         />
                                         <div className="text-sm sm:text-xs text-umma-600 font-medium">When this role ends</div>
                                         {showValidation && roleError && (
-                                          <div className="text-sm sm:text-[11px] text-red-600">{roleError}</div>
+                                          <div className="text-sm sm:text-[11px] text-red-400">{roleError}</div>
                                         )}
                                       </div>
                                     </div>
@@ -701,7 +701,7 @@ const ItineraryEditor = ({
                                         size="sm"
                                         variant="ghost"
                                         onClick={() => removeVolunteerRole(item.id, role.id)}
-                                        className="h-10 sm:h-6 px-3 sm:px-2 text-sm sm:text-xs text-red-500 hover:text-red-700 hover:bg-red-50"
+                                        className="h-10 sm:h-6 px-3 sm:px-2 text-sm sm:text-xs text-red-500 hover:text-red-700 hover:bg-red-500/10"
                                         disabled={disabled}
                                       >
                                         <X className="w-4 h-4 sm:w-3 sm:h-3 mr-1" />
@@ -713,26 +713,26 @@ const ItineraryEditor = ({
 
                                 {/* Mobile: Tappable role card */}
                                 <div
-                                  className="md:hidden flex items-center justify-between cursor-pointer active:scale-[0.98] -mx-1 -my-1 p-2.5 rounded-2xl transition-all bg-white border border-stone-200 shadow-sm touch-manipulation"
+                                  className="md:hidden flex items-center justify-between cursor-pointer active:scale-[0.98] -mx-1 -my-1 p-2.5 rounded-2xl transition-all bg-white/5 border border-white/10 shadow-sm touch-manipulation"
                                   onClick={() => setEditingRole({ itemId: item.id, roleId: role.id })}
                                 >
                                   <div className="flex-1 min-w-0">
-                                    <div className="font-semibold text-stone-900 text-base truncate">
-                                      {role.roleLabel || <span className="text-stone-400 font-normal italic">Untitled Role</span>}
+                                    <div className="font-semibold text-foreground text-base truncate">
+                                      {role.roleLabel || <span className="text-white/30 font-normal italic">Untitled Role</span>}
                                     </div>
-                                    <div className="text-sm text-stone-500 flex items-center flex-wrap gap-x-4 gap-y-1 mt-1">
+                                    <div className="text-sm text-white/40 flex items-center flex-wrap gap-x-4 gap-y-1 mt-1">
                                       <span className="flex items-center gap-1.5 font-medium">
                                         <Users className="w-4 h-4 text-umma-500" />
-                                        <span className="text-stone-700">{role.slotsBrother + role.slotsSister + role.slotsFlexible}</span>
-                                        <span className="text-stone-400">needed</span>
+                                        <span className="text-white/70">{role.slotsBrother + role.slotsSister + role.slotsFlexible}</span>
+                                        <span className="text-white/30">needed</span>
                                       </span>
                                       <span className="flex items-center gap-1.5">
-                                        <Clock className="w-4 h-4 text-stone-400" />
+                                        <Clock className="w-4 h-4 text-white/30" />
                                         {formatTime24To12(role.shiftStartTime)} - {formatTime24To12(role.shiftEndTime)}
                                       </span>
                                     </div>
                                   </div>
-                                  <ChevronRight className="w-5 h-5 text-stone-300 ml-2 flex-shrink-0" />
+                                  <ChevronRight className="w-5 h-5 text-white/20 ml-2 flex-shrink-0" />
                                 </div>
                               </div>
                             );
@@ -749,7 +749,7 @@ const ItineraryEditor = ({
               <Button
                 onClick={addItineraryItem}
                 variant="outline"
-                className="flex-1 h-14 md:h-11 text-base md:text-sm font-semibold border border-stone-200 md:border-umma-500 text-stone-700 md:text-umma-700 hover:bg-stone-50 md:hover:bg-umma-100 rounded-3xl md:rounded-lg touch-manipulation"
+                className="flex-1 h-14 md:h-11 text-base md:text-sm font-semibold border border-white/10 md:border-umma-500 text-white/70 md:text-umma-700 hover:bg-white/5 md:hover:bg-umma-100 rounded-3xl md:rounded-lg touch-manipulation"
                 disabled={disabled}
               >
                 <Plus className="w-5 h-5 md:w-4 md:h-4 mr-2" />
@@ -760,7 +760,7 @@ const ItineraryEditor = ({
                 <Button
                   onClick={onGenerateItinerary}
                   variant="outline"
-                  className="flex-1 h-14 md:h-11 text-base md:text-sm font-medium border border-stone-200 md:border-umma-500 text-stone-700 md:text-umma-700 hover:bg-stone-50 md:hover:bg-umma-50 rounded-3xl md:rounded-lg touch-manipulation"
+                  className="flex-1 h-14 md:h-11 text-base md:text-sm font-medium border border-white/10 md:border-umma-500 text-white/70 md:text-umma-700 hover:bg-white/5 md:hover:bg-umma-50 rounded-3xl md:rounded-lg touch-manipulation"
                   disabled={!canGenerateItinerary || isGenerating || disabled}
                 >
                   <Sparkles className="w-5 h-5 md:w-4 md:h-4 mr-2" />
@@ -773,10 +773,10 @@ const ItineraryEditor = ({
       </CardContent>
       <Sheet open={!!editingRole} onOpenChange={(open) => !open && setEditingRole(null)}>
         <SheetContent side="bottom" className="h-auto max-h-[85vh] sm:max-w-md overflow-y-auto rounded-t-3xl px-0 pb-0 flex flex-col">
-          <SheetHeader className="px-5 py-4 border-b border-stone-100 sticky top-0 bg-white z-10">
+          <SheetHeader className="px-5 py-4 border-b border-white/5 sticky top-0 bg-white/5 z-10">
             <div className="text-left">
-              <SheetTitle className="text-xl font-bold text-stone-900 text-left">Edit Role</SheetTitle>
-              <SheetDescription className="text-sm text-stone-500 mt-0.5 text-left">Configure volunteer requirements</SheetDescription>
+              <SheetTitle className="text-xl font-bold text-foreground text-left">Edit Role</SheetTitle>
+              <SheetDescription className="text-sm text-white/40 mt-0.5 text-left">Configure volunteer requirements</SheetDescription>
             </div>
           </SheetHeader>
 
@@ -791,24 +791,24 @@ const ItineraryEditor = ({
                 <>
                   {/* Role Name - Most Important */}
                   <div className="space-y-3">
-                    <Label className="text-sm font-semibold text-stone-500 uppercase tracking-wider">Role Name</Label>
+                    <Label className="text-sm font-semibold text-white/40 uppercase tracking-wider">Role Name</Label>
                     <Input
                       value={activeRoleData.roleLabel}
                       onChange={(e) => updateVolunteerRole(activeItem.id, activeRoleData.id, 'roleLabel', e.target.value)}
                       placeholder="e.g., Greeter, Setup Crew..."
-                      className="text-xl font-semibold h-14 border border-stone-200 focus-visible:ring-umma-500 rounded-2xl placeholder:font-normal placeholder:text-stone-400"
+                      className="text-xl font-semibold h-14 border border-white/10 focus-visible:ring-umma-500 rounded-2xl placeholder:font-normal placeholder:text-white/30"
                     />
                   </div>
 
                   {/* Volunteer Counts - Stepper UI */}
-                  <div className="space-y-4 bg-stone-50 rounded-2xl p-4">
-                    <Label className="text-sm font-semibold text-stone-500 uppercase tracking-wider">Volunteers Needed</Label>
+                  <div className="space-y-4 bg-white/5 rounded-2xl p-4">
+                    <Label className="text-sm font-semibold text-white/40 uppercase tracking-wider">Volunteers Needed</Label>
 
                     <div className="space-y-4">
                       <div className="flex items-center justify-between py-2">
                         <div className="space-y-0.5">
-                          <div className="font-semibold text-stone-800 text-base">Brothers</div>
-                          <div className="text-xs text-stone-500">Male volunteers</div>
+                          <div className="font-semibold text-foreground text-base">Brothers</div>
+                          <div className="text-xs text-white/40">Male volunteers</div>
                         </div>
                         <NumberStepper
                           value={activeRoleData.slotsBrother}
@@ -817,12 +817,12 @@ const ItineraryEditor = ({
                         />
                       </div>
 
-                      <div className="border-t border-stone-200" />
+                      <div className="border-t border-white/10" />
 
                       <div className="flex items-center justify-between py-2">
                         <div className="space-y-0.5">
-                          <div className="font-semibold text-stone-800 text-base">Sisters</div>
-                          <div className="text-xs text-stone-500">Female volunteers</div>
+                          <div className="font-semibold text-foreground text-base">Sisters</div>
+                          <div className="text-xs text-white/40">Female volunteers</div>
                         </div>
                         <NumberStepper
                           value={activeRoleData.slotsSister}
@@ -831,12 +831,12 @@ const ItineraryEditor = ({
                         />
                       </div>
 
-                      <div className="border-t border-stone-200" />
+                      <div className="border-t border-white/10" />
 
                       <div className="flex items-center justify-between py-2">
                         <div className="space-y-0.5">
-                          <div className="font-semibold text-stone-800 text-base">Either Gender</div>
-                          <div className="text-xs text-stone-500">Flexible assignment</div>
+                          <div className="font-semibold text-foreground text-base">Either Gender</div>
+                          <div className="text-xs text-white/40">Flexible assignment</div>
                         </div>
                         <NumberStepper
                           value={activeRoleData.slotsFlexible}
@@ -847,8 +847,8 @@ const ItineraryEditor = ({
                     </div>
 
                     {/* Total indicator */}
-                    <div className="flex items-center justify-between pt-3 border-t border-stone-200">
-                      <span className="text-sm font-semibold text-stone-600">Total volunteers</span>
+                    <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                      <span className="text-sm font-semibold text-white/50">Total volunteers</span>
                       <span className="text-lg font-bold text-umma-600">
                         {activeRoleData.slotsBrother + activeRoleData.slotsSister + activeRoleData.slotsFlexible}
                       </span>
@@ -857,22 +857,22 @@ const ItineraryEditor = ({
 
                   {/* Timing */}
                   <div className="space-y-3">
-                    <Label className="text-sm font-semibold text-stone-500 uppercase tracking-wider">Shift Time</Label>
+                    <Label className="text-sm font-semibold text-white/40 uppercase tracking-wider">Shift Time</Label>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
-                        <Label className="text-sm text-stone-600 font-medium">Start</Label>
-                        <div className="p-4 bg-stone-100 rounded-xl border border-stone-200 text-stone-700 font-semibold text-base text-center">
+                        <Label className="text-sm text-white/50 font-medium">Start</Label>
+                        <div className="p-4 bg-white/10 rounded-xl border border-white/10 text-white/70 font-semibold text-base text-center">
                           {formatTime24To12(activeRoleData.shiftStartTime)}
                         </div>
-                        <p className="text-xs text-stone-400 text-center mb-0">Synced with activity</p>
+                        <p className="text-xs text-white/30 text-center mb-0">Synced with activity</p>
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm text-stone-600 font-medium">End</Label>
+                        <Label className="text-sm text-white/50 font-medium">End</Label>
                         <Input
                           type="time"
                           value={activeRoleData.shiftEndTime}
                           onChange={(e) => updateVolunteerRole(activeItem.id, activeRoleData.id, 'shiftEndTime', e.target.value)}
-                          className="h-14 border-2 border-stone-200 rounded-xl text-base font-semibold text-center"
+                          className="h-14 border-2 border-white/10 rounded-xl text-base font-semibold text-center"
                         />
                       </div>
                     </div>
@@ -880,13 +880,13 @@ const ItineraryEditor = ({
 
                   {/* Notes - Optional */}
                   <div className="space-y-3">
-                    <Label className="text-sm font-semibold text-stone-500 uppercase tracking-wider">Notes (Optional)</Label>
+                    <Label className="text-sm font-semibold text-white/40 uppercase tracking-wider">Notes (Optional)</Label>
                     <Textarea
                       value={activeRoleData.notes || ""}
                       onChange={(e) => updateVolunteerRole(activeItem.id, activeRoleData.id, 'notes', e.target.value)}
                       placeholder="Special instructions, requirements, or details for this role..."
                       rows={3}
-                      className="text-base resize-none border-2 border-stone-200 rounded-xl"
+                      className="text-base resize-none border-2 border-white/10 rounded-xl"
                     />
                   </div>
 
@@ -894,7 +894,7 @@ const ItineraryEditor = ({
                   <div className="pt-2">
                     <Button
                       variant="ghost"
-                      className="w-full h-12 text-base text-red-600 hover:text-red-700 hover:bg-red-50 font-medium"
+                      className="w-full h-12 text-base text-red-400 hover:text-red-700 hover:bg-red-500/10 font-medium"
                       onClick={() => {
                         removeVolunteerRole(activeItem.id, activeRoleData.id);
                         setEditingRole(null);
@@ -910,7 +910,7 @@ const ItineraryEditor = ({
           </div>
 
           {/* Sticky Done Button */}
-          <div className="mt-auto p-4 pt-3 bg-white border-t border-stone-200 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] shrink-0" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+          <div className="mt-auto p-4 pt-3 bg-white/5 border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] shrink-0" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
             <Button
               className="w-full h-14 text-lg font-bold bg-umma-600 hover:bg-umma-700 text-white shadow-xl rounded-xl touch-manipulation"
               onClick={() => setEditingRole(null)}

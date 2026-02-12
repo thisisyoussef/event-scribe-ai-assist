@@ -120,7 +120,7 @@ const VolunteerRolesList = ({
                     <Button
                       onClick={() => onSignUp(role)}
                       disabled={remainingSlots <= 0}
-                      className="bg-umma-500 hover:bg-umma-600 text-white disabled:bg-gray-300"
+                      className="bg-umma-500 hover:bg-umma-600 text-white disabled:bg-white/20"
                       size={isMobile ? "sm" : "default"}
                     >
                       Sign Up

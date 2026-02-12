@@ -430,7 +430,7 @@ const VolunteerSignup = () => {
       <SignupPageMeta event={event} />
       <div className="min-h-screen bg-background">
         {/* Top Bar */}
-        <div className="bg-white/5 border-b border-white/10 sticky top-0 z-40">
+        <div className="bg-navy-800/60 backdrop-blur-xl border-b border-white/10 sticky top-0 z-40">
           <div className="container mx-auto px-4 py-3">
             <div className="flex items-center justify-between">
               {/* <Button
@@ -448,7 +448,7 @@ const VolunteerSignup = () => {
         </div>
 
         {/* Hero Section */}
-        <div className="bg-white/5 border-b border-white/10">
+        <div className="bg-navy-800/60 backdrop-blur-xl border-b border-white/10">
           <div className="container mx-auto px-4 py-4">
             {/* Mobile Layout */}
             <div className="md:hidden space-y-4">
@@ -467,7 +467,7 @@ const VolunteerSignup = () => {
                       {event.title}
                     </h1>
                     {event.is_public === false && (
-                      <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">
+                      <Badge variant="outline" className="text-xs bg-amber-500/15 text-amber-300 border-amber-500/20">
                         Private
                       </Badge>
                     )}
@@ -624,7 +624,7 @@ const VolunteerSignup = () => {
                         {event.title}
                       </h1>
                       {event.is_public === false && (
-                        <Badge variant="outline" className="text-sm bg-amber-50 text-amber-700 border-amber-200">
+                        <Badge variant="outline" className="text-sm bg-amber-500/15 text-amber-300 border-amber-500/20">
                           Private
                         </Badge>
                       )}
@@ -772,7 +772,7 @@ const VolunteerSignup = () => {
             </div>
 
             {/* Role Rows */}
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-white/5">
               {sortedAndFilteredRoles.map((role, index) => {
                 const volunteers = getVolunteersForRole(role.id);
                 const totalSlots = (role.slots_brother || 0) + (role.slots_sister || 0) + (role.slots_flexible || 0);
@@ -814,7 +814,7 @@ const VolunteerSignup = () => {
                             size="sm"
                             onClick={() => toggleRoleExpansion(role.id)}
                             className="text-white/30 hover:text-white/50 p-1 h-6 w-6 rounded-full border"
-                            style={{ borderColor: 'rgb(89, 89, 46)' }}
+                            style={{ borderColor: 'var(--gold-400, #d4a843)' }}
                           >
                             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                           </Button>
@@ -829,7 +829,7 @@ const VolunteerSignup = () => {
                               <Badge 
                                 key={poc.id}
                                 variant="outline" 
-                                className="text-xs bg-purple-50 text-purple-700 border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors px-2 py-1"
+                                className="text-xs bg-purple-500/15 text-purple-300 border-purple-500/20 cursor-pointer hover:bg-purple-500/20 transition-colors px-2 py-1"
                                 onClick={() => {
                                   if (poc.phone) {
                                     navigator.clipboard.writeText(poc.phone);
@@ -856,7 +856,7 @@ const VolunteerSignup = () => {
                         <div className="text-sm font-medium text-foreground">
                           {totalSlots - remainingSlots} / {totalSlots}
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1 overflow-hidden">
+                        <div className="w-full bg-white/15 rounded-full h-1.5 mt-1 overflow-hidden">
                           <div 
                             className="bg-gradient-to-r from-gold-400 to-gold-300 h-1.5 rounded-full transition-all duration-500 ease-out"
                             style={{ width: `${totalSlots > 0 ? ((totalSlots - remainingSlots) / totalSlots) * 100 : 0}%` }}
@@ -900,7 +900,7 @@ const VolunteerSignup = () => {
                                 {remainingSisters > 0 && (
                                   <Badge 
                                     variant="outline" 
-                                    className="text-xs bg-pink-50 text-pink-700 border-pink-200 px-1.5 py-0.5 h-5"
+                                    className="text-xs bg-pink-500/15 text-pink-300 border-pink-500/20 px-1.5 py-0.5 h-5"
                                   >
                                     <span className="hidden xl:inline">{remainingSisters} Sister{remainingSisters !== 1 ? 's' : ''}</span>
                                     <span className="xl:hidden">{remainingSisters}S</span>
@@ -909,7 +909,7 @@ const VolunteerSignup = () => {
                                 {remainingFlexible > 0 && (
                                   <Badge 
                                     variant="outline" 
-                                    className="text-xs bg-teal-50 text-teal-700 border-teal-200 px-1.5 py-0.5 h-5"
+                                    className="text-xs bg-teal-500/15 text-teal-300 border-teal-500/20 px-1.5 py-0.5 h-5"
                                   >
                                     <span className="hidden xl:inline">{remainingFlexible} Flexible</span>
                                     <span className="xl:hidden">{remainingFlexible}F</span>
@@ -952,7 +952,7 @@ const VolunteerSignup = () => {
                                 <Badge 
                                   key={poc.id}
                                   variant="outline" 
-                                  className="text-[10px] bg-purple-50 text-purple-700 border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors px-1.5 py-0.5"
+                                  className="text-[10px] bg-purple-500/15 text-purple-300 border-purple-500/20 cursor-pointer hover:bg-purple-500/20 transition-colors px-1.5 py-0.5"
                                   onClick={() => {
                                     if (poc.phone) {
                                       navigator.clipboard.writeText(poc.phone);
@@ -982,7 +982,7 @@ const VolunteerSignup = () => {
                           size="sm"
                           onClick={() => toggleRoleExpansion(role.id)}
                           className="text-white/30 hover:text-white/50 p-2 h-8 w-8 rounded-full border"
-                          style={{ borderColor: 'rgb(89, 89, 46)' }}
+                          style={{ borderColor: 'var(--gold-400, #d4a843)' }}
                         >
                           {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                         </Button>
@@ -1041,7 +1041,7 @@ const VolunteerSignup = () => {
                               {remainingSisters > 0 && (
                                 <Badge 
                                   variant="outline" 
-                                  className="text-xs bg-pink-50 text-pink-700 border-pink-200 px-1.5 py-0.5"
+                                  className="text-xs bg-pink-500/15 text-pink-300 border-pink-500/20 px-1.5 py-0.5"
                                 >
                                   {remainingSisters} Sister{remainingSisters !== 1 ? 's' : ''}
                                 </Badge>
@@ -1049,7 +1049,7 @@ const VolunteerSignup = () => {
                               {remainingFlexible > 0 && (
                                 <Badge 
                                   variant="outline" 
-                                  className="text-xs bg-teal-50 text-teal-700 border-teal-200 px-1.5 py-0.5"
+                                  className="text-xs bg-teal-500/15 text-teal-300 border-teal-500/20 px-1.5 py-0.5"
                                 >
                                   {remainingFlexible} Flexible
                                 </Badge>
@@ -1110,7 +1110,7 @@ const VolunteerSignup = () => {
                                         e.stopPropagation();
                                         handleDeleteVolunteer(volunteer.id, volunteer.name, role.role_label);
                                       }}
-                                      className="text-red-400 hover:text-red-700 hover:bg-red-500/10 h-8 px-2"
+                                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10 h-8 px-2"
                                       title="Remove volunteer from this role"
                                     >
                                       <Minus className="w-4 h-4" />
@@ -1160,7 +1160,7 @@ const VolunteerSignup = () => {
                             size="sm"
                             onClick={() => toggleRoleExpansion(role.id)}
                             className="text-white/30 hover:text-white/50 rounded-full border h-8 w-8 p-0 flex items-center justify-center"
-                            style={{ borderColor: 'rgb(89, 89, 46)' }}
+                            style={{ borderColor: 'var(--gold-400, #d4a843)' }}
                           >
                             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                           </Button>
@@ -1183,7 +1183,7 @@ const VolunteerSignup = () => {
                               {remainingSlots > 0 ? `${remainingSlots} spots left` : "Full"}
                             </Badge>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="w-full bg-white/15 rounded-full h-2">
                             <div 
                               className="bg-gold-400 h-2 rounded-full transition-all duration-300"
                               style={{ width: `${progressPercentage}%` }}
@@ -1215,12 +1215,12 @@ const VolunteerSignup = () => {
                                     </Badge>
                                   )}
                                   {remainingSisters > 0 && (
-                                    <Badge variant="outline" className="bg-pink-50 text-pink-700 border-pink-200">
+                                    <Badge variant="outline" className="bg-pink-500/15 text-pink-300 border-pink-500/20">
                                       {remainingSisters} Sister{remainingSisters !== 1 ? 's' : ''}
                                     </Badge>
                                   )}
                                   {remainingFlexible > 0 && (
-                                    <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200">
+                                    <Badge variant="outline" className="bg-teal-500/15 text-teal-300 border-teal-500/20">
                                       {remainingFlexible} Brother or Sister
                                     </Badge>
                                   )}
@@ -1246,7 +1246,7 @@ const VolunteerSignup = () => {
                                 <Badge 
                                   key={poc.id}
                                   variant="outline" 
-                                  className="text-[10px] bg-purple-50 text-purple-700 border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors px-1.5 py-0.5"
+                                  className="text-[10px] bg-purple-500/15 text-purple-300 border-purple-500/20 cursor-pointer hover:bg-purple-500/20 transition-colors px-1.5 py-0.5"
                                   onClick={() => {
                                     if (poc.phone) {
                                       navigator.clipboard.writeText(poc.phone);
@@ -1281,7 +1281,7 @@ const VolunteerSignup = () => {
                                 {volunteers.map((volunteer, index) => (
                                   <div
                                     key={volunteer.id}
-                                    className="flex items-center justify-between bg-white/10 rounded-lg p-3 cursor-pointer hover:bg-gray-200 transition-colors"
+                                    className="flex items-center justify-between bg-white/10 rounded-lg p-3 cursor-pointer hover:bg-white/15 transition-colors"
                                     onClick={() => {
                                       navigator.clipboard.writeText(volunteer.phone);
                                       toast({
@@ -1310,7 +1310,7 @@ const VolunteerSignup = () => {
                                         e.stopPropagation();
                                         handleDeleteVolunteer(volunteer.id, volunteer.name, role.role_label);
                                       }}
-                                      className="text-red-400 hover:text-red-700 hover:bg-red-500/10 h-8 px-2"
+                                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10 h-8 px-2"
                                       title="Remove volunteer from this role"
                                     >
                                       <Minus className="w-4 h-4" />
@@ -1521,8 +1521,8 @@ const VolunteerSignup = () => {
                 </Button>
                 
                 {showAdminOption && (
-                  <div className="mt-3 p-3 bg-red-25 border border-red-100 rounded-lg">
-                    <p className="text-xs text-red-700 mb-3">
+                  <div className="mt-3 p-3 bg-red-500/10 border border-red-500/15 rounded-lg">
+                    <p className="text-xs text-red-300 mb-3">
                       Admin access: Use this option only if you cannot verify phone number.
                     </p>
                     <form onSubmit={(e) => { e.preventDefault(); handleAdminPasswordSubmit(); }} className="space-y-3">
@@ -1531,7 +1531,7 @@ const VolunteerSignup = () => {
                         placeholder="Admin Password"
                         value={adminPassword}
                         onChange={(e) => setAdminPassword(e.target.value)}
-                        className="border-red-200 focus:border-red-400 focus:ring-red-400/20"
+                        className="border-red-500/20 focus:border-red-400 focus:ring-red-400/20"
                         autoComplete="off"
                         autoCorrect="off"
                         autoCapitalize="off"

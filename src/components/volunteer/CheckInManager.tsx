@@ -810,17 +810,17 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
 
           {/* Combined Statistics and Filter Buttons */}
           <div className="inline-flex items-center gap-2 rounded-full bg-white/60 backdrop-blur-md p-1 ring-1 ring-white/60 w-full sm:w-auto justify-center sm:justify-start shrink-0">
-          <Button variant={statusFilter === 'all' ? 'default' : 'ghost'} size="sm" onClick={() => setStatusFilter('all')} className={`rounded-full text-xs sm:text-sm px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 ${statusFilter==='all' ? 'bg-umma-600 text-white hover:bg-umma-700 shadow-sm' : 'text-stone-700 hover:bg-stone-100/80'}`}>
+          <Button variant={statusFilter === 'all' ? 'default' : 'ghost'} size="sm" onClick={() => setStatusFilter('all')} className={`rounded-full text-xs sm:text-sm px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 ${statusFilter==='all' ? 'bg-umma-600 text-white hover:bg-umma-700 shadow-sm' : 'text-white/70 hover:bg-white/10/80'}`}>
             <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="font-semibold">{totalVolunteers}</span>
             <span>Total</span>
           </Button>
-          <Button variant={statusFilter === 'not-in' ? 'default' : 'ghost'} size="sm" onClick={() => setStatusFilter('not-in')} className={`rounded-full text-xs sm:text-sm px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 ${statusFilter==='not-in' ? 'bg-umma-600 text-white hover:bg-umma-700 shadow-sm' : 'text-stone-700 hover:bg-stone-100/80'}`}>
+          <Button variant={statusFilter === 'not-in' ? 'default' : 'ghost'} size="sm" onClick={() => setStatusFilter('not-in')} className={`rounded-full text-xs sm:text-sm px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 ${statusFilter==='not-in' ? 'bg-umma-600 text-white hover:bg-umma-700 shadow-sm' : 'text-white/70 hover:bg-white/10/80'}`}>
             <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="font-semibold">{notCheckedInCount}</span>
             <span>Not In</span>
           </Button>
-          <Button variant={statusFilter === 'in' ? 'default' : 'ghost'} size="sm" onClick={() => setStatusFilter('in')} className={`rounded-full text-xs sm:text-sm px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 ${statusFilter==='in' ? 'bg-umma-600 text-white hover:bg-umma-700 shadow-sm' : 'text-stone-700 hover:bg-stone-100/80'}`}>
+          <Button variant={statusFilter === 'in' ? 'default' : 'ghost'} size="sm" onClick={() => setStatusFilter('in')} className={`rounded-full text-xs sm:text-sm px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 ${statusFilter==='in' ? 'bg-umma-600 text-white hover:bg-umma-700 shadow-sm' : 'text-white/70 hover:bg-white/10/80'}`}>
             <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="font-semibold">{checkedInCount}</span>
             <span>Checked In</span>
@@ -845,10 +845,10 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
               }`}>
                   <div className="flex items-center gap-2.5 min-w-0">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback className="text-xs font-medium bg-white text-umma-700">{getInitials(volunteer.name)}</AvatarFallback>
+                      <AvatarFallback className="text-xs font-medium bg-white/5 text-umma-700">{getInitials(volunteer.name)}</AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
-                    <div className={`font-medium text-sm sm:text-base truncate flex items-center gap-1.5 sm:gap-2 flex-wrap ${isIn ? 'text-white' : 'text-stone-900'}`}>
+                    <div className={`font-medium text-sm sm:text-base truncate flex items-center gap-1.5 sm:gap-2 flex-wrap ${isIn ? 'text-white' : 'text-foreground'}`}>
                       {volunteer.name}
                       <button
                         onClick={() => {
@@ -864,7 +864,7 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
                         {volunteer.phone}
                       </button>
                     </div>
-                    <div className={`text-xs truncate ${isIn ? 'text-white/80' : 'text-stone-500'}`}>
+                    <div className={`text-xs truncate ${isIn ? 'text-white/80' : 'text-white/40'}`}>
                         {roleInfo?.role_label || 'Unknown Role'}
                       </div>
                     </div>
@@ -876,7 +876,7 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
                       {checkInStatus.status !== 'not-checked-in' && (
                         <span className={`${
                           checkInStatus.status === 'checked-in' 
-                            ? 'rounded-full px-3 py-1 text-xs font-medium shadow-sm transition-all duration-200 bg-white text-umma-700 border border-umma-300' 
+                            ? 'rounded-full px-3 py-1 text-xs font-medium shadow-sm transition-all duration-200 bg-white/5 text-umma-700 border border-umma-300' 
                             : checkInStatus.status === 'running-late' 
                             ? 'warning-pill' 
                             : 'danger-pill'
@@ -888,7 +888,7 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
                         </span>
                       )}
                       {isIn && volunteer.checked_in_at && (
-                        <span className={`text-xs sm:text-sm ${isIn ? 'text-white/80' : 'text-stone-500'}`}>{formatTimeInMichigan(volunteer.checked_in_at)}</span>
+                        <span className={`text-xs sm:text-sm ${isIn ? 'text-white/80' : 'text-white/40'}`}>{formatTimeInMichigan(volunteer.checked_in_at)}</span>
                       )}
                     </div>
 
@@ -924,7 +924,7 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
                           className={`w-full sm:w-auto rounded-full text-xs sm:text-sm justify-center ${
                             volunteer.check_in_notes 
                               ? 'bg-umma-100 border-umma-300 text-umma-800 hover:bg-umma-200 hover:border-umma-400 shadow-sm font-medium' 
-                              : 'bg-white border-umma-200 text-umma-700 hover:bg-umma-50 hover:border-umma-300'
+                              : 'bg-white/5 border-umma-200 text-umma-700 hover:bg-umma-50 hover:border-umma-300'
                           }`}
                         >
                           <FileText className={`w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-1 ${volunteer.check_in_notes ? 'text-umma-800' : 'text-umma-700'}`} />

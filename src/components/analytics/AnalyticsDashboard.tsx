@@ -80,7 +80,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ eventId, eventT
       case 'total_clicks':
         return <MousePointer className="w-5 h-5 text-blue-600" />;
       case 'qr_scans':
-        return <QrCode className="w-5 h-5 text-green-600" />;
+        return <QrCode className="w-5 h-5 text-emerald-400" />;
       case 'human_clicks':
         return <Users className="w-5 h-5 text-purple-600" />;
       case 'unique_clicks':
@@ -88,9 +88,9 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ eventId, eventT
       case 'visitors':
         return <Eye className="w-5 h-5 text-indigo-600" />;
       case 'page_views':
-        return <BarChart3 className="w-5 h-5 text-red-600" />;
+        return <BarChart3 className="w-5 h-5 text-red-400" />;
       default:
-        return <BarChart3 className="w-5 h-5 text-gray-600" />;
+        return <BarChart3 className="w-5 h-5 text-white/50" />;
     }
   };
 
@@ -117,7 +117,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ eventId, eventT
     return (
       <Card>
         <CardContent className="p-6">
-          <div className="text-center text-red-600">
+          <div className="text-center text-red-400">
             <p>Error loading analytics: {error}</p>
             <Button onClick={refresh} className="mt-4">
               <RefreshCw className="w-4 h-4 mr-2" />
@@ -134,9 +134,9 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ eventId, eventT
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h2>
+          <h2 className="text-2xl font-bold text-foreground">Analytics Dashboard</h2>
           {eventTitle && (
-            <p className="text-gray-600 mt-1">{eventTitle}</p>
+            <p className="text-white/50 mt-1">{eventTitle}</p>
           )}
         </div>
         <div className="flex items-center gap-2">
@@ -334,12 +334,12 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ eventId, eventT
             <Card key={key} className="border-0 shadow-sm hover:shadow-md transition-all duration-200">
               <CardContent className="p-4">
                 <div className="flex flex-col items-center gap-2 text-center">
-                  <div className="p-2 bg-gray-50 rounded-lg">
+                  <div className="p-2 bg-background rounded-lg">
                     {getMetricIcon(key)}
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{value}</p>
-                    <p className="text-sm text-gray-600">{getMetricLabel(key)}</p>
+                    <p className="text-2xl font-bold text-foreground">{value}</p>
+                    <p className="text-sm text-white/50">{getMetricLabel(key)}</p>
                   </div>
                 </div>
               </CardContent>
@@ -369,7 +369,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ eventId, eventT
                 </thead>
                 <tbody>
                   {filteredData.map((row, index) => (
-                    <tr key={index} className="border-b hover:bg-gray-50">
+                    <tr key={index} className="border-b hover:bg-background">
                       <td className="p-2">{row.date_group}</td>
                       <td className="p-2">
                         <Badge variant="outline">
@@ -393,8 +393,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ eventId, eventT
       {!loading && filteredData.length === 0 && (
         <Card>
           <CardContent className="p-6">
-            <div className="text-center text-gray-500">
-              <BarChart3 className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <div className="text-center text-white/40">
+              <BarChart3 className="w-12 h-12 mx-auto mb-4 text-white/20" />
               <p>No analytics data available for the selected filters.</p>
               <p className="text-sm mt-2">Try adjusting your filters or check back later.</p>
             </div>
@@ -407,8 +407,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ eventId, eventT
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <RefreshCw className="w-8 h-8 mx-auto mb-4 animate-spin text-gray-400" />
-              <p className="text-gray-600">Loading analytics data...</p>
+              <RefreshCw className="w-8 h-8 mx-auto mb-4 animate-spin text-white/30" />
+              <p className="text-white/50">Loading analytics data...</p>
             </div>
           </CardContent>
         </Card>

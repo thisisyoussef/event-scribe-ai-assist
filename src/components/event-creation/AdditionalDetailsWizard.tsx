@@ -32,15 +32,15 @@ const AdditionalDetailsWizard = ({
 
   if (!isExpanded) {
     return (
-      <Card className="border-umma-200 bg-umma-50/50">
+      <Card className="border-white/10 bg-gold-400/10">
         <CardContent className="p-4">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-umma-100 rounded-lg flex items-center justify-center">
-              <Lightbulb className="w-5 h-5 text-umma-600" />
+            <div className="w-8 h-8 bg-gold-400/15 rounded-lg flex items-center justify-center">
+              <Lightbulb className="w-5 h-5 text-gold-400" />
             </div>
             <div>
-              <h3 className="font-medium text-umma-800">Enhanced Event Details</h3>
-              <p className="text-sm text-umma-600">Not available for templates</p>
+              <h3 className="font-medium text-foreground">Enhanced Event Details</h3>
+              <p className="text-sm text-gold-400">Not available for templates</p>
             </div>
           </div>
         </CardContent>
@@ -49,9 +49,9 @@ const AdditionalDetailsWizard = ({
   }
 
   return (
-    <Card className="border-umma-200">
+    <Card className="border-white/10">
       <CardHeader>
-        <CardTitle className="flex items-center justify-between text-umma-800">
+        <CardTitle className="flex items-center justify-between text-foreground">
           <div className="flex items-center space-x-2">
             <Lightbulb className="w-5 h-5" />
             <span>Enhanced Event Details</span>
@@ -60,13 +60,13 @@ const AdditionalDetailsWizard = ({
             onClick={() => onToggleExpand(false)} 
             variant="ghost" 
             size="sm"
-            className="text-umma-600"
+            className="text-gold-400"
             disabled={disabled}
           >
             Skip for now
             </Button>
         </CardTitle>
-        <p className="text-sm text-umma-600">
+        <p className="text-sm text-gold-400">
           These optional details help provide better suggestions for volunteer roles and event planning.
         </p>
       </CardHeader>

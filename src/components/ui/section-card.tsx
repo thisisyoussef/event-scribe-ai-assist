@@ -18,9 +18,9 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
             <div
                 ref={ref}
                 className={cn(
-                    "rounded-3xl bg-stone-50/50 border border-stone-200/50 shadow-sm",
+                    "rounded-3xl bg-white/5/50 border border-white/10/50 shadow-sm",
                     "p-3 md:p-6 transition-all duration-200",
-                    collapsible && !isExpanded && "py-3 md:py-4 hover:bg-stone-50/80",
+                    collapsible && !isExpanded && "py-3 md:py-4 hover:bg-white/5/80",
                     className
                 )}
                 {...props}
@@ -42,12 +42,12 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
                         )}
                         <div className="flex-1 min-w-0">
                             {title && (
-                                <h3 className="text-sm md:text-xs font-semibold uppercase tracking-wider text-stone-500">
+                                <h3 className="text-sm md:text-xs font-semibold uppercase tracking-wider text-white/40">
                                     {title}
                                 </h3>
                             )}
                             {description && (
-                                <p className="text-sm text-stone-500 mt-0.5">
+                                <p className="text-sm text-white/40 mt-0.5">
                                     {description}
                                 </p>
                             )}
@@ -63,7 +63,7 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
                                     className={cn(
                                         "w-8 h-8 md:w-7 md:h-7 rounded-full flex items-center justify-center transition-all",
                                         isExpanded
-                                            ? "bg-stone-200/50 text-stone-500"
+                                            ? "bg-white/15/50 text-white/40"
                                             : "bg-umma-100 text-umma-600"
                                     )}
                                 >

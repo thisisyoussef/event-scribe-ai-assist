@@ -31,7 +31,7 @@ const StepProgressBar = React.forwardRef<HTMLDivElement, StepProgressBarProps>(
                 {/* Progress Bar - Only on desktop */}
                 {showProgressBar && (
                     <div className="relative hidden md:block">
-                        <Progress value={progress} className="h-1.5 bg-stone-200" />
+                        <Progress value={progress} className="h-1.5 bg-white/15" />
                     </div>
                 )}
 
@@ -53,7 +53,7 @@ const StepProgressBar = React.forwardRef<HTMLDivElement, StepProgressBarProps>(
                                             ? "bg-umma-600 text-white shadow-lg ring-4 ring-umma-100"
                                             : currentStep > step.number
                                             ? "bg-umma-500 text-white shadow-md"
-                                            : "bg-stone-200 text-stone-500",
+                                            : "bg-white/15 text-white/40",
                                         onStepClick && "cursor-pointer active:scale-95"
                                     )}
                                     title={step.title}
@@ -68,7 +68,7 @@ const StepProgressBar = React.forwardRef<HTMLDivElement, StepProgressBarProps>(
                                     <div
                                         className={cn(
                                             "flex-1 max-w-[40px] md:max-w-[48px] lg:max-w-[60px] h-1 md:h-0.5 rounded-full transition-colors duration-200",
-                                            currentStep > step.number ? "bg-umma-500" : "bg-stone-200"
+                                            currentStep > step.number ? "bg-umma-500" : "bg-white/15"
                                         )}
                                     />
                                 )}
@@ -79,10 +79,10 @@ const StepProgressBar = React.forwardRef<HTMLDivElement, StepProgressBarProps>(
                     {/* Step Label - Desktop */}
                     {showStepLabel && currentStepData && (
                         <div className="text-right hidden md:block ml-4">
-                            <span className="text-sm font-medium text-stone-700">
+                            <span className="text-sm font-medium text-white/70">
                                 Step {currentStep} of {steps.length}
                             </span>
-                            <span className="text-sm text-stone-500 ml-1.5">
+                            <span className="text-sm text-white/40 ml-1.5">
                                 — {currentStepData.title}
                             </span>
                         </div>
@@ -95,8 +95,8 @@ const StepProgressBar = React.forwardRef<HTMLDivElement, StepProgressBarProps>(
                         <span className="text-xs font-semibold text-umma-600 uppercase tracking-wide">
                             Step {currentStep}
                         </span>
-                        <span className="text-xs text-stone-400 mx-1.5">•</span>
-                        <span className="text-xs font-medium text-stone-600">
+                        <span className="text-xs text-white/30 mx-1.5">•</span>
+                        <span className="text-xs font-medium text-white/50">
                             {currentStepData.title}
                         </span>
                     </div>

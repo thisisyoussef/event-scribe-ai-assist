@@ -100,7 +100,7 @@ const SharedEvents = () => {
   };
 
   const getPermissionColor = (level: 'view' | 'edit') => {
-    return level === 'edit' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
+    return level === 'edit' ? 'bg-blue-500/15 text-blue-300' : 'bg-emerald-500/15 text-emerald-300';
   };
 
   const formatDate = (dateString: string) => {
@@ -118,12 +118,12 @@ const SharedEvents = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <Navigation />
         <main className="container mx-auto px-4 py-8">
           <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading shared events...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-400 mx-auto"></div>
+            <p className="mt-4 text-white/50">Loading shared events...</p>
           </div>
         </main>
       </div>
@@ -131,12 +131,12 @@ const SharedEvents = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navigation />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Shared Events</h1>
-          <p className="text-gray-600">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Shared Events</h1>
+          <p className="text-white/50">
             Events that other users have shared with you
           </p>
         </div>
@@ -144,12 +144,12 @@ const SharedEvents = () => {
         {sharedEvents.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
-              <Share2 className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Shared Events</h3>
-              <p className="text-gray-600 mb-4">
+              <Share2 className="w-16 h-16 mx-auto mb-4 text-white/30" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">No Shared Events</h3>
+              <p className="text-white/50 mb-4">
                 You don't have any events shared with you yet.
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-white/40">
                 When someone shares an event with you, it will appear here.
               </p>
             </CardContent>
@@ -177,12 +177,12 @@ const SharedEvents = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-white/50">
                     <Calendar className="w-4 h-4" />
                     <span>{formatDate(sharedEvent.event.start_datetime)}</span>
                   </div>
                   
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-sm text-white/50">
                     <Clock className="w-4 h-4" />
                     <span>
                       {formatTime(sharedEvent.event.start_datetime)} - {formatTime(sharedEvent.event.end_datetime)}
@@ -190,20 +190,20 @@ const SharedEvents = () => {
                   </div>
                   
                   {sharedEvent.event.location && (
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2 text-sm text-white/50">
                       <MapPin className="w-4 h-4" />
                       <span>{sharedEvent.event.location}</span>
                     </div>
                   )}
                   
                   {sharedEvent.event.description && (
-                    <p className="text-sm text-gray-600 line-clamp-2">
+                    <p className="text-sm text-white/50 line-clamp-2">
                       {sharedEvent.event.description}
                     </p>
                   )}
 
                   <div className="pt-3 border-t">
-                    <div className="flex items-center justify-between text-xs text-gray-500">
+                    <div className="flex items-center justify-between text-xs text-white/40">
                       <span>Shared {formatDate(sharedEvent.shared_at)}</span>
                       <span className="capitalize">{sharedEvent.event.status}</span>
                     </div>

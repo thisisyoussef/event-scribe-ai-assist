@@ -265,8 +265,8 @@ export default function SaveAsTemplateDialog({
         
         <div className="space-y-4">
           {/* Save Mode Selection - always show both options */}
-          <div className="space-y-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-            <Label className="text-sm font-medium text-gray-700">Save Mode</Label>
+          <div className="space-y-3 p-4 bg-background border border-white/10 rounded-lg">
+            <Label className="text-sm font-medium text-white/70">Save Mode</Label>
             <RadioGroup value={saveMode} onValueChange={(value) => setSaveMode(value as 'new' | 'override')}>
               <div className="flex items-center space-x-2 p-2 hover:bg-white rounded">
                 <RadioGroupItem value="override" id="override" />
@@ -278,12 +278,12 @@ export default function SaveAsTemplateDialog({
               <div className="flex items-center space-x-2 p-2 hover:bg-white rounded">
                 <RadioGroupItem value="new" id="new" />
                 <Label htmlFor="new" className="flex items-center gap-2 text-sm cursor-pointer">
-                  <Plus className="h-4 w-4 text-green-600" />
+                  <Plus className="h-4 w-4 text-emerald-400" />
                   Create new template
                 </Label>
               </div>
             </RadioGroup>
-            <p className="text-xs text-gray-600 bg-white p-2 rounded border">
+            <p className="text-xs text-white/50 bg-white p-2 rounded border">
               {saveMode === 'override' 
                 ? 'This will replace the existing template with your current changes.'
                 : 'This will create a new template, leaving the original unchanged.'
@@ -301,7 +301,7 @@ export default function SaveAsTemplateDialog({
                 </SelectTrigger>
                 <SelectContent>
                   {templates.length === 0 ? (
-                    <div className="p-4 text-center text-gray-500">
+                    <div className="p-4 text-center text-white/40">
                       <p>No templates available</p>
                       <p className="text-xs mt-1">Create a template first to use this option</p>
                     </div>
@@ -311,7 +311,7 @@ export default function SaveAsTemplateDialog({
                         <div className="flex flex-col">
                           <span className="font-medium">{template.name}</span>
                           {template.description && (
-                            <span className="text-xs text-gray-500 truncate">{template.description}</span>
+                            <span className="text-xs text-white/40 truncate">{template.description}</span>
                           )}
                         </div>
                       </SelectItem>
@@ -320,11 +320,11 @@ export default function SaveAsTemplateDialog({
                 </SelectContent>
               </Select>
               {selectedTemplateId ? (
-                <p className="text-xs text-gray-600 bg-gray-50 p-2 rounded border">
+                <p className="text-xs text-white/50 bg-background p-2 rounded border">
                   You're updating: <span className="font-medium">{templates.find(t => t.id === selectedTemplateId)?.name}</span>
                 </p>
               ) : (
-                <p className="text-xs text-gray-500 bg-blue-50 p-2 rounded border border-blue-200">
+                <p className="text-xs text-white/40 bg-blue-50 p-2 rounded border border-blue-200">
                   Please select a template to update, or switch to "Create new template" mode
                 </p>
               )}
@@ -383,7 +383,7 @@ export default function SaveAsTemplateDialog({
                 <div className="flex items-center gap-2"><span className="w-2 h-2 bg-purple-500 rounded-full"></span>Volunteer roles: {itinerary.flatMap(item => item.volunteerRoles || []).length} roles</div>
               )}
               {preEventTasks.length > 0 && <div className="flex items-center gap-2"><span className="w-2 h-2 bg-orange-500 rounded-full"></span>Pre-event tasks: {preEventTasks.length} tasks</div>}
-              <div className="flex items-center gap-2"><span className="w-2 h-2 bg-gray-500 rounded-full"></span>SMS: {formatTime12Hour(eventData.dayBeforeTime)} / {formatTime12Hour(eventData.dayOfTime)}</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 bg-background0 rounded-full"></span>SMS: {formatTime12Hour(eventData.dayBeforeTime)} / {formatTime12Hour(eventData.dayOfTime)}</div>
             </div>
             {!eventData.title && !eventData.location && !eventData.description && itinerary.length === 0 && preEventTasks.length === 0 && (
               <p className="amber-600 mt-2 text-center p-2 bg-amber-50 border border-amber-200 rounded">
@@ -452,7 +452,7 @@ export default function SaveAsTemplateDialog({
         )}
         {/* Debug info - only show in development */}
         {process.env.NODE_ENV === 'development' && (
-          <div className="text-xs text-gray-400 text-center mt-2 p-2 bg-gray-50 rounded border">
+          <div className="text-xs text-white/30 text-center mt-2 p-2 bg-background rounded border">
             Debug: canSave={canSaveTemplate().toString()}, hasEventData={hasEventData().toString()}, disabled={disabled.toString()}, user={currentUser ? 'yes' : 'no'}, sourceTemplate={hasSourceTemplate ? 'yes' : 'no'}
           </div>
         )}

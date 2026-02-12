@@ -624,7 +624,7 @@ const Dashboard = () => {
                     placeholder="Search events..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 h-9 w-full sm:w-64 border-white/15 bg-white/5 text-foreground focus:border-gold-400 focus:ring-[#5c5b2f]/20"
+                    className="pl-10 h-9 w-full sm:w-64 border-white/15 bg-white/5 text-foreground focus:border-gold-400 focus:ring-gold-400/20"
                   />
                 </div>
                 
@@ -732,7 +732,7 @@ const Dashboard = () => {
                               <h3 className="font-semibold text-foreground text-sm mb-1 flex items-center gap-2">
                                 {event.title}
                                 {isAdmin && event.created_by !== currentUser?.id && (
-                                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                                  <Badge variant="outline" className="text-xs bg-blue-500/15 text-blue-300 border-blue-500/25">
                                     {`By ${creatorNames[event.created_by] || 'Other User'}`}
                                   </Badge>
                                 )}
@@ -757,7 +757,7 @@ const Dashboard = () => {
                                     ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25" 
                                     : getEventStatus(event) === "draft"
                                     ? "bg-amber-500/15 text-amber-300 border-amber-500/25"
-                                    : "bg-gray-200 text-gray-800 border-white/15"
+                                    : "bg-white/10 text-white/60 border-white/15"
                                 }`}
                               >
                                 {getEventStatus(event) === "published" ? "Live" : getEventStatus(event) === "draft" ? "Draft" : "Past"}
@@ -931,7 +931,7 @@ const Dashboard = () => {
                                   <div className="font-semibold text-foreground text-sm mb-1 flex items-center gap-2">
                                     {event.title}
                                     {isAdmin && event.created_by !== currentUser?.id && (
-                                      <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                                      <Badge variant="outline" className="text-xs bg-blue-500/15 text-blue-300 border-blue-500/25">
                                         {`By ${creatorNames[event.created_by] || 'Other User'}`}
                                       </Badge>
                                     )}
@@ -981,7 +981,7 @@ const Dashboard = () => {
                                       ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25" 
                                       : getEventStatus(event) === "draft"
                                       ? "bg-amber-500/15 text-amber-300 border-amber-500/25"
-                                      : "bg-gray-200 text-gray-800 border-white/15"
+                                      : "bg-white/10 text-white/60 border-white/15"
                                   }`}
                                 >
                                   {getEventStatus(event) === "published" ? "Live" : getEventStatus(event) === "draft" ? "Draft" : "Past"}
@@ -1131,7 +1131,7 @@ const Dashboard = () => {
       <Dialog open={deleteDialog.isOpen} onOpenChange={(open) => setDeleteDialog({ isOpen: open, event: deleteDialog.event })}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-red-800">Delete Event?</DialogTitle>
+            <DialogTitle className="text-red-300">Delete Event?</DialogTitle>
             <DialogDescription className="text-white/50">
               This will move "{deleteDialog.event?.title}" to recently deleted. 
               You can recover it within 30 days, or it will be permanently removed.
@@ -1142,8 +1142,8 @@ const Dashboard = () => {
                 <Badge 
                   variant="secondary" 
                   className={deleteDialog.event.status === 'published' 
-                    ? "bg-emerald-500/15 text-green-800 border-green-200 ml-2" 
-                    : "bg-amber-500/15 text-yellow-800 border-yellow-200 ml-2"
+                    ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25 ml-2" 
+                    : "bg-amber-500/15 text-amber-300 border-amber-500/25 ml-2"
                   }
                 >
                   {deleteDialog.event.status === 'published' ? 'Published' : 'Draft'}

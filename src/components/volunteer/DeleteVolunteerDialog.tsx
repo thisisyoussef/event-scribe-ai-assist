@@ -54,7 +54,7 @@ const DeleteVolunteerDialog = ({
           <AlertDialogAction 
             onClick={onConfirm}
             disabled={isDeleting}
-            className="bg-red-500/100 hover:bg-red-600"
+            className="bg-red-500 hover:bg-red-600"
           >
             {isDeleting ? "Removing..." : "Yes, Remove"}
           </AlertDialogAction>
