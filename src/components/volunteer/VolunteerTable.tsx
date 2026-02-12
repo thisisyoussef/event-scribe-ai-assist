@@ -98,7 +98,7 @@ const VolunteerTable = ({ volunteers, onVolunteerDeleted }: VolunteerTableProps)
                     size="sm"
                     variant="outline"
                     onClick={() => handleDeleteClick(volunteer)}
-                    className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300 h-7 w-7 p-0"
+                    className="text-red-400 hover:text-red-700 border-white/10 hover:border-white/15 h-7 w-7 p-0"
                     disabled={isDeleting}
                   >
                     <Trash2 className="w-3 h-3" />
@@ -170,7 +170,7 @@ const VolunteerTable = ({ volunteers, onVolunteerDeleted }: VolunteerTableProps)
                       size="sm"
                       variant="outline"
                       onClick={() => handleDeleteClick(volunteer)}
-                      className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+                      className="text-red-400 hover:text-red-700 border-white/10 hover:border-white/15"
                       disabled={isDeleting}
                     >
                       <Trash2 className="w-4 h-4" />

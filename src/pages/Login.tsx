@@ -389,14 +389,14 @@ const Login = () => {
     
     return (
       <div className="space-y-2">
-        <Label htmlFor={name} className="text-sm font-medium text-gray-700">
+        <Label htmlFor={name} className="text-sm font-medium text-white/80">
           {label} {required && <span className="text-red-500">*</span>}
         </Label>
         {name === 'password' && rightElement ? (
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
               {icon && (
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40">
                   {icon}
                 </div>
               )}
@@ -410,12 +410,12 @@ const Login = () => {
                 autoComplete={isSignUp ? 'new-password' : 'current-password'}
                 name="password"
                 required={false}
-                className={`h-11 transition-all duration-200 placeholder:text-[#5c5b2f]/60 ${
+                className={`h-11 transition-all duration-200 placeholder:text-white/30 ${
                   icon ? 'pl-10' : ''
                 } ${
                   hasError 
-                    ? 'border-red-300 focus:border-red-500 focus:ring-red-200 bg-red-50' 
-                    : 'border-gray-200 focus:border-[#5c5b2f] focus:ring-[#5c5b2f]/20'
+                    ? 'border-red-500/50 focus:border-red-400 focus:ring-red-400/20 bg-red-500/10 text-foreground' 
+                    : 'border-white/15 focus:border-gold-400 focus:ring-gold-400/20 bg-white/5 text-foreground'
                 }`}
               />
             </div>
@@ -426,7 +426,7 @@ const Login = () => {
         ) : (
           <div className="relative">
             {icon && (
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/40">
                 {icon}
               </div>
             )}
@@ -450,12 +450,12 @@ const Login = () => {
               data-form-type={name === 'pocCode' ? 'other' : undefined}
               aria-autocomplete={name === 'pocCode' ? 'none' : undefined}
               required={false}
-              className={`h-11 transition-all duration-200 placeholder:text-[#5c5b2f]/60 ${
+              className={`h-11 transition-all duration-200 placeholder:text-white/30 ${
                 icon ? 'pl-10' : ''
               } ${
                 hasError 
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200 bg-red-50' 
-                  : 'border-gray-200 focus:border-[#5c5b2f] focus:ring-[#5c5b2f]/20'
+                  ? 'border-red-500/50 focus:border-red-400 focus:ring-red-400/20 bg-red-500/10 text-foreground' 
+                  : 'border-white/15 focus:border-gold-400 focus:ring-gold-400/20 bg-white/5 text-foreground'
               }`}
             />
             {rightElement && (
@@ -476,21 +476,18 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-150 to-gray-200 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col relative">
       {/* Top Bar */}
-      <div className="border-b border-gray-200 bg-white/90 backdrop-blur-sm">
+      <div className="border-b border-gold-400/10 bg-navy-800/60 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
-              <button 
+              <button
                 onClick={() => navigate("/")}
                 className="flex items-center space-x-3 hover:opacity-80 transition-opacity cursor-pointer"
               >
-                <img 
-                  src="/images/umma_stewards.png" 
-                  alt="UMMA Stewards" 
-                  className="h-12 w-auto object-contain rounded shadow-sm"
-                />
+                <div className="crescent-moon mr-1" />
+                <span className="text-lg font-semibold text-gold-300 tracking-wide">UMMA Stewards</span>
               </button>
             </div>
           </div>
@@ -499,24 +496,24 @@ const Login = () => {
 
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <Card className="w-full max-w-md border border-gray-200 bg-white shadow-2xl shadow-gray-900/10">
+        <Card className="w-full max-w-md border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl shadow-black/30 golden-glow">
           <CardHeader className="space-y-2 text-center pb-6">
             {isForgotPassword && (
               <button
                 onClick={() => setIsForgotPassword(false)}
-                className="absolute left-4 top-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="absolute left-4 top-4 p-2 text-white/40 hover:text-gold-300 hover:bg-white/5 rounded-lg transition-colors"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
             )}
-            <CardTitle className="text-2xl font-semibold text-gray-900">
+            <CardTitle className="text-2xl font-semibold text-foreground">
               {isForgotPassword ? "Reset Password" : isSignUp ? "Create POC Account" : "Welcome back"}
             </CardTitle>
-            <CardDescription className="text-gray-600 text-base">
-              {isForgotPassword 
+            <CardDescription className="text-white/60 text-base">
+              {isForgotPassword
                 ? "Enter your email to receive a password reset link"
-                : isSignUp 
-                  ? "Sign up as a Point of Contact to organize events" 
+                : isSignUp
+                  ? "Sign up as a Point of Contact to organize events"
                   : "Sign in to access your dashboard"
               }
             </CardDescription>
@@ -538,7 +535,7 @@ const Login = () => {
                       
                       {/* Gender Selection */}
                       <div className="space-y-2">
-                        <Label htmlFor="gender" className="text-sm font-medium text-gray-700">
+                        <Label htmlFor="gender" className="text-sm font-medium text-white/80">
                           Gender <span className="text-red-500">*</span>
                         </Label>
                         <div className="grid grid-cols-2 gap-3">
@@ -547,8 +544,8 @@ const Login = () => {
                             onClick={() => handleFieldChange('gender', 'brother')}
                             className={`p-3 text-center rounded-lg border-2 transition-all duration-200 ${
                               gender === 'brother'
-                                ? 'border-[#5c5b2f] bg-[#5c5b2f] text-white'
-                                : 'border-gray-200 text-gray-700 hover:border-[#5c5b2f] hover:bg-[#5c5b2f]/5'
+                                ? 'border-gold-400 bg-gold-400 text-navy-900'
+                                : 'border-white/15 text-white/70 hover:border-gold-400/50 hover:bg-gold-400/10'
                             }`}
                           >
                             Brother
@@ -558,8 +555,8 @@ const Login = () => {
                             onClick={() => handleFieldChange('gender', 'sister')}
                             className={`p-3 text-center rounded-lg border-2 transition-all duration-200 ${
                               gender === 'sister'
-                                ? 'border-[#5c5b2f] bg-[#5c5b2f] text-white'
-                                : 'border-gray-200 text-gray-700 hover:border-[#5c5b2f] hover:bg-[#5c5b2f]/5'
+                                ? 'border-gold-400 bg-gold-400 text-navy-900'
+                                : 'border-white/15 text-white/70 hover:border-gold-400/50 hover:bg-gold-400/10'
                             }`}
                           >
                             Sister
@@ -574,7 +571,7 @@ const Login = () => {
                       </div>
                       
                       {renderInput('pocCode', 'POC Verification Code', 'text', 'Enter POC verification code', pocCode, (value) => handleFieldChange('pocCode', value), true, <Shield className="w-4 h-4" />)}
-                      <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                      <div className="text-sm text-white/50 bg-white/5 p-3 rounded-lg border border-white/10">
                         <strong>Note:</strong> This code is provided by your organization to verify you are a Point of Contact (POC).
                       </div>
                     </div>
@@ -588,13 +585,13 @@ const Login = () => {
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="text-gray-400 hover:text-gray-600 transition-colors"
+                          className="text-white/40 hover:text-gray-600 transition-colors"
                         >
                           {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                       )}
                       {isSignUp && (
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-white/50">
                           Password must be at least 6 characters long
                         </div>
                       )}
@@ -607,7 +604,7 @@ const Login = () => {
                       <button
                         type="button"
                         onClick={() => setIsForgotPassword(true)}
-                        className="text-sm text-[#5c5b2f] hover:text-[#7c7b55] hover:underline font-medium"
+                        className="text-sm text-gold-400 hover:text-gold-300 hover:underline font-medium"
                       >
                         Forgot password?
                       </button>
@@ -616,7 +613,7 @@ const Login = () => {
 
                   <Button 
                     type="submit" 
-                    className="w-full h-11 bg-[#5c5b2f] hover:bg-[#7c7b55] text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full h-11 bg-gold-400 hover:bg-gold-300 text-navy-900 font-medium rounded-lg shadow-lg button-glow transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={loading}
                   >
                     {loading ? (
@@ -638,44 +635,44 @@ const Login = () => {
             {/* Footer Links */}
             <div className="text-center space-y-4">
               {isForgotPassword ? (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-white/50">
                   Remember your password?{" "}
                   <button
                     type="button"
                     onClick={() => setIsForgotPassword(false)}
-                    className="text-[#5c5b2f] hover:text-[#7c7b55] hover:underline font-medium"
+                    className="text-gold-400 hover:text-gold-300 hover:underline font-medium"
                   >
                     Sign in here
                   </button>
                 </div>
               ) : isSignUp ? (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-white/50">
                   Already have an account?{" "}
                   <button
                     type="button"
                     onClick={() => setIsSignUp(false)}
-                    className="text-[#5c5b2f] hover:text-[#7c7b55] hover:underline font-medium"
+                    className="text-gold-400 hover:text-gold-300 hover:underline font-medium"
                   >
                     Sign in here
                   </button>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-white/50">
                     New to volunteering at the UMMA?{" "}
                     <button
                       type="button"
                       onClick={() => setIsSignUp(true)}
-                      className="text-[#5c5b2f] hover:text-[#7c7b55] hover:underline font-medium"
+                      className="text-gold-400 hover:text-gold-300 hover:underline font-medium"
                     >
                       Create an account
                     </button>
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-white/50">
                     <button
                       type="button"
                       onClick={() => setIsForgotPassword(true)}
-                      className="text-[#5c5b2f] hover:text-[#7c7b55] hover:underline font-medium"
+                      className="text-gold-400 hover:text-gold-300 hover:underline font-medium"
                     >
                       Forgot your password?
                     </button>

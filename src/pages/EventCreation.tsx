@@ -1789,7 +1789,7 @@ const EventCreation = () => {
   }, [eventId, currentUser, loadEventData, hasLoadedEventData, isLoadingEventData]);
 
   return (
-    <div className="min-h-screen bg-stone-50 md:bg-gray-50">
+    <div className="min-h-screen bg-stone-50 md:bg-background">
       <Navigation />
 
       <main className="container mx-auto px-4 py-4 md:py-6 lg:py-8">
@@ -1801,7 +1801,7 @@ const EventCreation = () => {
               <Button
                 variant="ghost"
                 onClick={() => navigate("/dashboard")}
-                className="text-stone-500 md:text-gray-600 hover:text-stone-900 hover:bg-stone-100 h-10 md:h-auto px-2 md:px-4 -ml-2"
+                className="text-stone-500 md:text-white/50 hover:text-stone-900 hover:bg-stone-100 h-10 md:h-auto px-2 md:px-4 -ml-2"
               >
                 <ChevronLeft className="w-5 h-5 md:w-4 md:h-4 mr-1 md:mr-2" />
                 <span className="text-sm md:text-base">Back</span>
@@ -1821,10 +1821,10 @@ const EventCreation = () => {
 
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div>
-              <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-stone-900 md:text-gray-900 mb-1 md:mb-2 tracking-tight">
+              <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-stone-900 md:text-foreground mb-1 md:mb-2 tracking-tight">
                 {eventId ? "Edit Event" : "Create Event"}
               </h1>
-              <p className="text-stone-500 md:text-gray-600 text-sm md:text-base lg:text-lg leading-relaxed">
+              <p className="text-stone-500 md:text-white/50 text-sm md:text-base lg:text-lg leading-relaxed">
                 {eventId ? "Update your event details" :
                   currentStep === 1 ? "Let's start with the basics" :
                     currentStep === 2 ? "Add activities and volunteer roles" :
@@ -1833,7 +1833,7 @@ const EventCreation = () => {
               </p>
               {/* Template Indicator */}
               {location.state?.templateId && location.state?.templateName && (
-                <div className="mt-2 flex items-center gap-2 text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded-lg border border-blue-200">
+                <div className="mt-2 flex items-center gap-2 text-sm text-blue-600 bg-blue-500/10 px-3 py-2 rounded-lg border border-blue-200">
                   <FileText className="w-4 h-4" />
                   <span>Working from template: <strong>{location.state.templateName}</strong></span>
                   <Button
@@ -1885,18 +1885,18 @@ const EventCreation = () => {
                         <Toggle
                           pressed={hideTestFeatures}
                           onPressedChange={setHideTestFeatures}
-                          className="data-[state=on]:bg-[#5c5b2f] data-[state=on]:text-white"
+                          className="data-[state=on]:bg-gold-400 data-[state=on]:text-white"
                         >
                           {hideTestFeatures ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
                         </Toggle>
-                        <span className="text-sm text-gray-500">Test Features</span>
+                        <span className="text-sm text-white/40">Test Features</span>
                       </div>
 
                       {!eventId && (
                         <Button
                           variant="ghost"
                           onClick={prefillTestData}
-                          className="h-10 px-4 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                          className="h-10 px-4 text-white/50 hover:text-gold-300 hover:bg-white/10"
                         >
                           <TestTube className="w-4 h-4 mr-2" />
                           Load Test Data
@@ -1913,13 +1913,13 @@ const EventCreation = () => {
 
         {/* Autosave Indicator */}
         {lastSaved && (
-          <div className="mt-4 text-sm text-gray-500">
+          <div className="mt-4 text-sm text-white/40">
             Saved • {lastSaved.toLocaleTimeString()}
           </div>
         )}
 
         {/* Progress Stepper - Mobile Optimized */}
-        <div className="mb-4 md:mb-6 lg:mb-8 bg-white rounded-2xl md:rounded-xl border border-stone-200 md:border-gray-200 px-3 py-3 md:px-6 md:py-4 overflow-x-auto scrollbar-hide shadow-sm md:shadow-none">
+        <div className="mb-4 md:mb-6 lg:mb-8 bg-white rounded-2xl md:rounded-xl border border-stone-200 md:border-white/10 px-3 py-3 md:px-6 md:py-4 overflow-x-auto scrollbar-hide shadow-sm md:shadow-none">
           <StepProgressBar
             steps={steps}
             currentStep={currentStep}
@@ -1973,7 +1973,7 @@ const EventCreation = () => {
                             id="date-mobile"
                             value={eventData.date || ""}
                             onChange={(e) => setEventData({ ...eventData, date: e.target.value })}
-                            className="md:hidden h-12 w-full block bg-white text-gray-900 rounded-xl border-2 border-stone-200 focus-visible:ring-umma-500 text-base font-medium appearance-none"
+                            className="md:hidden h-12 w-full block bg-white text-foreground rounded-xl border-2 border-stone-200 focus-visible:ring-umma-500 text-base font-medium appearance-none"
                             style={{ minHeight: '3rem' }}
                             disabled={eventId && !hasEditPermission}
                           />
@@ -2025,7 +2025,7 @@ const EventCreation = () => {
                                 }
                                 setEventData({ ...eventData, startTime: newStart, endTime: newEnd });
                               }}
-                              className="md:hidden h-12 w-full block bg-white text-gray-900 rounded-xl border-2 border-stone-200 focus-visible:ring-umma-500 text-base font-medium appearance-none"
+                              className="md:hidden h-12 w-full block bg-white text-foreground rounded-xl border-2 border-stone-200 focus-visible:ring-umma-500 text-base font-medium appearance-none"
                               style={{ minHeight: '3rem' }}
                               disabled={eventId && !hasEditPermission}
                             />
@@ -2062,7 +2062,7 @@ const EventCreation = () => {
                               onChange={(e) => {
                                 setEventData({ ...eventData, endTime: e.target.value });
                               }}
-                              className="md:hidden h-12 w-full block bg-white text-gray-900 rounded-xl border-2 border-stone-200 focus-visible:ring-umma-500 text-base font-medium appearance-none"
+                              className="md:hidden h-12 w-full block bg-white text-foreground rounded-xl border-2 border-stone-200 focus-visible:ring-umma-500 text-base font-medium appearance-none"
                               style={{ minHeight: '3rem' }}
                               disabled={eventId && !hasEditPermission}
                             />
@@ -2084,7 +2084,7 @@ const EventCreation = () => {
 
                         {/* Overnight event indicator */}
                         {eventData.startTime && eventData.endTime && isOvernightEvent(eventData.startTime, eventData.endTime) && (
-                          <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 p-3 rounded-xl">
+                          <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-500/10 p-3 rounded-xl">
                             <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -2159,8 +2159,8 @@ const EventCreation = () => {
                 {/* Step 3: Enhanced Details - Only show when hideTestFeatures is false */}
                 {logicalCurrentStep === 3 && !hideTestFeatures && (
                   <div className="space-y-6">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Enhanced Event Details</h2>
-                    <p className="text-gray-600 mb-6">
+                    <h2 className="text-xl font-semibold mb-4 text-foreground">Enhanced Event Details</h2>
+                    <p className="text-white/50 mb-6">
                       Add additional preferences to help provide better suggestions for volunteer roles and event planning.
                     </p>
 
@@ -2177,8 +2177,8 @@ const EventCreation = () => {
                 {/* Step 4: Pre-Event Tasks - Only show when hideTestFeatures is false */}
                 {logicalCurrentStep === 4 && !hideTestFeatures && (
                   <div className="space-y-6">
-                    <h2 className="text-xl font-semibold mb-4 text-gray-800">Pre-Event Task Planning</h2>
-                    <p className="text-gray-600 mb-6">
+                    <h2 className="text-xl font-semibold mb-4 text-foreground">Pre-Event Task Planning</h2>
+                    <p className="text-white/50 mb-6">
                       Create and assign tasks needed before your event.
                     </p>
                     <PreEventTasksManager
@@ -2277,9 +2277,9 @@ const EventCreation = () => {
                     </div>
 
                     {/* Desktop: Original Event Summary */}
-                    <Card className="hidden md:block mb-6 bg-white border-gray-200">
+                    <Card className="hidden md:block mb-6 bg-white border-white/10">
                       <CardHeader className="pb-2">
-                        <CardTitle className="flex items-center space-x-2 text-gray-800">
+                        <CardTitle className="flex items-center space-x-2 text-foreground">
                           <Calendar className="w-5 h-5" />
                           <span>Event Summary</span>
                         </CardTitle>
@@ -2287,14 +2287,14 @@ const EventCreation = () => {
                       <CardContent>
                         <div className="grid md:grid-cols-2 gap-6">
                           <div>
-                            <h4 className="font-medium text-gray-800">{eventData.title}</h4>
-                            <div className="text-sm text-gray-600 space-y-2 mt-3">
+                            <h4 className="font-medium text-foreground">{eventData.title}</h4>
+                            <div className="text-sm text-white/50 space-y-2 mt-3">
                               <div className="flex items-center space-x-2">
-                                <Calendar className="w-4 h-4 text-gray-700" />
+                                <Calendar className="w-4 h-4 text-white/70" />
                                 <span>{dateFromYMDLocal(eventData.date).toLocaleDateString()}</span>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <Clock className="w-4 h-4 text-gray-700" />
+                                <Clock className="w-4 h-4 text-white/70" />
                                 <span>
                                   {formatTime24To12(eventData.startTime)} - {formatTime24To12(eventData.endTime)}
                                   {eventData.startTime && eventData.endTime && isOvernightEvent(eventData.startTime, eventData.endTime) && (
@@ -2303,18 +2303,18 @@ const EventCreation = () => {
                                 </span>
                               </div>
                               <div className="flex items-center space-x-2">
-                                <MapPin className="w-4 h-4 text-gray-700" />
+                                <MapPin className="w-4 h-4 text-white/70" />
                                 <span>{eventData.location}</span>
                               </div>
                             </div>
                           </div>
                           <div className="space-y-3">
-                            <h5 className="font-medium text-gray-800">Volunteer Roles</h5>
+                            <h5 className="font-medium text-foreground">Volunteer Roles</h5>
                             {itinerary.some(item => item.volunteerRoles.length > 0) ? (
                               <div className="space-y-2">
                                 {itinerary.map(item =>
                                   item.volunteerRoles.map(role => (
-                                    <div key={role.id} className="text-sm text-gray-600 flex items-center gap-2">
+                                    <div key={role.id} className="text-sm text-white/50 flex items-center gap-2">
                                       <span>
                                         {formatTime24To12(role.shiftStartTime)} - {formatTime24To12(role.shiftEndTime)} {role.roleLabel}: {role.slotsBrother + role.slotsSister + (role.slotsFlexible || 0)} slots
                                       </span>
@@ -2323,7 +2323,7 @@ const EventCreation = () => {
                                 )}
                               </div>
                             ) : (
-                              <p className="text-sm text-gray-500">No volunteer roles defined yet</p>
+                              <p className="text-sm text-white/40">No volunteer roles defined yet</p>
                             )}
                           </div>
                         </div>
@@ -2335,13 +2335,13 @@ const EventCreation = () => {
                       title="SMS Reminders"
                       collapsible={true}
                       defaultExpanded={eventData.smsEnabled}
-                      className="md:bg-white md:border md:border-gray-200 md:shadow-none"
+                      className="md:bg-white md:border md:border-white/10 md:shadow-none"
                     >
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <Label className="text-base md:text-sm font-medium text-stone-700 md:text-gray-700">Enable SMS Reminders</Label>
-                            <p className="text-sm text-stone-500 md:text-gray-500 mt-0.5">Automatic reminders for volunteers</p>
+                            <Label className="text-base md:text-sm font-medium text-stone-700 md:text-white/70">Enable SMS Reminders</Label>
+                            <p className="text-sm text-stone-500 md:text-white/40 mt-0.5">Automatic reminders for volunteers</p>
                           </div>
                           <Switch
                             checked={eventData.smsEnabled}
@@ -2351,25 +2351,25 @@ const EventCreation = () => {
                         </div>
 
                         {eventData.smsEnabled && (
-                          <div className="grid grid-cols-2 gap-3 md:gap-4 pt-4 border-t border-stone-200 md:border-gray-100">
+                          <div className="grid grid-cols-2 gap-3 md:gap-4 pt-4 border-t border-stone-200 md:border-white/5">
                             <div className="space-y-2">
-                              <Label className="text-sm text-stone-600 md:text-gray-700 font-medium">Day Before</Label>
+                              <Label className="text-sm text-stone-600 md:text-white/70 font-medium">Day Before</Label>
                               <Input
                                 type="time"
                                 value={eventData.dayBeforeTime}
                                 onChange={(e) => setEventData(prev => ({ ...prev, dayBeforeTime: e.target.value }))}
-                                className="h-12 md:h-10 border-stone-200 md:border-gray-200 focus-visible:ring-umma-500 md:focus-visible:ring-[#5c5b2f] rounded-xl md:rounded-lg"
+                                className="h-12 md:h-10 border-stone-200 md:border-white/10 focus-visible:ring-umma-500 md:focus-visible:ring-gold-400 rounded-xl md:rounded-lg"
                                 disabled={eventId && !hasEditPermission}
                               />
                             </div>
 
                             <div className="space-y-2">
-                              <Label className="text-sm text-stone-600 md:text-gray-700 font-medium">Day Of</Label>
+                              <Label className="text-sm text-stone-600 md:text-white/70 font-medium">Day Of</Label>
                               <Input
                                 type="time"
                                 value={eventData.dayOfTime}
                                 onChange={(e) => setEventData(prev => ({ ...prev, dayOfTime: e.target.value }))}
-                                className="h-12 md:h-10 border-stone-200 md:border-gray-200 focus-visible:ring-umma-500 md:focus-visible:ring-[#5c5b2f] rounded-xl md:rounded-lg"
+                                className="h-12 md:h-10 border-stone-200 md:border-white/10 focus-visible:ring-umma-500 md:focus-visible:ring-gold-400 rounded-xl md:rounded-lg"
                                 disabled={eventId && !hasEditPermission}
                               />
                             </div>
@@ -2383,10 +2383,10 @@ const EventCreation = () => {
                       title="Save as Template"
                       collapsible={true}
                       defaultExpanded={false}
-                      className="md:bg-white md:border md:border-gray-200 md:shadow-none"
+                      className="md:bg-white md:border md:border-white/10 md:shadow-none"
                     >
                       <div className="space-y-4">
-                        <p className="text-sm text-stone-600 md:text-gray-600">
+                        <p className="text-sm text-stone-600 md:text-white/50">
                           Save this event setup as a template for future events.
                         </p>
                         <SaveAsTemplateDialog
@@ -2413,7 +2413,7 @@ const EventCreation = () => {
                 {currentStep === 1 && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-800">Live Preview</h3>
+                      <h3 className="text-lg font-semibold text-foreground">Live Preview</h3>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -2429,8 +2429,8 @@ const EventCreation = () => {
                         {/* Event Title */}
                         {eventData.title && (
                           <div className="space-y-2">
-                            <h4 className="font-medium text-gray-700">Event Title</h4>
-                            <p className="text-sm text-gray-900 bg-gray-50 p-3 rounded-lg border">
+                            <h4 className="font-medium text-white/70">Event Title</h4>
+                            <p className="text-sm text-foreground bg-background p-3 rounded-lg border">
                               {eventData.title}
                             </p>
                           </div>
@@ -2439,11 +2439,11 @@ const EventCreation = () => {
                         {/* Date & Time */}
                         {(eventData.date || eventData.startTime || eventData.endTime) && (
                           <div className="space-y-2">
-                            <h4 className="font-medium text-gray-700">Date & Time</h4>
-                            <div className="text-sm text-gray-900 bg-gray-50 p-3 rounded-lg border space-y-1">
+                            <h4 className="font-medium text-white/70">Date & Time</h4>
+                            <div className="text-sm text-foreground bg-background p-3 rounded-lg border space-y-1">
                               {eventData.date && (
                                 <div className="flex items-center gap-2">
-                                  <Calendar className="w-4 h-4 text-gray-500" />
+                                  <Calendar className="w-4 h-4 text-white/40" />
                                   <span>{dateFromYMDLocal(eventData.date).toLocaleDateString('en-US', {
                                     weekday: 'long',
                                     year: 'numeric',
@@ -2454,7 +2454,7 @@ const EventCreation = () => {
                               )}
                               {(eventData.startTime || eventData.endTime) && (
                                 <div className="flex items-center gap-2">
-                                  <Clock className="w-4 h-4 text-gray-500" />
+                                  <Clock className="w-4 h-4 text-white/40" />
                                   <span>
                                     {formatTime24To12(eventData.startTime) || '--:--'} - {formatTime24To12(eventData.endTime) || '--:--'}
                                     {eventData.startTime && eventData.endTime && isOvernightEvent(eventData.startTime, eventData.endTime) && (
@@ -2470,9 +2470,9 @@ const EventCreation = () => {
                         {/* Location */}
                         {eventData.location && (
                           <div className="space-y-2">
-                            <h4 className="font-medium text-gray-700">Location</h4>
-                            <div className="text-sm text-gray-900 bg-gray-50 p-3 rounded-lg border flex items-center gap-2">
-                              <MapPin className="w-4 h-4 text-gray-500" />
+                            <h4 className="font-medium text-white/70">Location</h4>
+                            <div className="text-sm text-foreground bg-background p-3 rounded-lg border flex items-center gap-2">
+                              <MapPin className="w-4 h-4 text-white/40" />
                               <span>{eventData.location}</span>
                             </div>
                           </div>
@@ -2481,8 +2481,8 @@ const EventCreation = () => {
                         {/* Description */}
                         {eventData.description && (
                           <div className="space-y-2">
-                            <h4 className="font-medium text-gray-700">Description</h4>
-                            <div className="text-sm text-gray-900 bg-gray-50 p-3 rounded-lg border">
+                            <h4 className="font-medium text-white/70">Description</h4>
+                            <div className="text-sm text-foreground bg-background p-3 rounded-lg border">
                               {eventData.description}
                             </div>
                           </div>
@@ -2490,7 +2490,7 @@ const EventCreation = () => {
 
                         {/* Empty State */}
                         {!eventData.title && !eventData.date && !eventData.startTime && !eventData.endTime && !eventData.location && !eventData.description && (
-                          <div className="text-center py-8 text-gray-500">
+                          <div className="text-center py-8 text-white/40">
                             <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-300" />
                             <p className="text-sm">Start filling out your event details to see a live preview here.</p>
                           </div>
@@ -2503,7 +2503,7 @@ const EventCreation = () => {
                 {currentStep === 2 && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-800">Itinerary Preview</h3>
+                      <h3 className="text-lg font-semibold text-foreground">Itinerary Preview</h3>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -2519,30 +2519,30 @@ const EventCreation = () => {
                         {itinerary.length > 0 ? (
                           <div className="space-y-3">
                             {itinerary.map((item, index) => (
-                              <div key={index} className="bg-gray-50 p-3 rounded-lg border">
+                              <div key={index} className="bg-background p-3 rounded-lg border">
                                 <div className="flex items-center justify-between mb-2">
-                                  <span className="text-sm font-medium text-gray-700">{formatTime24To12(item.time)}</span>
-                                  <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded">
+                                  <span className="text-sm font-medium text-white/70">{formatTime24To12(item.time)}</span>
+                                  <span className="text-xs text-white/40 bg-white px-2 py-1 rounded">
                                     {item.volunteerRoles.length} roles
                                   </span>
                                 </div>
-                                <h5 className="font-medium text-gray-900 text-sm mb-1">{item.title}</h5>
+                                <h5 className="font-medium text-foreground text-sm mb-1">{item.title}</h5>
                                 {item.description && (
-                                  <p className="text-xs text-gray-600 mb-2">{item.description}</p>
+                                  <p className="text-xs text-white/50 mb-2">{item.description}</p>
                                 )}
                                 {item.volunteerRoles.length > 0 && (
                                   <div className="space-y-1">
-                                    <p className="text-xs font-medium text-gray-700">Volunteer Roles:</p>
+                                    <p className="text-xs font-medium text-white/70">Volunteer Roles:</p>
                                     {item.volunteerRoles.map((role, roleIndex) => (
-                                      <div key={roleIndex} className="text-xs text-gray-600 bg-white p-2 rounded border">
+                                      <div key={roleIndex} className="text-xs text-white/50 bg-white p-2 rounded border">
                                         <div className="flex items-center justify-between">
                                           <span className="font-medium">{role.roleLabel}</span>
-                                          <span className="text-gray-500">
+                                          <span className="text-white/40">
                                             {role.slotsBrother + role.slotsSister + (role.slotsFlexible || 0)} slots
                                           </span>
                                         </div>
                                         {role.notes && (
-                                          <p className="text-gray-500 mt-1">{role.notes}</p>
+                                          <p className="text-white/40 mt-1">{role.notes}</p>
                                         )}
                                       </div>
                                     ))}
@@ -2552,7 +2552,7 @@ const EventCreation = () => {
                             ))}
                           </div>
                         ) : (
-                          <div className="text-center py-8 text-gray-500">
+                          <div className="text-center py-8 text-white/40">
                             <Clock className="w-8 h-8 mx-auto mb-2 text-gray-300" />
                             <p className="text-sm">No itinerary items yet. Start planning your event timeline.</p>
                           </div>
@@ -2565,7 +2565,7 @@ const EventCreation = () => {
                 {currentStep === 5 && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-800">Publish Summary</h3>
+                      <h3 className="text-lg font-semibold text-foreground">Publish Summary</h3>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -2579,33 +2579,33 @@ const EventCreation = () => {
                     {showLivePreview && (
                       <div className="space-y-4">
                         {/* Event Overview */}
-                        <div className="bg-gray-50 p-3 rounded-lg border">
-                          <h4 className="font-medium text-gray-700 text-sm mb-2">Event Overview</h4>
+                        <div className="bg-background p-3 rounded-lg border">
+                          <h4 className="font-medium text-white/70 text-sm mb-2">Event Overview</h4>
                           <div className="space-y-2 text-xs">
                             <div className="flex justify-between">
-                              <span className="text-gray-600">Status:</span>
-                              <span className={`font-medium ${eventData.status === 'published' ? 'text-green-600' : 'text-yellow-600'}`}>
+                              <span className="text-white/50">Status:</span>
+                              <span className={`font-medium ${eventData.status === 'published' ? 'text-emerald-400' : 'text-yellow-600'}`}>
                                 {eventData.status === 'published' ? 'Published' : 'Draft'}
                               </span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-600">Visibility:</span>
-                              <span className={`font-medium ${eventData.isPublic ? 'text-green-600' : 'text-orange-600'}`}>
+                              <span className="text-white/50">Visibility:</span>
+                              <span className={`font-medium ${eventData.isPublic ? 'text-emerald-400' : 'text-orange-600'}`}>
                                 {eventData.isPublic ? 'Public' : 'Private'}
                               </span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-600">SMS Reminders:</span>
+                              <span className="text-white/50">SMS Reminders:</span>
                               <span className="font-medium">{eventData.smsEnabled ? 'Enabled' : 'Disabled'}</span>
                             </div>
                             {eventData.smsEnabled && (
                               <>
                                 <div className="flex justify-between">
-                                  <span className="text-gray-600">Day Before:</span>
+                                  <span className="text-white/50">Day Before:</span>
                                   <span className="font-medium">{formatTime24To12(eventData.dayBeforeTime)}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                  <span className="text-gray-600">Day Of:</span>
+                                  <span className="text-white/50">Day Of:</span>
                                   <span className="font-medium">{formatTime24To12(eventData.dayOfTime)}</span>
                                 </div>
                               </>
@@ -2614,11 +2614,11 @@ const EventCreation = () => {
                         </div>
 
                         {/* Quick Visibility Toggle */}
-                        <div className="bg-gray-50 p-3 rounded-lg border">
+                        <div className="bg-background p-3 rounded-lg border">
                           <div className="flex items-center justify-between">
                             <div>
-                              <h4 className="font-medium text-gray-700 text-sm">Event Visibility</h4>
-                              <p className="text-xs text-gray-500">
+                              <h4 className="font-medium text-white/70 text-sm">Event Visibility</h4>
+                              <p className="text-xs text-white/40">
                                 {eventData.isPublic
                                   ? "Event is visible to the public"
                                   : "Event is private (admin only)"
@@ -2634,9 +2634,9 @@ const EventCreation = () => {
                         </div>
 
                         {/* Itinerary Summary */}
-                        <div className="bg-gray-50 p-3 rounded-lg border">
-                          <h4 className="font-medium text-gray-700 text-sm mb-2">Itinerary Summary</h4>
-                          <div className="text-xs text-gray-600">
+                        <div className="bg-background p-3 rounded-lg border">
+                          <h4 className="font-medium text-white/70 text-sm mb-2">Itinerary Summary</h4>
+                          <div className="text-xs text-white/50">
                             <div className="flex justify-between mb-1">
                               <span>Total Items:</span>
                               <span className="font-medium">{itinerary.length}</span>
@@ -2651,24 +2651,24 @@ const EventCreation = () => {
                         </div>
 
                         {/* Publish Checklist */}
-                        <div className="bg-gray-50 p-3 rounded-lg border">
-                          <h4 className="font-medium text-gray-700 text-sm mb-2">Publish Checklist</h4>
+                        <div className="bg-background p-3 rounded-lg border">
+                          <h4 className="font-medium text-white/70 text-sm mb-2">Publish Checklist</h4>
                           <div className="space-y-2 text-xs">
                             <div className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full ${eventData.title ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                              <span className={eventData.title ? 'text-gray-900' : 'text-gray-500'}>Event title</span>
+                              <span className={eventData.title ? 'text-foreground' : 'text-white/40'}>Event title</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full ${eventData.date ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                              <span className={eventData.date ? 'text-gray-900' : 'text-gray-500'}>Date & time</span>
+                              <span className={eventData.date ? 'text-foreground' : 'text-white/40'}>Date & time</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full ${eventData.location ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                              <span className={eventData.location ? 'text-gray-900' : 'text-gray-500'}>Location</span>
+                              <span className={eventData.location ? 'text-foreground' : 'text-white/40'}>Location</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full ${eventData.description ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                              <span className={eventData.description ? 'text-gray-900' : 'text-gray-500'}>Description</span>
+                              <span className={eventData.description ? 'text-foreground' : 'text-white/40'}>Description</span>
                             </div>
                           </div>
                         </div>
@@ -2680,7 +2680,7 @@ const EventCreation = () => {
                 {currentStep !== 1 && currentStep !== 2 && currentStep !== 5 && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-800">Itinerary Preview</h3>
+                      <h3 className="text-lg font-semibold text-foreground">Itinerary Preview</h3>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -2696,30 +2696,30 @@ const EventCreation = () => {
                         {itinerary.length > 0 ? (
                           <div className="space-y-3">
                             {itinerary.map((item, index) => (
-                              <div key={index} className="bg-gray-50 p-3 rounded-lg border">
+                              <div key={index} className="bg-background p-3 rounded-lg border">
                                 <div className="flex items-center justify-between mb-2">
-                                  <span className="text-sm font-medium text-gray-700">{formatTime24To12(item.time)}</span>
-                                  <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded">
+                                  <span className="text-sm font-medium text-white/70">{formatTime24To12(item.time)}</span>
+                                  <span className="text-xs text-white/40 bg-white px-2 py-1 rounded">
                                     {item.volunteerRoles.length} roles
                                   </span>
                                 </div>
-                                <h5 className="font-medium text-gray-900 text-sm mb-1">{item.title}</h5>
+                                <h5 className="font-medium text-foreground text-sm mb-1">{item.title}</h5>
                                 {item.description && (
-                                  <p className="text-xs text-gray-600 mb-2">{item.description}</p>
+                                  <p className="text-xs text-white/50 mb-2">{item.description}</p>
                                 )}
                                 {item.volunteerRoles.length > 0 && (
                                   <div className="space-y-1">
-                                    <p className="text-xs font-medium text-gray-700">Volunteer Roles:</p>
+                                    <p className="text-xs font-medium text-white/70">Volunteer Roles:</p>
                                     {item.volunteerRoles.map((role, roleIndex) => (
-                                      <div key={roleIndex} className="text-xs text-gray-600 bg-white p-2 rounded border">
+                                      <div key={roleIndex} className="text-xs text-white/50 bg-white p-2 rounded border">
                                         <div className="flex items-center justify-between">
                                           <span className="font-medium">{role.roleLabel}</span>
-                                          <span className="text-gray-500">
+                                          <span className="text-white/40">
                                             {formatTime24To12(role.shiftStartTime)} - {formatTime24To12(role.shiftEndTime)} {role.slotsBrother + role.slotsSister + (role.slotsFlexible || 0)} slots
                                           </span>
                                         </div>
                                         {role.notes && (
-                                          <p className="text-gray-500 mt-1">{role.notes}</p>
+                                          <p className="text-white/40 mt-1">{role.notes}</p>
                                         )}
                                       </div>
                                     ))}
@@ -2729,7 +2729,7 @@ const EventCreation = () => {
                             ))}
                           </div>
                         ) : (
-                          <div className="text-center py-8 text-gray-500">
+                          <div className="text-center py-8 text-white/40">
                             <Clock className="w-8 h-8 mx-auto mb-2 text-gray-300" />
                             <p className="text-sm">No itinerary items yet. Start planning your event timeline.</p>
                           </div>
@@ -2778,7 +2778,7 @@ const EventCreation = () => {
               size="sm"
               onClick={() => setShowDeleteDialog(true)}
               disabled={isDeleting}
-              className="h-9 w-9 p-0 text-stone-500 hover:text-red-600 hover:bg-red-50"
+              className="h-9 w-9 p-0 text-stone-500 hover:text-red-600 hover:bg-red-500/10"
               title="Delete Event"
             >
               <Trash2 className="w-4 h-4" />
@@ -2942,7 +2942,7 @@ const EventCreation = () => {
                   });
                 }
               }}
-              className="bg-[#5c5b2f] hover:bg-[#4a4a28] text-white"
+              className="bg-gold-400 hover:bg-gold-300 text-white"
             >
               Save as Draft
             </Button>

@@ -158,17 +158,17 @@ const CheckInDialog: React.FC<CheckInDialogProps> = ({
               id="volunteer-name"
               value={volunteer.name}
               disabled
-              className="bg-gray-50"
+              className="bg-background"
             />
           </div>
-          
+
           <div>
             <Label htmlFor="volunteer-phone">Phone</Label>
             <Input
               id="volunteer-phone"
               value={volunteer.phone}
               disabled
-              className="bg-gray-50"
+              className="bg-background"
             />
           </div>
 
@@ -333,7 +333,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
               }}
               placeholder="e.g., 'Running late', 'Left early', 'Special instructions'..."
               rows={isMobile ? 4 : 5}
-              className="resize-none text-[15px] rounded-2xl border border-[#e6e2d8] px-4 py-3 bg-white/95 shadow-[inset_0_1px_0_rgba(0,0,0,0.02),0_8px_24px_rgba(0,0,0,0.04)] focus:border-[#5c5b2f] focus:ring-2 focus:ring-[#5c5b2f]/25 focus:ring-offset-0"
+              className="resize-none text-[15px] rounded-2xl border border-[#e6e2d8] px-4 py-3 bg-white/95 shadow-[inset_0_1px_0_rgba(0,0,0,0.02),0_8px_24px_rgba(0,0,0,0.04)] focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20 focus:ring-offset-0"
             />
           </div>
         </div>
@@ -343,7 +343,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={onUpdateNotes} className="bg-[#5c5b2f] hover:bg-[#4a4a28]">
+            <Button onClick={onUpdateNotes} className="bg-gold-400 hover:bg-gold-300">
               Save Notes
             </Button>
           </div>
@@ -353,7 +353,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
           <div className="flex-shrink-0 pt-3 pb-1">
             <Button
               onClick={onUpdateNotes}
-              className="w-full bg-[#5c5b2f] hover:bg-[#4a4a28] text-white rounded-full px-6 py-3.5 shadow-xl font-medium text-[15px]"
+              className="w-full bg-gold-400 hover:bg-gold-300 text-white rounded-full px-6 py-3.5 shadow-xl font-medium text-[15px]"
             >
               Save Notes
             </Button>
@@ -782,7 +782,7 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           {/* Search Bar */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4 sm:w-5 sm:h-5 z-10" />
+            <Search className="absolute left-3 sm:left-3 top-1/2 transform -translate-y-1/2 text-white/40 w-4 h-4 sm:w-5 sm:h-5 z-10" />
             {/* iOS Passwords bar trap: offscreen username/password fields so Safari doesn't suggest passwords for the search input */}
             <div
               aria-hidden="true"
@@ -945,7 +945,7 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
           </div>
 
           {filteredVolunteers.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-white/40">
               {searchQuery && searchQuery.trim() 
                 ? "No volunteers found matching your search."
                 : "No volunteers found."}

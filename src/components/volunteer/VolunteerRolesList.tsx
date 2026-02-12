@@ -113,7 +113,7 @@ const VolunteerRolesList = ({
                   <div className="flex items-center gap-3">
                     <Badge 
                       variant={remainingSlots > 0 ? "default" : "secondary"}
-                      className={remainingSlots > 0 ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}
+                      className={remainingSlots > 0 ? "bg-emerald-500/15 text-emerald-300" : "bg-white/10 text-foreground"}
                     >
                       {remainingSlots > 0 ? `${remainingSlots} spots left` : "Full"}
                     </Badge>

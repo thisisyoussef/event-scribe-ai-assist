@@ -108,9 +108,9 @@ const NoShowCleanup: React.FC<NoShowCleanupProps> = ({
       <Card>
         <CardContent className="p-6">
           <div className="text-center">
-            <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">All Volunteers Checked In</h3>
-            <p className="text-gray-600">
+            <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">All Volunteers Checked In</h3>
+            <p className="text-white/50">
               Great! All volunteers who signed up for this event have checked in.
             </p>
           </div>
@@ -137,7 +137,7 @@ const NoShowCleanup: React.FC<NoShowCleanupProps> = ({
           {/* Mobile Card View */}
           <div className="md:hidden space-y-3">
             {noShowVolunteers.map((volunteer) => (
-              <div key={volunteer.volunteer_id} className="rounded-xl bg-red-50/50 backdrop-blur-sm ring-1 ring-red-100 p-4 space-y-2">
+              <div key={volunteer.volunteer_id} className="rounded-xl bg-red-500/10/50 backdrop-blur-sm ring-1 ring-red-100 p-4 space-y-2">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <h5 className="font-semibold text-stone-900 text-sm mb-1">{volunteer.volunteer_name}</h5>
@@ -215,16 +215,16 @@ const NoShowCleanup: React.FC<NoShowCleanupProps> = ({
                 </DialogHeader>
                 
                 <div className="space-y-4">
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="bg-red-500/10 border border-white/10 rounded-lg p-4">
                     <h4 className="font-medium text-red-900 mb-2">This will remove:</h4>
-                    <ul className="text-sm text-red-700 space-y-1">
+                    <ul className="text-sm text-red-400 space-y-1">
                       {noShowVolunteers.slice(0, 5).map((volunteer) => (
                         <li key={volunteer.volunteer_id}>
                           • {volunteer.volunteer_name} ({volunteer.volunteer_phone})
                         </li>
                       ))}
                       {noShowVolunteers.length > 5 && (
-                        <li className="text-red-600">
+                        <li className="text-red-400">
                           ... and {noShowVolunteers.length - 5} more
                         </li>
                       )}

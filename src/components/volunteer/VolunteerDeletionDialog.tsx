@@ -88,8 +88,8 @@ const VolunteerDeletionDialog = ({
         </AlertDialogHeader>
         
         <div className="space-y-4">
-          <div className="bg-red-50 p-3 rounded-lg border border-red-200">
-            <div className="text-red-700 text-sm">
+          <div className="bg-red-500/10 p-3 rounded-lg border border-white/10">
+            <div className="text-red-400 text-sm">
               This action cannot be undone. The volunteer will need to sign up again if they want to participate.
             </div>
           </div>
@@ -166,7 +166,7 @@ const VolunteerDeletionDialog = ({
             <AlertDialogAction 
               onClick={handleConfirm}
               disabled={!canInteract || !password.trim()}
-              className="bg-red-500 hover:bg-red-600"
+              className="bg-red-500/100 hover:bg-red-600"
             >
               {isProcessing || isDeleting ? "Removing..." : "Yes, Remove"}
             </AlertDialogAction>

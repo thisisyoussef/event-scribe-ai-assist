@@ -202,7 +202,7 @@ const PreEventTasksManager = ({
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
+      case 'high': return 'bg-red-500/15 text-red-800';
       case 'medium': return 'bg-umma-100 text-umma-800';
       case 'low': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';

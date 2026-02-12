@@ -306,12 +306,12 @@ const Settings = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <Navigation />
         <main className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
-              <div className="animate-spin w-12 h-12 border-3 border-[#5c5b2f] border-t-transparent rounded-full mx-auto mb-6"></div>
+              <div className="animate-spin w-12 h-12 border-3 border-gold-400 border-t-transparent rounded-full mx-auto mb-6"></div>
               <p className="text-gray-700 font-medium text-lg">Loading settings...</p>
             </div>
           </div>
@@ -322,7 +322,7 @@ const Settings = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <Navigation />
         <main className="container mx-auto px-4 py-8">
           <div className="text-center">
@@ -334,12 +334,12 @@ const Settings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navigation />
       
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+          <h1 className="text-3xl font-bold text-foreground">Settings</h1>
           <p className="text-gray-600 mt-1">Configure your integrations and preferences</p>
         </div>
 
@@ -389,7 +389,7 @@ const Settings = () => {
                       type="email"
                       value={user?.email || ""}
                       disabled
-                      className="bg-gray-100"
+                      className="bg-white/10"
                       placeholder="your@email.com"
                     />
                     <p className="text-sm text-gray-500">Email cannot be changed</p>
@@ -460,7 +460,7 @@ const Settings = () => {
                       placeholder="sk-..."
                     />
                     <p className="text-sm text-gray-500">
-                      Get your API key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">OpenAI Platform</a>
+                      Get your API key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">OpenAI Platform</a>
                     </p>
                   </div>
                 </CardContent>
@@ -513,7 +513,7 @@ const Settings = () => {
                   </div>
                   
                   <p className="text-sm text-gray-500">
-                    Get your Twilio credentials from <a href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Twilio Console</a>
+                    Get your Twilio credentials from <a href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Twilio Console</a>
                   </p>
                 </CardContent>
               </Card>
@@ -563,7 +563,7 @@ const Settings = () => {
                   />
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-blue-500/15 p-4 rounded-lg">
                   <h4 className="font-medium mb-2">Available Placeholders:</h4>
                   <div className="text-sm text-gray-600 grid grid-cols-2 gap-2">
                     <span><code>[Name]</code> - Volunteer's name</span>
@@ -621,7 +621,7 @@ const Settings = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Debug Info */}
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div className="bg-background border border-gray-200 rounded-lg p-4">
                   <div className="text-sm text-gray-600">
                     <p><strong>Debug Info:</strong></p>
                     <p>isAdmin: {isAdmin ? 'true' : 'false'}</p>
@@ -644,15 +644,15 @@ const Settings = () => {
 
                 {isAdmin ? (
                   <div className="space-y-4">
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="bg-emerald-500/15 border border-green-200 rounded-lg p-4">
                       <div className="flex items-center space-x-2">
-                        <Shield className="w-5 h-5 text-green-600" />
-                        <span className="font-medium text-green-800">Admin Mode Active</span>
+                        <Shield className="w-5 h-5 text-emerald-400" />
+                        <span className="font-medium text-emerald-300">Admin Mode Active</span>
                       </div>
-                      <p className="text-green-700 mt-2">
+                      <p className="text-emerald-300 mt-2">
                         You currently have admin privileges. You can:
                       </p>
-                      <ul className="text-green-700 mt-2 list-disc list-inside space-y-1">
+                      <ul className="text-emerald-300 mt-2 list-disc list-inside space-y-1">
                         <li>Delete any event, regardless of ownership</li>
                         <li>Access advanced system features</li>
                         <li>Manage all user events and data</li>
@@ -661,7 +661,7 @@ const Settings = () => {
                     <Button 
                       onClick={deactivateAdminMode} 
                       variant="outline"
-                      className="w-full sm:w-auto border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400"
+                      className="w-full sm:w-auto border-red-300 text-red-300 hover:bg-red-500/10 hover:border-red-400"
                     >
                       <LogOut className="w-4 h-4 mr-2" />
                       Deactivate Admin Mode
@@ -669,9 +669,9 @@ const Settings = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="bg-blue-500/15 border border-blue-200 rounded-lg p-4">
                       <div className="flex items-center space-x-2">
-                        <Shield className="w-5 h-5 text-blue-600" />
+                        <Shield className="w-5 h-5 text-blue-400" />
                         <span className="font-medium text-blue-800">Admin Privileges</span>
                       </div>
                       <p className="text-blue-700 mt-2">

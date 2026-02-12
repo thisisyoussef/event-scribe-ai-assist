@@ -1098,7 +1098,7 @@ const Contacts = () => {
   const filteredContacts = getFilteredContacts();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navigation />
       
       <main className="container mx-auto px-4 py-6 md:py-8">
@@ -1106,17 +1106,17 @@ const Contacts = () => {
         <div className="mb-8">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 tracking-tight">
                 Contacts
               </h1>
-              <p className="text-gray-600 text-lg leading-relaxed">
+              <p className="text-white/50 text-lg leading-relaxed">
                 Manage your event contacts and coordinators
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
               <Button 
                 variant="ghost"
-                className="h-10 px-4 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                className="h-10 px-4 text-white/50 hover:text-gold-300 hover:bg-white/10"
                 onClick={() => setImportDialogOpen(true)}
               >
                 <Upload className="w-4 h-4 mr-2" />
@@ -1124,7 +1124,7 @@ const Contacts = () => {
               </Button>
               <Button 
                 variant="ghost"
-                className="h-10 px-4 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                className="h-10 px-4 text-white/50 hover:text-gold-300 hover:bg-white/10"
                 onClick={handleExport}
                 disabled={exportLoading}
               >
@@ -1133,7 +1133,7 @@ const Contacts = () => {
               </Button>
               <Button 
                 onClick={openAddDialog}
-                className="h-10 px-6 bg-[#5c5b2f] hover:bg-[#4a4a28] text-white shadow-sm hover:shadow-md transition-all duration-200"
+                className="h-10 px-6 bg-gold-400 hover:bg-gold-300 text-navy-900 shadow-lg hover:shadow-md transition-all duration-200"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Contact
@@ -1147,16 +1147,16 @@ const Contacts = () => {
           {/* Search and Basic Filters */}
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
             <div className="flex-1">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Contacts</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">Contacts</h2>
               
               {/* Search */}
               <div className="relative max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/30" />
                 <Input
                   placeholder="Search contacts..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 border-gray-300 focus:border-[#5c5b2f] focus:ring-[#5c5b2f]/20"
+                  className="pl-10 border-white/15 focus:border-gold-400 focus:ring-gold-400/20"
                 />
               </div>
             </div>
@@ -1181,7 +1181,7 @@ const Contacts = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowMoreFilters(!showMoreFilters)}
-                className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                className="text-white/50 hover:text-gold-300 hover:bg-white/10"
               >
                 <Filter className="w-4 h-4 mr-2" />
                 {showMoreFilters ? 'Hide' : 'More'} Filters
@@ -1191,13 +1191,13 @@ const Contacts = () => {
           
           {/* Advanced Filters */}
           {showMoreFilters && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Advanced Filters</h3>
+            <div className="mt-4 p-4 bg-background rounded-lg border border-white/10">
+              <h3 className="text-sm font-medium text-white/70 mb-3">Advanced Filters</h3>
               <div className="flex flex-wrap items-center gap-4">
                 {/* Source Filter */}
                 <div className="flex items-center gap-2">
-                  <Label className="text-sm font-medium text-gray-700">Source:</Label>
-                  <div className="flex bg-gray-100 rounded-lg p-1">
+                  <Label className="text-sm font-medium text-white/70">Source:</Label>
+                  <div className="flex bg-white/10 rounded-lg p-1">
                     {[
                       { value: 'all', label: 'All Sources' },
                       { value: 'poc', label: 'POC' },
@@ -1210,8 +1210,8 @@ const Contacts = () => {
                         onClick={() => setSourceFilter(option.value as 'all' | 'poc' | 'volunteer')}
                         className={`text-xs px-3 py-1 h-8 ${
                           sourceFilter === (option.value as any) 
-                            ? "bg-[#5c5b2f] text-white" 
-                            : "text-gray-600 hover:text-gray-900"
+                            ? "bg-gold-400 text-navy-900"
+                            : "text-white/50 hover:text-gold-300"
                         }`}
                       >
                         {option.label}
@@ -1222,8 +1222,8 @@ const Contacts = () => {
 
                 {/* Gender Filter */}
                 <div className="flex items-center gap-2">
-                  <Label className="text-sm font-medium text-gray-700">Gender:</Label>
-                  <div className="flex bg-gray-100 rounded-lg p-1">
+                  <Label className="text-sm font-medium text-white/70">Gender:</Label>
+                  <div className="flex bg-white/10 rounded-lg p-1">
                     {[
                       { value: 'all', label: 'All' },
                       { value: 'brother', label: 'Brother' },
@@ -1236,8 +1236,8 @@ const Contacts = () => {
                         onClick={() => setGenderFilter(option.value as 'all' | 'brother' | 'sister')}
                         className={`text-xs px-3 py-1 h-8 ${
                           genderFilter === option.value 
-                            ? "bg-[#5c5b2f] text-white" 
-                            : "text-gray-600 hover:text-gray-900"
+                            ? "bg-gold-400 text-navy-900"
+                            : "text-white/50 hover:text-gold-300"
                         }`}
                       >
                         {option.label}
@@ -1248,7 +1248,7 @@ const Contacts = () => {
 
                 {/* Event Filter */}
                 <div className="flex items-center gap-2">
-                  <Label className="text-sm font-medium text-gray-700">Event:</Label>
+                  <Label className="text-sm font-medium text-white/70">Event:</Label>
                   <div className="w-48">
                     <CustomSelect
                       options={[
@@ -1271,7 +1271,7 @@ const Contacts = () => {
 
                 {/* Role Filter */}
                 <div className="flex items-center gap-2">
-                  <Label className="text-sm font-medium text-gray-700">Role:</Label>
+                  <Label className="text-sm font-medium text-white/70">Role:</Label>
                   <div className="w-48">
                     <CustomSelect
                       options={[
@@ -1297,12 +1297,12 @@ const Contacts = () => {
             
           {/* Clear Filters */}
           {(searchQuery || sourceFilter !== 'all' || genderFilter !== 'all' || eventFilter !== 'all' || roleFilter !== 'all') && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="mt-4 pt-4 border-t border-white/10">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-white/40 hover:text-white/70"
               >
                 Clear filters
               </Button>
@@ -1311,22 +1311,22 @@ const Contacts = () => {
         </div>
 
         {/* Main Content */}
-        <Card className="border-0 shadow-sm">
+        <Card className="border-0 shadow-lg">
           <CardContent className="p-0">
             {loading ? (
               <div className="text-center py-16">
-                <div className="animate-spin w-12 h-12 border-3 border-[#5c5b2f] border-t-transparent rounded-full mx-auto mb-6"></div>
-                <p className="text-gray-700 font-medium text-lg">Loading contacts...</p>
+                <div className="animate-spin w-12 h-12 border-3 border-gold-400 border-t-transparent rounded-full mx-auto mb-6"></div>
+                <p className="text-white/70 font-medium text-lg">Loading contacts...</p>
               </div>
             ) : filteredContacts.length === 0 ? (
               <div className="text-center py-16 px-8">
-                <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Users className="w-10 h-10 text-gray-400" />
+                <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <Users className="w-10 h-10 text-white/30" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-700 mb-3">
+                <h3 className="text-xl font-semibold text-white/70 mb-3">
                   {contacts.length === 0 ? "Start Building Your Network" : "No Contacts Match Filters"}
                 </h3>
-                <p className="text-gray-500 mb-6 max-w-lg mx-auto">
+                <p className="text-white/40 mb-6 max-w-lg mx-auto">
                   {contacts.length === 0 
                     ? "Add your first contact to start building your event coordination network"
                     : "Try adjusting your search or filters to find what you're looking for."
@@ -1335,7 +1335,7 @@ const Contacts = () => {
                 {contacts.length === 0 && (
                   <Button 
                     onClick={openAddDialog}
-                    className="bg-[#5c5b2f] hover:bg-[#4a4a28] text-white px-6 py-3 shadow-sm hover:shadow-md transition-all duration-200"
+                    className="bg-gold-400 hover:bg-gold-300 text-navy-900 px-6 py-3 shadow-lg hover:shadow-md transition-all duration-200"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Your First Contact
@@ -1349,16 +1349,16 @@ const Contacts = () => {
                 {isMobile ? (
                   <div className="p-4 space-y-3">
                     {filteredContacts.map((contact: ContactWithDetails) => (
-                      <div key={contact.id} className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+                      <div key={contact.id} className="bg-white/5 rounded-xl p-4 border border-white/10 shadow-lg hover:shadow-md transition-all duration-200">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-[#5c5b2f] rounded-full flex items-center justify-center text-white font-semibold">
+                          <div className="w-10 h-10 bg-gold-400 rounded-full flex items-center justify-center text-navy-900 font-semibold">
                             {getInitials(contact.name)}
                           </div>
                           <div className="flex-1">
-                            <div className="font-medium text-gray-900">{contact.name}</div>
-                            <div className="text-sm text-gray-600">{contact.phone}</div>
+                            <div className="font-medium text-foreground">{contact.name}</div>
+                            <div className="text-sm text-white/50">{contact.phone}</div>
                             {contact.email && (
-                              <div className="text-sm text-gray-600">{contact.email}</div>
+                              <div className="text-sm text-white/50">{contact.email}</div>
                             )}
                             <div className="flex items-center gap-2 mt-1">
                               {/* Show role based on the actual role field */}
@@ -1368,12 +1368,12 @@ const Contacts = () => {
                                 </Badge>
                               )}
                               {contact.role === 'volunteer' && (
-                                <Badge variant="outline" className="text-xs bg-gray-50 text-gray-700 border-gray-200">
+                                <Badge variant="outline" className="text-xs bg-background text-white/70 border-white/10">
                                   Volunteer
                                 </Badge>
                               )}
                               {contact.role === 'admin' && (
-                                <Badge variant="outline" className="text-xs bg-red-50 text-red-700 border-red-200">
+                                <Badge variant="outline" className="text-xs bg-red-500/10 text-red-300 border-red-200">
                                   Admin
                                 </Badge>
                               )}
@@ -1388,7 +1388,7 @@ const Contacts = () => {
                                   )}
                                   {/* Show Volunteer badge if they have volunteer history OR if they were manually created as a volunteer */}
                                   {(contact.volunteerHistory.length > 0 || contact.source === 'volunteer_signup') && (
-                                    <Badge variant="outline" className="text-xs bg-gray-50 text-gray-700 border-gray-200">
+                                    <Badge variant="outline" className="text-xs bg-background text-white/70 border-white/10">
                                       Volunteer
                                     </Badge>
                                   )}
@@ -1399,7 +1399,7 @@ const Contacts = () => {
                                   variant="outline" 
                                   className={`text-xs ${
                                     contact.gender === 'brother' 
-                                      ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                                      ? 'bg-blue-500/15 text-blue-300 border-blue-200' 
                                       : 'bg-pink-50 text-pink-700 border-pink-200'
                                   }`}
                                 >
@@ -1415,7 +1415,7 @@ const Contacts = () => {
                                 className={`text-xs font-medium ${
                                   contact.total_events_volunteered && contact.total_events_volunteered > 0
                                     ? 'bg-green-50 text-green-700 border-green-200'
-                                    : 'bg-gray-50 text-gray-500 border-gray-200'
+                                    : 'bg-background text-white/40 border-white/10'
                                 }`}
                               >
                                 {(contact.total_events_volunteered || 0)} events
@@ -1425,8 +1425,8 @@ const Contacts = () => {
                                 variant="outline" 
                                 className={`text-xs font-medium ${
                                   contact.total_roles_volunteered && contact.total_roles_volunteered > 0
-                                    ? 'bg-blue-50 text-blue-700 border-blue-200'
-                                    : 'bg-gray-50 text-gray-500 border-gray-200'
+                                    ? 'bg-blue-500/15 text-blue-300 border-blue-200'
+                                    : 'bg-background text-white/40 border-white/10'
                                 }`}
                               >
                                 {(contact.total_roles_volunteered || 0)} roles
@@ -1438,7 +1438,7 @@ const Contacts = () => {
                                     className={`text-xs font-medium ${
                                       contact.total_poc_assignments && contact.total_poc_assignments > 0
                                         ? 'bg-purple-50 text-purple-700 border-purple-200'
-                                        : 'bg-gray-50 text-gray-500 border-gray-200'
+                                        : 'bg-background text-white/40 border-white/10'
                                     }`}
                                   >
                                     {(contact.total_poc_assignments || 0)} POC
@@ -1449,18 +1449,18 @@ const Contacts = () => {
                             
                             {/* Event and Role Information */}
                             {contact.volunteerHistory.length > 0 && (
-                              <div className="mt-2 text-xs text-gray-500">
+                              <div className="mt-2 text-xs text-white/40">
                                 <div className="font-medium mb-1">Volunteer History:</div>
                                 {contact.volunteerHistory.slice(0, 3).map((signup, index) => (
                                   <div key={index} className="ml-2">
                                     {signup.event?.title} - {signup.role?.role_label}
                                     {signup.status !== 'confirmed' && (
-                                      <span className="text-gray-400 ml-1">({signup.status})</span>
+                                      <span className="text-white/30 ml-1">({signup.status})</span>
                                     )}
                                   </div>
                                 ))}
                                 {contact.volunteerHistory.length > 3 && (
-                                  <div className="ml-2 text-gray-400">
+                                  <div className="ml-2 text-white/30">
                                     +{contact.volunteerHistory.length - 3} more signups
                                   </div>
                                 )}
@@ -1475,44 +1475,44 @@ const Contacts = () => {
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b border-gray-200 bg-gray-50/50">
-                          <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm">
+                        <tr className="border-b border-white/10 bg-white/5">
+                          <th className="text-left py-4 px-6 font-semibold text-foreground text-sm">
                             Name
                           </th>
-                          <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm">Phone</th>
-                          <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm">Email</th>
-                          <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm">Gender</th>
-                          <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm">Role</th>
-                          <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm">Activity</th>
-                          <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm">Added</th>
-                          <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm">Actions</th>
+                          <th className="text-left py-4 px-6 font-semibold text-foreground text-sm">Phone</th>
+                          <th className="text-left py-4 px-6 font-semibold text-foreground text-sm">Email</th>
+                          <th className="text-left py-4 px-6 font-semibold text-foreground text-sm">Gender</th>
+                          <th className="text-left py-4 px-6 font-semibold text-foreground text-sm">Role</th>
+                          <th className="text-left py-4 px-6 font-semibold text-foreground text-sm">Activity</th>
+                          <th className="text-left py-4 px-6 font-semibold text-foreground text-sm">Added</th>
+                          <th className="text-left py-4 px-6 font-semibold text-foreground text-sm">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {filteredContacts.map((contact: ContactWithDetails) => (
-                          <tr key={contact.id} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors duration-150">
+                          <tr key={contact.id} className="border-b border-white/5 hover:bg-white/5 transition-colors duration-150">
                             <td className="py-4 px-6">
                               <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 bg-[#5c5b2f] rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                <div className="w-8 h-8 bg-gold-400 rounded-full flex items-center justify-center text-navy-900 font-semibold text-sm">
                                   {getInitials(contact.name)}
                                 </div>
                                 <div>
-                                  <div className="font-medium text-gray-900">{contact.name}</div>
+                                  <div className="font-medium text-foreground">{contact.name}</div>
                                 </div>
                               </div>
                             </td>
                             <td className="py-4 px-6">
                               <div className="flex items-center space-x-2">
-                                <Phone className="w-4 h-4 text-gray-400" />
-                                <span className="text-gray-700">{contact.phone}</span>
+                                <Phone className="w-4 h-4 text-white/30" />
+                                <span className="text-white/70">{contact.phone}</span>
                               </div>
                             </td>
                             <td className="py-4 px-6">
                               <div className="flex items-center space-x-2">
                                 {contact.email && (
-                                  <Mail className="w-4 h-4 text-gray-400" />
+                                  <Mail className="w-4 h-4 text-white/30" />
                                 )}
-                                <span className="text-gray-700">{contact.email || '-'}</span>
+                                <span className="text-white/70">{contact.email || '-'}</span>
                               </div>
                             </td>
                             <td className="py-4 px-6">
@@ -1522,7 +1522,7 @@ const Contacts = () => {
                                     variant="outline" 
                                     className={`text-xs ${
                                       contact.gender === 'brother' 
-                                        ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                                        ? 'bg-blue-500/15 text-blue-300 border-blue-200' 
                                         : 'bg-pink-50 text-pink-700 border-pink-200'
                                     }`}
                                   >
@@ -1540,12 +1540,12 @@ const Contacts = () => {
                                   </Badge>
                                 )}
                                 {contact.role === 'volunteer' && (
-                                  <Badge variant="outline" className="text-xs bg-gray-50 text-gray-700 border-gray-200">
+                                  <Badge variant="outline" className="text-xs bg-background text-white/70 border-white/10">
                                     Volunteer
                                   </Badge>
                                 )}
                                 {contact.role === 'admin' && (
-                                  <Badge variant="outline" className="text-xs bg-red-50 text-red-700 border-red-200">
+                                  <Badge variant="outline" className="text-xs bg-red-500/10 text-red-300 border-red-200">
                                     Admin
                                   </Badge>
                                 )}
@@ -1560,7 +1560,7 @@ const Contacts = () => {
                                     )}
                                     {/* Show Volunteer badge if they have volunteer history OR if they were manually created as a volunteer */}
                                     {(contact.volunteerHistory.length > 0 || contact.source === 'volunteer_signup') && (
-                                      <Badge variant="outline" className="text-xs bg-gray-50 text-gray-700 border-gray-200">
+                                      <Badge variant="outline" className="text-xs bg-background text-white/70 border-white/10">
                                         Volunteer
                                       </Badge>
                                     )}
@@ -1576,7 +1576,7 @@ const Contacts = () => {
                                   className={`text-xs font-medium ${
                                     contact.total_events_volunteered && contact.total_events_volunteered > 0
                                       ? 'bg-green-50 text-green-700 border-green-200'
-                                      : 'bg-gray-50 text-gray-500 border-gray-200'
+                                      : 'bg-background text-white/40 border-white/10'
                                   }`}
                                 >
                                   {(contact.total_events_volunteered || 0)} events
@@ -1586,8 +1586,8 @@ const Contacts = () => {
                                   variant="outline" 
                                   className={`text-xs font-medium ${
                                     contact.total_roles_volunteered && contact.total_roles_volunteered > 0
-                                      ? 'bg-blue-50 text-blue-700 border-blue-200'
-                                      : 'bg-gray-50 text-gray-500 border-gray-200'
+                                      ? 'bg-blue-500/15 text-blue-300 border-blue-200'
+                                      : 'bg-background text-white/40 border-white/10'
                                   }`}
                                 >
                                   {(contact.total_roles_volunteered || 0)} roles
@@ -1599,7 +1599,7 @@ const Contacts = () => {
                                       className={`text-xs font-medium ${
                                         contact.total_poc_assignments && contact.total_poc_assignments > 0
                                           ? 'bg-purple-50 text-purple-700 border-purple-200'
-                                          : 'bg-gray-50 text-gray-500 border-gray-200'
+                                          : 'bg-background text-white/40 border-white/10'
                                       }`}
                                     >
                                       {(contact.total_poc_assignments || 0)} POC
@@ -1609,7 +1609,7 @@ const Contacts = () => {
                               </div>
                             </td>
                             <td className="py-4 px-6">
-                              <div className="text-sm text-gray-500">
+                              <div className="text-sm text-white/40">
                                 {new Date(contact.created_at).toLocaleDateString()}
                               </div>
                             </td>
@@ -1620,7 +1620,7 @@ const Contacts = () => {
                                   variant="outline"
                                   onClick={() => handleEdit(contact)}
                                   title="Edit Contact"
-                                  className="h-8 w-8 p-0 border-gray-300 text-gray-700 hover:bg-gray-50"
+                                  className="h-8 w-8 p-0 border-white/15 text-white/70 hover:bg-white/5"
                                 >
                                   <Edit className="w-4 h-4" />
                                 </Button>
@@ -1630,13 +1630,13 @@ const Contacts = () => {
                                       size="sm"
                                       variant="outline"
                                       title="More Actions"
-                                      className="h-8 w-8 p-0 border-gray-300 text-gray-700 hover:bg-gray-50"
+                                      className="h-8 w-8 p-0 border-white/15 text-white/70 hover:bg-white/5"
                                     >
                                       <MoreHorizontal className="w-4 h-4" />
                                     </Button>
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="end" className="w-48">
-                                    <DropdownMenuItem onClick={() => handleDelete(contact.id)} className="text-red-600">
+                                    <DropdownMenuItem onClick={() => handleDelete(contact.id)} className="text-red-400">
                                       <Trash2 className="w-4 h-4 mr-2" />
                                       Delete
                                     </DropdownMenuItem>
@@ -1684,9 +1684,9 @@ const Contacts = () => {
                     className={errors.firstName ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : ""}
                   />
                   {errors.firstName && (
-                    <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
-                      <span className="w-4 h-4 rounded-full bg-red-100 flex items-center justify-center">
-                        <span className="text-red-600 text-xs">!</span>
+                    <p className="text-sm text-red-400 mt-1 flex items-center gap-1">
+                      <span className="w-4 h-4 rounded-full bg-red-500/10 flex items-center justify-center">
+                        <span className="text-red-400 text-xs">!</span>
                       </span>
                       {errors.firstName}
                     </p>
@@ -1702,9 +1702,9 @@ const Contacts = () => {
                     className={errors.lastName ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : ""}
                   />
                   {errors.lastName && (
-                    <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
-                      <span className="w-4 h-4 rounded-full bg-red-100 flex items-center justify-center">
-                        <span className="text-red-600 text-xs">!</span>
+                    <p className="text-sm text-red-400 mt-1 flex items-center gap-1">
+                      <span className="w-4 h-4 rounded-full bg-red-500/10 flex items-center justify-center">
+                        <span className="text-red-400 text-xs">!</span>
                       </span>
                       {errors.lastName}
                     </p>
@@ -1722,9 +1722,9 @@ const Contacts = () => {
                   className={errors.phone ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : ""}
                 />
                 {errors.phone && (
-                  <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
-                    <span className="w-4 h-4 rounded-full bg-red-100 flex items-center justify-center">
-                      <span className="text-red-600 text-xs">!</span>
+                  <p className="text-sm text-red-400 mt-1 flex items-center gap-1">
+                    <span className="w-4 h-4 rounded-full bg-red-500/10 flex items-center justify-center">
+                      <span className="text-red-400 text-xs">!</span>
                     </span>
                     {errors.phone}
                   </p>
@@ -1744,9 +1744,9 @@ const Contacts = () => {
                   className={errors.gender ? "border-red-500" : ""}
                 />
                 {errors.gender && (
-                  <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
-                    <span className="w-4 h-4 rounded-full bg-red-100 flex items-center justify-center">
-                      <span className="text-red-600 text-xs">!</span>
+                  <p className="text-sm text-red-400 mt-1 flex items-center gap-1">
+                    <span className="w-4 h-4 rounded-full bg-red-500/10 flex items-center justify-center">
+                      <span className="text-red-400 text-xs">!</span>
                     </span>
                     {errors.gender}
                   </p>
@@ -1766,9 +1766,9 @@ const Contacts = () => {
                   className={errors.contactType ? "border-red-500" : ""}
                 />
                 {errors.contactType && (
-                  <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
-                    <span className="w-4 h-4 rounded-full bg-red-100 flex items-center justify-center">
-                      <span className="text-red-600 text-xs">!</span>
+                  <p className="text-sm text-red-400 mt-1 flex items-center gap-1">
+                    <span className="w-4 h-4 rounded-full bg-red-500/10 flex items-center justify-center">
+                      <span className="text-red-400 text-xs">!</span>
                     </span>
                     {errors.contactType}
                   </p>
@@ -1788,9 +1788,9 @@ const Contacts = () => {
                   className={errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : ""}
                 />
                 {errors.email && (
-                  <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
-                    <span className="w-4 h-4 rounded-full bg-red-100 flex items-center justify-center">
-                      <span className="text-red-600 text-xs">!</span>
+                  <p className="text-sm text-red-400 mt-1 flex items-center gap-1">
+                    <span className="w-4 h-4 rounded-full bg-red-500/10 flex items-center justify-center">
+                      <span className="text-red-400 text-xs">!</span>
                     </span>
                     {errors.email}
                   </p>
@@ -1803,13 +1803,13 @@ const Contacts = () => {
                 type="button" 
                 variant="outline"
                 onClick={() => handleDialogOpenChange(false)}
-                className="w-full sm:w-auto border-gray-300 text-gray-700 hover:bg-gray-50"
+                className="w-full sm:w-auto border-white/15 text-white/70 hover:bg-white/5"
               >
                 Cancel
               </Button>
               <Button 
                 type="submit"
-                className="w-full sm:w-auto bg-[#5c5b2f] hover:bg-[#4a4a28] text-white"
+                className="w-full sm:w-auto bg-gold-400 hover:bg-gold-300 text-navy-900"
               >
                 {editingContact ? "Update Contact" : "Add Contact"}
               </Button>
@@ -1837,9 +1837,9 @@ const Contacts = () => {
                 type="file"
                 accept=".csv"
                 onChange={handleFileSelect}
-                className="border-gray-300 focus:border-[#5c5b2f] focus:ring-[#5c5b2f]/20"
+                className="border-white/15 focus:border-gold-400 focus:ring-gold-400/20"
               />
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-white/40">
                 Supported format: CSV with headers (Name, Phone, Email, Gender, Contact Type)
               </p>
             </div>
@@ -1848,12 +1848,12 @@ const Contacts = () => {
             {importPreview.length > 0 && (
               <div className="space-y-2">
                 <Label>Preview (First 5 rows)</Label>
-                <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-md p-3 bg-gray-50">
+                <div className="max-h-40 overflow-y-auto border border-white/10 rounded-md p-3 bg-background">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-gray-200">
+                      <tr className="border-b border-white/10">
                         {Object.keys(importPreview[0] || {}).map(header => (
-                          <th key={header} className="text-left py-1 px-2 font-medium text-gray-700">
+                          <th key={header} className="text-left py-1 px-2 font-medium text-white/70">
                             {header}
                           </th>
                         ))}
@@ -1861,9 +1861,9 @@ const Contacts = () => {
                     </thead>
                     <tbody>
                       {importPreview.map((row, index) => (
-                        <tr key={index} className="border-b border-gray-100">
+                        <tr key={index} className="border-b border-white/5">
                           {Object.values(row).map((value, cellIndex) => (
-                            <td key={cellIndex} className="py-1 px-2 text-gray-600">
+                            <td key={cellIndex} className="py-1 px-2 text-white/50">
                               {String(value || '-')}
                             </td>
                           ))}
@@ -1878,7 +1878,7 @@ const Contacts = () => {
             {/* Sample CSV */}
             <div className="space-y-2">
               <Label>Sample CSV Format</Label>
-              <div className="bg-gray-50 p-3 rounded-md font-mono text-sm">
+              <div className="bg-background p-3 rounded-md font-mono text-sm">
                 <div>Name,Phone,Email,Gender,Contact Type</div>
                 <div>John Doe,+1234567890,john@example.com,brother,poc</div>
                 <div>Jane Smith,+1234567891,jane@example.com,sister,volunteer</div>
@@ -1925,7 +1925,7 @@ Aisha Rahman,+1234567895,aisha@example.com,sister,volunteer`;
             <Button
               onClick={handleImport}
               disabled={!importFile || importLoading}
-              className="bg-[#5c5b2f] hover:bg-[#4a4a28] text-white"
+              className="bg-gold-400 hover:bg-gold-300 text-navy-900"
             >
               {importLoading ? 'Importing...' : 'Import Contacts'}
             </Button>

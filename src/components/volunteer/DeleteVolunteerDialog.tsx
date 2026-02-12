@@ -36,12 +36,12 @@ const DeleteVolunteerDialog = ({
             Remove Volunteer?
           </AlertDialogTitle>
           <AlertDialogDescription className="text-left space-y-3">
-            <p className="text-gray-600">
+            <p className="text-white/50">
               Are you sure you want to remove <strong>{volunteer.name}</strong> from this volunteer role?
             </p>
             
-            <div className="bg-red-50 p-3 rounded-lg border border-red-200">
-              <p className="text-red-700 text-sm">
+            <div className="bg-red-500/10 p-3 rounded-lg border border-white/10">
+              <p className="text-red-400 text-sm">
                 This action cannot be undone. The volunteer will need to sign up again if they want to participate.
               </p>
             </div>
@@ -54,7 +54,7 @@ const DeleteVolunteerDialog = ({
           <AlertDialogAction 
             onClick={onConfirm}
             disabled={isDeleting}
-            className="bg-red-500 hover:bg-red-600"
+            className="bg-red-500/100 hover:bg-red-600"
           >
             {isDeleting ? "Removing..." : "Yes, Remove"}
           </AlertDialogAction>
