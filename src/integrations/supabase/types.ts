@@ -120,9 +120,12 @@ export type Database = {
           created_by: string | null
           day_before_time: string | null
           day_of_time: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           description: string | null
           end_datetime: string
           id: string
+          is_public: boolean | null
           location: string
           sms_enabled: boolean | null
           start_datetime: string
@@ -135,9 +138,12 @@ export type Database = {
           created_by?: string | null
           day_before_time?: string | null
           day_of_time?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           end_datetime: string
           id?: string
+          is_public?: boolean | null
           location: string
           sms_enabled?: boolean | null
           start_datetime: string
@@ -150,9 +156,12 @@ export type Database = {
           created_by?: string | null
           day_before_time?: string | null
           day_of_time?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           end_datetime?: string
           id?: string
+          is_public?: boolean | null
           location?: string
           sms_enabled?: boolean | null
           start_datetime?: string
