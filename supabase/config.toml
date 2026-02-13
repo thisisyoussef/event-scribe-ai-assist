@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.delete-volunteer]
 verify_jwt = false
+
+[functions.update-event]
+verify_jwt = false
