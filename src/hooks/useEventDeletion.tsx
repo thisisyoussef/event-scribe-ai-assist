@@ -129,7 +129,7 @@ export const useEventDeletion = () => {
     }
   };
 
-  // Permanently delete an event
+  // Permanently delete an event using SECURITY DEFINER RPC
   const permanentlyDeleteEvent = async (eventId: string, eventTitle: string): Promise<boolean> => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -142,16 +142,24 @@ export const useEventDeletion = () => {
         return false;
       }
 
-      const { error: deleteError } = await supabase
-        .from('events')
-        .delete()
-        .eq('id', eventId);
+      const { data, error: deleteError } = await supabase.rpc('admin_permanent_delete_event', {
+        p_event_id: eventId,
+      });
 
       if (deleteError) {
         console.error('Error permanently deleting event:', deleteError);
         toast({
           title: "Error",
           description: `Failed to permanently delete event: ${deleteError.message}`,
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      if (!data) {
+        toast({
+          title: "Error",
+          description: "Event not found.",
           variant: "destructive",
         });
         return false;
@@ -174,7 +182,7 @@ export const useEventDeletion = () => {
     }
   };
 
-  // Permanently delete all soft-deleted events and templates
+  // Permanently delete all soft-deleted events and templates using SECURITY DEFINER RPC
   const permanentlyDeleteAllEvents = async (): Promise<boolean> => {
     setIsDeletingAll(true);
     try {
@@ -188,52 +196,24 @@ export const useEventDeletion = () => {
         return false;
       }
 
-      // Get all soft-deleted events
-      const eventsQuery = supabase
-        .from('events')
-        .select('id, title')
-        .not('deleted_at', 'is', null);
+      const { data, error } = await supabase.rpc('admin_permanent_delete_all_soft_deleted', {
+        p_user_id: user.id,
+        p_admin_mode: isAdmin,
+      });
 
-      if (!isAdmin) {
-        eventsQuery.eq('created_by', user.id);
-      }
-
-      const { data: softDeletedEvents, error: fetchEventsError } = await eventsQuery;
-
-      if (fetchEventsError) {
-        console.error('Error fetching soft deleted events:', fetchEventsError);
+      if (error) {
+        console.error('Error permanently deleting all items:', error);
         toast({
           title: "Error",
-          description: "Failed to fetch deleted events. Please try again.",
+          description: `Failed to permanently delete items: ${error.message}`,
           variant: "destructive",
         });
         return false;
       }
 
-      // Get all soft-deleted templates
-      const templatesQuery = supabase
-        .from('event_templates')
-        .select('id, name')
-        .not('deleted_at', 'is', null);
-
-      if (!isAdmin) {
-        templatesQuery.eq('user_id', user.id);
-      }
-
-      const { data: softDeletedTemplates, error: fetchTemplatesError } = await templatesQuery;
-
-      if (fetchTemplatesError) {
-        console.error('Error fetching soft deleted templates:', fetchTemplatesError);
-        toast({
-          title: "Error",
-          description: "Failed to fetch deleted templates. Please try again.",
-          variant: "destructive",
-        });
-        return false;
-      }
-
-      const totalEvents = softDeletedEvents?.length || 0;
-      const totalTemplates = softDeletedTemplates?.length || 0;
+      const result = data as { deleted_events: number; deleted_templates: number } | null;
+      const totalEvents = result?.deleted_events || 0;
+      const totalTemplates = result?.deleted_templates || 0;
 
       if (totalEvents === 0 && totalTemplates === 0) {
         toast({
@@ -241,54 +221,6 @@ export const useEventDeletion = () => {
           description: "There are no deleted items to permanently remove.",
         });
         return false;
-      }
-
-      // Permanently delete all soft-deleted events
-      if (totalEvents > 0) {
-        const deleteEventsQuery = supabase
-          .from('events')
-          .delete()
-          .not('deleted_at', 'is', null);
-
-        if (!isAdmin) {
-          deleteEventsQuery.eq('created_by', user.id);
-        }
-
-        const { error: deleteEventsError } = await deleteEventsQuery;
-
-        if (deleteEventsError) {
-          console.error('Error permanently deleting all events:', deleteEventsError);
-          toast({
-            title: "Error",
-            description: "Failed to permanently delete events. Please try again.",
-            variant: "destructive",
-          });
-          return false;
-        }
-      }
-
-      // Permanently delete all soft-deleted templates
-      if (totalTemplates > 0) {
-        const deleteTemplatesQuery = supabase
-          .from('event_templates')
-          .delete()
-          .not('deleted_at', 'is', null);
-
-        if (!isAdmin) {
-          deleteTemplatesQuery.eq('user_id', user.id);
-        }
-
-        const { error: deleteTemplatesError } = await deleteTemplatesQuery;
-
-        if (deleteTemplatesError) {
-          console.error('Error permanently deleting all templates:', deleteTemplatesError);
-          toast({
-            title: "Error",
-            description: "Failed to permanently delete templates. Please try again.",
-            variant: "destructive",
-          });
-          return false;
-        }
       }
 
       let description = '';

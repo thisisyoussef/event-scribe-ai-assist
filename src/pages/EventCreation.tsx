@@ -158,32 +158,8 @@ const EventCreation = () => {
 
   // Function to validate itinerary before proceeding
   const validateItinerary = () => {
-    let hasErrors = false;
-
-    for (const item of itinerary) {
-      for (const role of item.volunteerRoles) {
-        if (role.shiftStartTime && role.shiftEndTime) {
-          const startMinutes = parseInt(role.shiftStartTime.split(':')[0]) * 60 + parseInt(role.shiftStartTime.split(':')[1]);
-          const endMinutes = parseInt(role.shiftEndTime.split(':')[0]) * 60 + parseInt(role.shiftEndTime.split(':')[1]);
-
-          if (endMinutes <= startMinutes) {
-            hasErrors = true;
-            break;
-          }
-        }
-      }
-      if (hasErrors) break;
-    }
-
-    if (hasErrors) {
-      toast({
-        title: "Validation Error",
-        description: "Please fix the time validation errors before proceeding.",
-        variant: "destructive",
-      });
-      return false;
-    }
-
+    // Allow all shift time combinations — overnight shifts (end < start) are valid
+    // for events like Tarawih/Qiyam that cross midnight.
     return true;
   }
 
