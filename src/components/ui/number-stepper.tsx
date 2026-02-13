@@ -41,7 +41,7 @@ export function NumberStepper({
             <Button
                 variant="outline"
                 size="icon"
-                className="h-10 w-10 md:h-9 md:w-9 rounded-full shrink-0 border-white/10 text-white/50 hover:bg-white/10 hover:text-foreground touch-manipulation"
+                className="h-10 w-10 md:h-9 md:w-9 rounded-full shrink-0 border-stone-200 text-stone-600 hover:bg-stone-100 hover:text-stone-900 touch-manipulation"
                 onClick={handleDecrement}
                 disabled={disabled || (min !== undefined && value <= min)}
                 type="button"
@@ -57,7 +57,7 @@ export function NumberStepper({
             <Button
                 variant="outline"
                 size="icon"
-                className="h-10 w-10 md:h-9 md:w-9 rounded-full shrink-0 border-white/10 text-white/50 hover:bg-white/10 hover:text-foreground touch-manipulation"
+                className="h-10 w-10 md:h-9 md:w-9 rounded-full shrink-0 border-stone-200 text-stone-600 hover:bg-stone-100 hover:text-stone-900 touch-manipulation"
                 onClick={handleIncrement}
                 disabled={disabled || (max !== undefined && value >= max)}
                 type="button"

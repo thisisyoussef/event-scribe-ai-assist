@@ -440,13 +440,13 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gray-50">
         <Navigation />
         <main className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
-              <div className="animate-spin w-12 h-12 border-3 border-gold-400 border-t-transparent rounded-full mx-auto mb-6"></div>
-              <p className="text-white/60 font-medium text-lg">Loading your events...</p>
+              <div className="animate-spin w-12 h-12 border-3 border-[#5c5b2f] border-t-transparent rounded-full mx-auto mb-6"></div>
+              <p className="text-gray-700 font-medium text-lg">Loading your events...</p>
             </div>
           </div>
         </main>
@@ -455,7 +455,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
       
       <main className="container mx-auto px-4 py-6 md:py-8">
@@ -464,7 +464,7 @@ const Dashboard = () => {
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
                   Event Dashboard
                 </h1>
                 {isAdmin && (
@@ -474,14 +474,14 @@ const Dashboard = () => {
                   </Badge>
                 )}
               </div>
-              <p className="text-white/50 text-lg leading-relaxed">
+              <p className="text-gray-600 text-lg leading-relaxed">
                 Organize events and manage volunteer coordination
               </p>
             </div>
             <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2 sm:gap-3">
               <Button 
                 onClick={() => navigate("/events/create")}
-                className="w-full h-10 px-4 sm:px-6 bg-gold-400 hover:bg-gold-300 text-navy-900 shadow-sm hover:shadow-md transition-all duration-200"
+                className="w-full h-10 px-4 sm:px-6 bg-[#5c5b2f] hover:bg-[#4a4a28] text-white shadow-sm hover:shadow-md transition-all duration-200"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Event
@@ -489,7 +489,7 @@ const Dashboard = () => {
               <Button 
                 onClick={() => navigate("/recently-deleted")}
                 variant="ghost"
-                className="hidden sm:flex h-10 px-4 text-red-400 hover:text-red-300 hover:bg-red-500/10 border border-red-500/30"
+                className="hidden sm:flex h-10 px-4 text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-300"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Recently Deleted
@@ -500,60 +500,60 @@ const Dashboard = () => {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8 max-w-5xl mx-auto">
-          <Card className="border border-white/10 bg-white/5 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5 hover:border-gold-400/20">
+          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
             <CardContent className="p-4">
               <div className="flex flex-col items-center gap-2 text-center">
-                <div className="p-2 bg-gold-400/15 rounded-lg">
-                  <Calendar className="w-5 h-5 text-gold-400" />
+                <div className="p-2 bg-[#5c5b2f]/10 rounded-lg">
+                  <Calendar className="w-5 h-5 text-[#5c5b2f]" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-foreground">{events.length}</p>
-                  <p className="text-sm text-white/50">Total Events</p>
+                  <p className="text-2xl font-bold text-gray-900">{events.length}</p>
+                  <p className="text-sm text-gray-600">Total Events</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
-          <Card className="border border-white/10 bg-white/5 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5 hover:border-gold-400/20">
+          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
             <CardContent className="p-4">
               <div className="flex flex-col items-center gap-2 text-center">
-                <div className="p-2 bg-emerald-500/15 rounded-lg">
-                  <Globe className="w-5 h-5 text-emerald-400" />
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <Globe className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-emerald-400">
+                  <p className="text-2xl font-bold text-green-600">
                     {events.filter((event: Event) => getEventStatus(event) === "published").length}
                   </p>
-                  <p className="text-sm text-white/50">Active Events</p>
+                  <p className="text-sm text-gray-600">Active Events</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
-          <Card className="border border-white/10 bg-white/5 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5 hover:border-gold-400/20">
+          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
             <CardContent className="p-4">
               <div className="flex flex-col items-center gap-2 text-center">
-                <div className="p-2 bg-amber-500/15 rounded-lg">
-                  <FileText className="w-5 h-5 text-amber-400" />
+                <div className="p-2 bg-yellow-100 rounded-lg">
+                  <FileText className="w-5 h-5 text-yellow-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-amber-400">
+                  <p className="text-2xl font-bold text-yellow-600">
                     {events.filter((event: Event) => getEventStatus(event) === "draft").length}
                   </p>
-                  <p className="text-sm text-white/50">Draft Events</p>
+                  <p className="text-sm text-gray-600">Draft Events</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
-          <Card className="border border-white/10 bg-white/5 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5 hover:border-gold-400/20">
+          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
             <CardContent className="p-4">
               <div className="flex flex-col items-center gap-2 text-center">
-                <div className="p-2 bg-purple-500/15 rounded-lg">
-                  <UserCheck className="w-5 h-5 text-purple-400" />
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <UserCheck className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-purple-400">
+                  <p className="text-2xl font-bold text-purple-600">
                     {events.reduce((total: number, event: any) => {
                       // Only count open slots for published events that are not past
                       if (getEventStatus(event) === 'published') {
@@ -563,7 +563,7 @@ const Dashboard = () => {
                       return total;
                     }, 0)}
                   </p>
-                  <p className="text-sm text-white/50">Open Volunteer Opportunities</p>
+                  <p className="text-sm text-gray-600">Open Volunteer Opportunities</p>
                 </div>
               </div>
             </CardContent>
@@ -571,17 +571,17 @@ const Dashboard = () => {
           
           
           
-          <Card className="border border-white/10 bg-white/5 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5 hover:border-gold-400/20 md:col-span-1">
+          <Card className="border-0 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 md:col-span-1">
             <CardContent className="p-4">
               <div className="flex flex-col items-center gap-2 text-center">
-                <div className="p-2 bg-white/10 rounded-lg">
-                  <Calendar className="w-5 h-5 text-white/50" />
+                <div className="p-2 bg-gray-100 rounded-lg">
+                  <Calendar className="w-5 h-5 text-gray-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-white/70">
+                  <p className="text-2xl font-bold text-gray-700">
                     {events.filter((event: Event) => isPastEvent(event)).length}
                   </p>
-                  <p className="text-sm text-white/50">Past Events</p>
+                  <p className="text-sm text-gray-600">Past Events</p>
                 </div>
               </div>
             </CardContent>
@@ -604,12 +604,12 @@ const Dashboard = () => {
         </div>
 
         {/* Events Table */}
-        <Card className="border border-white/10 bg-white/5 backdrop-blur-xl shadow-lg">
-          <CardHeader className="border-b border-white/10 bg-transparent">
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="border-b border-gray-200 bg-white">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
               <div>
-                <CardTitle className="text-xl font-semibold text-foreground">Your Events</CardTitle>
-                <CardDescription className="text-white/50">
+                <CardTitle className="text-xl font-semibold text-gray-900">Your Events</CardTitle>
+                <CardDescription className="text-gray-600">
                   Manage your events and track volunteer participation
 
                 </CardDescription>
@@ -619,25 +619,25 @@ const Dashboard = () => {
               <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
                 {/* Search */}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/30" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
                     placeholder="Search events..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 h-9 w-full sm:w-64 border-white/15 bg-white/5 text-foreground focus:border-gold-400 focus:ring-gold-400/20"
+                    className="pl-10 h-9 w-full sm:w-64 border-gray-300 focus:border-[#5c5b2f] focus:ring-[#5c5b2f]/20"
                   />
                 </div>
                 
                 {/* Filter Pills */}
                 <div className="overflow-x-auto -mx-4 px-4">
-                  <div className="flex gap-1 p-1 bg-white/10 rounded-lg w-full sm:w-fit">
+                  <div className="flex gap-1 p-1 bg-gray-100 rounded-lg w-full sm:w-fit">
                     <Button
                       variant={eventFilter === 'all' ? 'default' : 'ghost'}
                       onClick={() => setEventFilter('all')}
                       className={`h-7 px-2 sm:px-3 text-xs rounded-md transition-all whitespace-nowrap flex-1 sm:flex-none sm:w-auto font-medium ${
                         eventFilter === 'all' 
-                          ? 'bg-gold-400 text-white shadow-md border border-gold-400/20' 
-                          : 'text-white/50 hover:text-foreground hover:bg-white/10 bg-transparent'
+                          ? 'bg-[#5c5b2f] text-white shadow-md border border-[#5c5b2f]/20' 
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-white/50 bg-transparent'
                       }`}
                     >
                       All ({events.length})
@@ -647,8 +647,8 @@ const Dashboard = () => {
                       onClick={() => setEventFilter('published')}
                       className={`h-7 px-2 sm:px-3 text-xs rounded-md transition-all whitespace-nowrap flex-1 sm:flex-none sm:w-auto font-medium ${
                         eventFilter === 'published' 
-                          ? 'bg-gold-400 text-white shadow-md border border-gold-400/20' 
-                          : 'text-white/50 hover:text-foreground hover:bg-white/10 bg-transparent'
+                          ? 'bg-[#5c5b2f] text-white shadow-md border border-[#5c5b2f]/20' 
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-white/50 bg-transparent'
                       }`}
                     >
                       Published ({events.filter((event: Event) => getEventStatus(event) === "published").length})
@@ -658,8 +658,8 @@ const Dashboard = () => {
                       onClick={() => setEventFilter('draft')}
                       className={`h-7 px-2 sm:px-3 text-xs rounded-md transition-all whitespace-nowrap flex-1 sm:flex-none sm:w-auto font-medium ${
                         eventFilter === 'draft' 
-                          ? 'bg-gold-400 text-white shadow-md border border-gold-400/20' 
-                          : 'text-white/50 hover:text-foreground hover:bg-white/10 bg-transparent'
+                          ? 'bg-[#5c5b2f] text-white shadow-md border border-[#5c5b2f]/20' 
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-white/50 bg-transparent'
                       }`}
                     >
                       Drafts ({events.filter((event: Event) => getEventStatus(event) === "draft").length})
@@ -669,8 +669,8 @@ const Dashboard = () => {
                       onClick={() => setEventFilter('past')}
                       className={`h-7 px-2 sm:px-3 text-xs rounded-md transition-all whitespace-nowrap flex-1 sm:flex-none sm:w-auto font-medium ${
                         eventFilter === 'past' 
-                          ? 'bg-gold-400 text-white shadow-md border border-gold-400/20' 
-                          : 'text-white/50 hover:text-foreground hover:bg-white/10 bg-transparent'
+                          ? 'bg-[#5c5b2f] text-white shadow-md border border-[#5c5b2f]/20' 
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-white/50 bg-transparent'
                       }`}
                     >
                       Past ({events.filter((event: Event) => isPastEvent(event)).length})
@@ -683,7 +683,7 @@ const Dashboard = () => {
                   <Button
                     variant="ghost"
                     onClick={clearFilters}
-                    className="h-7 px-3 text-xs text-white/40 hover:text-white/70"
+                    className="h-7 px-3 text-xs text-gray-500 hover:text-gray-700"
                   >
                     Clear filters
                   </Button>
@@ -695,13 +695,13 @@ const Dashboard = () => {
           <CardContent className="p-0">
             {getFilteredEvents().length === 0 ? (
               <div className="text-center py-16 px-8">
-                <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Calendar className="w-10 h-10 text-white/30" />
+                <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <Calendar className="w-10 h-10 text-gray-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-white/70 mb-3">
+                <h3 className="text-xl font-semibold text-gray-700 mb-3">
                   {events.length === 0 ? "Start Organizing Events" : "No Events Match Filters"}
                 </h3>
-                <p className="text-white/40 mb-6 max-w-lg mx-auto">
+                <p className="text-gray-500 mb-6 max-w-lg mx-auto">
                   {events.length === 0 
                     ? "Create your first event and start coordinating volunteers"
                     : "Try adjusting your search or filters to find what you're looking for."
@@ -710,7 +710,7 @@ const Dashboard = () => {
                 {events.length === 0 && (
                   <Button 
                     onClick={() => navigate("/events/create")}
-                    className="bg-gold-400 hover:bg-gold-300 text-navy-900 px-6 py-3 shadow-sm hover:shadow-md transition-all duration-200"
+                    className="bg-[#5c5b2f] hover:bg-[#4a4a28] text-white px-6 py-3 shadow-sm hover:shadow-md transition-all duration-200"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Create Your First Event
@@ -725,20 +725,20 @@ const Dashboard = () => {
                       const stats = getEventStats(event);
                       return (
                         <div key={event.id} className={`rounded-xl p-4 border shadow-sm ${
-                          isPastEvent(event) ? 'border-white/15 bg-white/10' : 'bg-white/5 border-white/10'
+                          isPastEvent(event) ? 'border-gray-300 bg-gray-100' : 'bg-white border-gray-200'
                         }`}>
                           <div className="flex justify-between items-start mb-3">
                             <div className="flex-1">
-                              <h3 className="font-semibold text-foreground text-sm mb-1 flex items-center gap-2">
+                              <h3 className="font-semibold text-gray-900 text-sm mb-1 flex items-center gap-2">
                                 {event.title}
                                 {isAdmin && event.created_by !== currentUser?.id && (
-                                  <Badge variant="outline" className="text-xs bg-blue-500/15 text-blue-300 border-blue-500/25">
+                                  <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
                                     {`By ${creatorNames[event.created_by] || 'Other User'}`}
                                   </Badge>
                                 )}
                               </h3>
-                              <p className="text-white/50 text-xs mb-1">{event.location}</p>
-                              <p className="text-white/50 text-xs">
+                              <p className="text-gray-600 text-xs mb-1">{event.location}</p>
+                              <p className="text-gray-600 text-xs">
                                 {new Date(event.start_datetime).toLocaleDateString('en-US', { 
                                   weekday: 'short', 
                                   month: 'short', 
@@ -754,10 +754,10 @@ const Dashboard = () => {
                                 variant="secondary"
                                 className={`text-[10px] px-1.5 py-0.5 ${
                                   getEventStatus(event) === "published" 
-                                    ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25" 
+                                    ? "bg-green-100 text-green-700 border-green-200" 
                                     : getEventStatus(event) === "draft"
-                                    ? "bg-amber-500/15 text-amber-300 border-amber-500/25"
-                                    : "bg-white/10 text-white/60 border-white/15"
+                                    ? "bg-yellow-100 text-yellow-700 border-yellow-200"
+                                    : "bg-gray-200 text-gray-800 border-gray-300"
                                 }`}
                               >
                                 {getEventStatus(event) === "published" ? "Live" : getEventStatus(event) === "draft" ? "Draft" : "Past"}
@@ -767,19 +767,19 @@ const Dashboard = () => {
                           
                           <div className="mb-3">
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-xs text-white/50">Volunteers</span>
-                              <span className="text-sm font-semibold text-foreground">
+                              <span className="text-xs text-gray-600">Volunteers</span>
+                              <span className="text-sm font-semibold text-gray-900">
                                 {stats.filledSlots} / {stats.totalSlots}
                               </span>
                             </div>
-                            <div className="w-full bg-white/10 rounded-full h-2">
+                            <div className="w-full bg-gray-100 rounded-full h-2">
                               <div 
-                                className="bg-gold-400 h-2 rounded-full transition-all duration-300"
+                                className="bg-[#5c5b2f] h-2 rounded-full transition-all duration-300"
                                 style={{ width: `${stats.totalSlots > 0 ? (stats.filledSlots / stats.totalSlots) * 100 : 0}%` }}
                               ></div>
                             </div>
                             {stats.openSlots > 0 && (
-                              <div className="text-white/50 text-xs mt-1">
+                              <div className="text-gray-600 text-xs mt-1">
                                 {stats.openSlots} open spots
                               </div>
                             )}
@@ -791,7 +791,7 @@ const Dashboard = () => {
                               <Button
                                 size="sm"
                                 onClick={() => navigate(`/${createEventSlug(event.title, event.id)}/checkin`)}
-                                className="flex-1 text-xs bg-gold-400 hover:bg-gold-300 text-navy-900 border-gold-400"
+                                className="flex-1 text-xs bg-[#5c5b2f] hover:bg-[#4a4a28] text-white border-[#5c5b2f]"
                               >
                                 <LogIn className="w-3 h-3 mr-1" />
                                 Check In
@@ -800,9 +800,9 @@ const Dashboard = () => {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => navigate(`/events/${event.id}/edit`)}
-                                className="flex-1 text-xs border-white/15 text-white/70 hover:bg-white/5"
+                                className="flex-1 text-xs border-gray-300 text-gray-700 hover:bg-gray-50"
                               >
-                                <Edit className="w-3 h-3 mr-1 text-amber-400" />
+                                <Edit className="w-3 h-3 mr-1 text-yellow-600" />
                                 Edit
                               </Button>
                             </div>
@@ -814,7 +814,7 @@ const Dashboard = () => {
                                   size="sm"
                                   variant="ghost"
                                   onClick={() => copySignupLink(event)}
-                                  className="flex-1 text-xs text-white/50 hover:text-foreground hover:bg-white/10"
+                                  className="flex-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                                 >
                                   <Copy className="w-3 h-3 mr-1" />
                                   Copy Link
@@ -823,7 +823,7 @@ const Dashboard = () => {
                                   size="sm"
                                   variant="ghost"
                                   onClick={() => openSignupLink(event)}
-                                  className="flex-1 text-xs text-white/50 hover:text-foreground hover:bg-white/10"
+                                  className="flex-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                                 >
                                   <ArrowUpRight className="w-3 h-3 mr-1" />
                                   Open Link
@@ -836,7 +836,7 @@ const Dashboard = () => {
                                   size="sm"
                                   variant="ghost"
                                   onClick={() => copySignupLink(event)}
-                                  className="flex-1 text-xs text-white/50 hover:text-foreground hover:bg-white/10"
+                                  className="flex-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                                 >
                                   <Copy className="w-3 h-3 mr-1" />
                                   Copy Link
@@ -887,7 +887,7 @@ const Dashboard = () => {
                                     }}
                                     disabled={!hasEditPermission}
                                   />
-                                  <span className="text-xs text-white/50">
+                                  <span className="text-xs text-gray-600">
                                     {event.is_public ? 'Public' : 'Private'}
                                   </span>
                                 </div>
@@ -896,7 +896,7 @@ const Dashboard = () => {
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => setDeleteDialog({ isOpen: true, event })}
-                                className="px-4 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                className="px-4 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
                               >
                                 <Trash2 className="w-3 h-3 mr-1" />
                                 Delete
@@ -911,44 +911,44 @@ const Dashboard = () => {
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b border-white/10 bg-white/3">
-                          <th className="text-left py-4 px-6 font-semibold text-foreground text-sm">Event</th>
-                          <th className="text-left py-4 px-6 font-semibold text-foreground text-sm">Date & Time</th>
-                          <th className="text-left py-4 px-6 font-semibold text-foreground text-sm">Volunteers</th>
-                          <th className="text-left py-4 px-6 font-semibold text-foreground text-sm">Status</th>
-                          <th className="text-left py-4 px-6 font-semibold text-foreground text-sm">Actions</th>
+                        <tr className="border-b border-gray-200 bg-gray-50/50">
+                          <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm">Event</th>
+                          <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm">Date & Time</th>
+                          <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm">Volunteers</th>
+                          <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm">Status</th>
+                          <th className="text-left py-4 px-6 font-semibold text-gray-900 text-sm">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {getFilteredEvents().map((event: any, index) => {
                           const stats = getEventStats(event);
                           return (
-                            <tr key={event.id} className={`border-b border-white/5 hover:bg-white/5 transition-colors duration-150 ${
-                              isPastEvent(event) ? 'bg-white/10' : ''
+                            <tr key={event.id} className={`border-b border-gray-100 hover:bg-gray-50/50 transition-colors duration-150 ${
+                              isPastEvent(event) ? 'bg-gray-100' : ''
                             }`}>
                               <td className="py-4 px-6">
                                 <div>
-                                  <div className="font-semibold text-foreground text-sm mb-1 flex items-center gap-2">
+                                  <div className="font-semibold text-gray-900 text-sm mb-1 flex items-center gap-2">
                                     {event.title}
                                     {isAdmin && event.created_by !== currentUser?.id && (
-                                      <Badge variant="outline" className="text-xs bg-blue-500/15 text-blue-300 border-blue-500/25">
+                                      <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
                                         {`By ${creatorNames[event.created_by] || 'Other User'}`}
                                       </Badge>
                                     )}
                                   </div>
-                                  <div className="text-white/50 text-xs">{event.location}</div>
+                                  <div className="text-gray-600 text-xs">{event.location}</div>
                                 </div>
                               </td>
                               <td className="py-4 px-6">
                                 <div className="space-y-1">
-                                  <div className="text-foreground font-medium text-sm">
+                                  <div className="text-gray-900 font-medium text-sm">
                                     {new Date(event.start_datetime).toLocaleDateString('en-US', { 
                                       weekday: 'short', 
                                       month: 'short', 
                                       day: 'numeric' 
                                     })}
                                   </div>
-                                  <div className="text-white/50 text-xs">
+                                  <div className="text-gray-600 text-xs">
                                     {displayTimeInMichigan(event.start_datetime)}
                                   </div>
                                 </div>
@@ -956,18 +956,18 @@ const Dashboard = () => {
                               <td className="py-4 px-6">
                                 <div className="space-y-2">
                                   <div className="flex items-center space-x-2">
-                                    <div className="text-sm font-semibold text-foreground">
+                                    <div className="text-sm font-semibold text-gray-900">
                                       {stats.filledSlots} / {stats.totalSlots}
                                     </div>
                                   </div>
-                                  <div className="w-full bg-white/10 rounded-full h-2">
+                                  <div className="w-full bg-gray-100 rounded-full h-2">
                                     <div 
-                                      className="bg-gold-400 h-2 rounded-full transition-all duration-300"
+                                      className="bg-[#5c5b2f] h-2 rounded-full transition-all duration-300"
                                       style={{ width: `${stats.totalSlots > 0 ? (stats.filledSlots / stats.totalSlots) * 100 : 0}%` }}
                                     ></div>
                                   </div>
                                   {stats.openSlots > 0 && (
-                                    <div className="text-white/50 text-xs">
+                                    <div className="text-gray-600 text-xs">
                                       {stats.openSlots} open spots
                                     </div>
                                   )}
@@ -978,10 +978,10 @@ const Dashboard = () => {
                                   variant="secondary"
                                   className={`text-[10px] px-1.5 py-0.5 ${
                                     getEventStatus(event) === "published" 
-                                      ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25" 
+                                      ? "bg-green-100 text-green-700 border-green-200" 
                                       : getEventStatus(event) === "draft"
-                                      ? "bg-amber-500/15 text-amber-300 border-amber-500/25"
-                                      : "bg-white/10 text-white/60 border-white/15"
+                                      ? "bg-yellow-100 text-yellow-700 border-yellow-200"
+                                      : "bg-gray-200 text-gray-800 border-gray-300"
                                   }`}
                                 >
                                   {getEventStatus(event) === "published" ? "Live" : getEventStatus(event) === "draft" ? "Draft" : "Past"}
@@ -995,7 +995,7 @@ const Dashboard = () => {
                                       size="sm"
                                       onClick={() => navigate(`/${createEventSlug(event.title, event.id)}/checkin`)}
                                       title="Check In"
-                                      className="h-8 px-3 bg-gold-400 hover:bg-gold-300 text-navy-900 border-gold-400"
+                                      className="h-8 px-3 bg-[#5c5b2f] hover:bg-[#4a4a28] text-white border-[#5c5b2f]"
                                     >
                                       <LogIn className="w-4 h-4 mr-1" />
                                       Check In
@@ -1005,9 +1005,9 @@ const Dashboard = () => {
                                       variant="outline"
                                       onClick={() => navigate(`/events/${event.id}/edit`)}
                                       title="Edit Event"
-                                      className="h-8 px-3 border-white/15 text-white/70 hover:bg-white/5"
+                                      className="h-8 px-3 border-gray-300 text-gray-700 hover:bg-gray-50"
                                     >
-                                      <Edit className="w-4 h-4 mr-1 text-amber-400" />
+                                      <Edit className="w-4 h-4 mr-1 text-yellow-600" />
                                       Edit
                                     </Button>
                                   </div>
@@ -1020,7 +1020,7 @@ const Dashboard = () => {
                                         variant="ghost"
                                         onClick={() => copySignupLink(event)}
                                         title="Copy Signup Link"
-                                        className="h-8 px-2 text-white/50 hover:text-foreground hover:bg-white/10"
+                                        className="h-8 px-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                                       >
                                         <Copy className="w-4 h-4" />
                                       </Button>
@@ -1029,7 +1029,7 @@ const Dashboard = () => {
                                         variant="ghost"
                                         onClick={() => openSignupLink(event)}
                                         title="Open Signup Link"
-                                        className="h-8 px-2 text-white/50 hover:text-foreground hover:bg-white/10"
+                                        className="h-8 px-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                                       >
                                         <ArrowUpRight className="w-4 h-4" />
                                       </Button>
@@ -1042,7 +1042,7 @@ const Dashboard = () => {
                                         variant="ghost"
                                         onClick={() => copySignupLink(event)}
                                         title="Copy Signup Link"
-                                        className="h-8 px-2 text-white/50 hover:text-foreground hover:bg-white/10"
+                                        className="h-8 px-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                                       >
                                         <Copy className="w-4 h-4" />
                                       </Button>
@@ -1053,7 +1053,7 @@ const Dashboard = () => {
                                   <div className="flex items-center space-x-2">
                                     {!isPastEvent(event) && (
                                       <>
-                                        <div className="w-px h-6 bg-white/10 mx-1"></div>
+                                        <div className="w-px h-6 bg-gray-200 mx-1"></div>
                                         <div className="flex items-center space-x-2">
                                           <Switch
                                             checked={event.is_public !== false}
@@ -1094,7 +1094,7 @@ const Dashboard = () => {
                                             }}
                                             disabled={!hasEditPermission(event)}
                                           />
-                                          <span className="text-xs text-white/50 whitespace-nowrap">
+                                          <span className="text-xs text-gray-600 whitespace-nowrap">
                                             {event.is_public !== false ? 'Public' : 'Private'}
                                           </span>
                                         </div>
@@ -1105,7 +1105,7 @@ const Dashboard = () => {
                                       variant="ghost"
                                       onClick={() => setDeleteDialog({ isOpen: true, event })}
                                       title="Delete Event"
-                                      className="h-8 px-2 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                      className="h-8 px-2 text-red-600 hover:text-red-700 hover:bg-red-50"
                                     >
                                       <Trash2 className="w-4 h-4" />
                                     </Button>
@@ -1131,19 +1131,19 @@ const Dashboard = () => {
       <Dialog open={deleteDialog.isOpen} onOpenChange={(open) => setDeleteDialog({ isOpen: open, event: deleteDialog.event })}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-red-300">Delete Event?</DialogTitle>
-            <DialogDescription className="text-white/50">
+            <DialogTitle className="text-red-800">Delete Event?</DialogTitle>
+            <DialogDescription className="text-gray-600">
               This will move "{deleteDialog.event?.title}" to recently deleted. 
               You can recover it within 30 days, or it will be permanently removed.
             </DialogDescription>
             {deleteDialog.event && (
               <div className="mt-2">
-                <span className="text-sm text-white/50">Event status: </span>
+                <span className="text-sm text-gray-600">Event status: </span>
                 <Badge 
                   variant="secondary" 
                   className={deleteDialog.event.status === 'published' 
-                    ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25 ml-2" 
-                    : "bg-amber-500/15 text-amber-300 border-amber-500/25 ml-2"
+                    ? "bg-green-100 text-green-800 border-green-200 ml-2" 
+                    : "bg-yellow-100 text-yellow-800 border-yellow-200 ml-2"
                   }
                 >
                   {deleteDialog.event.status === 'published' ? 'Published' : 'Draft'}
@@ -1155,7 +1155,7 @@ const Dashboard = () => {
             <Button
               variant="outline"
               onClick={() => setDeleteDialog({ isOpen: false, event: null })}
-              className="flex-1 border-white/15 text-white/70 hover:bg-white/5"
+              className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
             >
               Cancel
             </Button>

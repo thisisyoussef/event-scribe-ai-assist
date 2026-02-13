@@ -13,7 +13,7 @@ const EventHeader = ({ event }: EventHeaderProps) => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="bg-gradient-to-r from-navy-800 to-navy-900 text-white">
+    <div className="bg-gradient-to-r from-umma-600 to-umma-700 text-white">
       <div className="container mx-auto px-4 py-2">
         {/* Logo only header */}
         <div className="flex justify-center mb-2">

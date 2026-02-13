@@ -158,17 +158,17 @@ const CheckInDialog: React.FC<CheckInDialogProps> = ({
               id="volunteer-name"
               value={volunteer.name}
               disabled
-              className="bg-background"
+              className="bg-gray-50"
             />
           </div>
-
+          
           <div>
             <Label htmlFor="volunteer-phone">Phone</Label>
             <Input
               id="volunteer-phone"
               value={volunteer.phone}
               disabled
-              className="bg-background"
+              className="bg-gray-50"
             />
           </div>
 
@@ -333,7 +333,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
               }}
               placeholder="e.g., 'Running late', 'Left early', 'Special instructions'..."
               rows={isMobile ? 4 : 5}
-              className="resize-none text-[15px] rounded-2xl border border-[#e6e2d8] px-4 py-3 bg-white/95 shadow-[inset_0_1px_0_rgba(0,0,0,0.02),0_8px_24px_rgba(0,0,0,0.04)] focus:border-gold-400 focus:ring-2 focus:ring-gold-400/20 focus:ring-offset-0"
+              className="resize-none text-[15px] rounded-2xl border border-[#e6e2d8] px-4 py-3 bg-white/95 shadow-[inset_0_1px_0_rgba(0,0,0,0.02),0_8px_24px_rgba(0,0,0,0.04)] focus:border-[#5c5b2f] focus:ring-2 focus:ring-[#5c5b2f]/25 focus:ring-offset-0"
             />
           </div>
         </div>
@@ -343,7 +343,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={onUpdateNotes} className="bg-gold-400 hover:bg-gold-300">
+            <Button onClick={onUpdateNotes} className="bg-[#5c5b2f] hover:bg-[#4a4a28]">
               Save Notes
             </Button>
           </div>
@@ -353,7 +353,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
           <div className="flex-shrink-0 pt-3 pb-1">
             <Button
               onClick={onUpdateNotes}
-              className="w-full bg-gold-400 hover:bg-gold-300 text-white rounded-full px-6 py-3.5 shadow-xl font-medium text-[15px]"
+              className="w-full bg-[#5c5b2f] hover:bg-[#4a4a28] text-white rounded-full px-6 py-3.5 shadow-xl font-medium text-[15px]"
             >
               Save Notes
             </Button>
@@ -782,7 +782,7 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           {/* Search Bar */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 sm:left-3 top-1/2 transform -translate-y-1/2 text-white/40 w-4 h-4 sm:w-5 sm:h-5 z-10" />
+            <Search className="absolute left-3 sm:left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4 sm:w-5 sm:h-5 z-10" />
             {/* iOS Passwords bar trap: offscreen username/password fields so Safari doesn't suggest passwords for the search input */}
             <div
               aria-hidden="true"
@@ -795,7 +795,7 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 sm:pl-12 h-9 sm:h-10 rounded-xl bg-white/5 backdrop-blur-md border-white/10 text-sm w-full"
+              className="pl-10 sm:pl-12 h-9 sm:h-10 rounded-xl bg-white/70 backdrop-blur-md border-umma-500 text-sm w-full"
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="none"
@@ -809,18 +809,18 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
           </div>
 
           {/* Combined Statistics and Filter Buttons */}
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md p-1 ring-1 ring-white/10 w-full sm:w-auto justify-center sm:justify-start shrink-0">
-          <Button variant={statusFilter === 'all' ? 'default' : 'ghost'} size="sm" onClick={() => setStatusFilter('all')} className={`rounded-full text-xs sm:text-sm px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 ${statusFilter==='all' ? 'bg-gold-400 text-navy-800 hover:bg-gold-300 shadow-sm' : 'text-white/70 hover:bg-white/10/80'}`}>
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/60 backdrop-blur-md p-1 ring-1 ring-white/60 w-full sm:w-auto justify-center sm:justify-start shrink-0">
+          <Button variant={statusFilter === 'all' ? 'default' : 'ghost'} size="sm" onClick={() => setStatusFilter('all')} className={`rounded-full text-xs sm:text-sm px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 ${statusFilter==='all' ? 'bg-umma-600 text-white hover:bg-umma-700 shadow-sm' : 'text-stone-700 hover:bg-stone-100/80'}`}>
             <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="font-semibold">{totalVolunteers}</span>
             <span>Total</span>
           </Button>
-          <Button variant={statusFilter === 'not-in' ? 'default' : 'ghost'} size="sm" onClick={() => setStatusFilter('not-in')} className={`rounded-full text-xs sm:text-sm px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 ${statusFilter==='not-in' ? 'bg-gold-400 text-navy-800 hover:bg-gold-300 shadow-sm' : 'text-white/70 hover:bg-white/10/80'}`}>
+          <Button variant={statusFilter === 'not-in' ? 'default' : 'ghost'} size="sm" onClick={() => setStatusFilter('not-in')} className={`rounded-full text-xs sm:text-sm px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 ${statusFilter==='not-in' ? 'bg-umma-600 text-white hover:bg-umma-700 shadow-sm' : 'text-stone-700 hover:bg-stone-100/80'}`}>
             <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="font-semibold">{notCheckedInCount}</span>
             <span>Not In</span>
           </Button>
-          <Button variant={statusFilter === 'in' ? 'default' : 'ghost'} size="sm" onClick={() => setStatusFilter('in')} className={`rounded-full text-xs sm:text-sm px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 ${statusFilter==='in' ? 'bg-gold-400 text-navy-800 hover:bg-gold-300 shadow-sm' : 'text-white/70 hover:bg-white/10/80'}`}>
+          <Button variant={statusFilter === 'in' ? 'default' : 'ghost'} size="sm" onClick={() => setStatusFilter('in')} className={`rounded-full text-xs sm:text-sm px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 ${statusFilter==='in' ? 'bg-umma-600 text-white hover:bg-umma-700 shadow-sm' : 'text-stone-700 hover:bg-stone-100/80'}`}>
             <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span className="font-semibold">{checkedInCount}</span>
             <span>Checked In</span>
@@ -837,18 +837,18 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
               const isRunningLate = checkInStatus.status === 'running-late';
               return (
               <div key={volunteer.id} className={`relative flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl backdrop-blur-md border transition-all duration-150 ${
-                isIn
-                  ? 'bg-gold-400/20 border-gold-400/30 text-white hover:border-gold-400/40'
+                isIn 
+                  ? 'bg-umma-600 border-umma-600 text-white hover:border-umma-700' 
                   : isRunningLate
-                  ? 'bg-amber-500/10 border-amber-500/20 hover:bg-amber-500/15'
-                  : 'bg-white/5 border-white/10 hover:bg-white/10'
+                  ? 'bg-amber-50/60 border-amber-300/60 hover:bg-amber-100/70'
+                  : 'bg-white/70 border-umma-500 hover:bg-white/80'
               }`}>
                   <div className="flex items-center gap-2.5 min-w-0">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback className="text-xs font-medium bg-white/5 text-gold-300">{getInitials(volunteer.name)}</AvatarFallback>
+                      <AvatarFallback className="text-xs font-medium bg-white text-umma-700">{getInitials(volunteer.name)}</AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
-                    <div className={`font-medium text-sm sm:text-base truncate flex items-center gap-1.5 sm:gap-2 flex-wrap ${isIn ? 'text-white' : 'text-foreground'}`}>
+                    <div className={`font-medium text-sm sm:text-base truncate flex items-center gap-1.5 sm:gap-2 flex-wrap ${isIn ? 'text-white' : 'text-stone-900'}`}>
                       {volunteer.name}
                       <button
                         onClick={() => {
@@ -858,13 +858,13 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
                             description: `${volunteer.name}'s phone number copied to clipboard`,
                           });
                         }}
-                        className={`${isIn ? 'text-white/90 hover:text-white' : 'text-white/60 hover:text-white/80'} text-xs sm:text-sm font-medium cursor-pointer no-underline`}
+                        className={`${isIn ? 'text-white/90 hover:text-white' : 'text-umma-700 hover:text-umma-800'} text-xs sm:text-sm font-medium cursor-pointer no-underline`}
                         title={`Click to copy ${volunteer.name}'s phone number`}
                       >
                         {volunteer.phone}
                       </button>
                     </div>
-                    <div className={`text-xs truncate ${isIn ? 'text-white/80' : 'text-white/40'}`}>
+                    <div className={`text-xs truncate ${isIn ? 'text-white/80' : 'text-stone-500'}`}>
                         {roleInfo?.role_label || 'Unknown Role'}
                       </div>
                     </div>
@@ -876,7 +876,7 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
                       {checkInStatus.status !== 'not-checked-in' && (
                         <span className={`${
                           checkInStatus.status === 'checked-in' 
-                            ? 'rounded-full px-3 py-1 text-xs font-medium shadow-sm transition-all duration-200 bg-white/5 text-gold-300 border border-gold-400/20' 
+                            ? 'rounded-full px-3 py-1 text-xs font-medium shadow-sm transition-all duration-200 bg-white text-umma-700 border border-umma-300' 
                             : checkInStatus.status === 'running-late' 
                             ? 'warning-pill' 
                             : 'danger-pill'
@@ -888,7 +888,7 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
                         </span>
                       )}
                       {isIn && volunteer.checked_in_at && (
-                        <span className={`text-xs sm:text-sm ${isIn ? 'text-white/80' : 'text-white/40'}`}>{formatTimeInMichigan(volunteer.checked_in_at)}</span>
+                        <span className={`text-xs sm:text-sm ${isIn ? 'text-white/80' : 'text-stone-500'}`}>{formatTimeInMichigan(volunteer.checked_in_at)}</span>
                       )}
                     </div>
 
@@ -901,7 +901,7 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
                             <span className="sm:hidden">In</span>
                           </Button>
                           {checkInStatus.status !== 'running-late' && (
-                            <Button size="sm" variant="outline" onClick={() => handleRunningLate(volunteer)} disabled={isCheckingIn || isCheckingOut} className="flex-1 sm:flex-none rounded-full text-amber-300 border-amber-500/20 hover:bg-amber-500/10 text-xs sm:text-sm justify-center">
+                            <Button size="sm" variant="outline" onClick={() => handleRunningLate(volunteer)} disabled={isCheckingIn || isCheckingOut} className="flex-1 sm:flex-none rounded-full text-amber-700 border-amber-300 hover:bg-amber-50 text-xs sm:text-sm justify-center">
                               <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-1" />
                               <span className="hidden sm:inline">Running Late</span>
                               <span className="sm:hidden">Late</span>
@@ -922,17 +922,17 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
                           size="sm" 
                           onClick={() => openNotesDialog(volunteer)} 
                           className={`w-full sm:w-auto rounded-full text-xs sm:text-sm justify-center ${
-                            volunteer.check_in_notes
-                              ? 'bg-gold-400/10 border-gold-400/20 text-gold-300 hover:bg-gold-400/15 hover:border-gold-400/30 shadow-sm font-medium'
-                              : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/20'
+                            volunteer.check_in_notes 
+                              ? 'bg-umma-100 border-umma-300 text-umma-800 hover:bg-umma-200 hover:border-umma-400 shadow-sm font-medium' 
+                              : 'bg-white border-umma-200 text-umma-700 hover:bg-umma-50 hover:border-umma-300'
                           }`}
                         >
-                          <FileText className={`w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-1 ${volunteer.check_in_notes ? 'text-gold-300' : 'text-white/60'}`} />
+                          <FileText className={`w-3.5 h-3.5 sm:w-4 sm:h-4 sm:mr-1 ${volunteer.check_in_notes ? 'text-umma-800' : 'text-umma-700'}`} />
                           <span className="hidden sm:inline">Notes</span>
                           <span className="sm:hidden">Notes</span>
                         </Button>
                         {volunteer.check_in_notes && (
-                          <span className="absolute -top-1.5 -right-1.5 h-4 w-4 bg-gold-400 rounded-full border-2 border-navy-800 shadow-md flex items-center justify-center">
+                          <span className="absolute -top-1.5 -right-1.5 h-4 w-4 bg-umma-600 rounded-full border-2 border-white shadow-md flex items-center justify-center">
                             <span className="text-[8px] text-white font-bold">!</span>
                           </span>
                         )}
@@ -945,7 +945,7 @@ const CheckInManager: React.FC<CheckInManagerProps> = ({
           </div>
 
           {filteredVolunteers.length === 0 && (
-            <div className="text-center py-8 text-white/40">
+            <div className="text-center py-8 text-gray-500">
               {searchQuery && searchQuery.trim() 
                 ? "No volunteers found matching your search."
                 : "No volunteers found."}

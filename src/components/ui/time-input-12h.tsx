@@ -43,7 +43,7 @@ export function TimeInput12h({ value, onChange, disabled, className, id }: TimeI
   return (
     <div className={cn("flex items-center gap-2 md:gap-1.5", className)} id={id}>
       <Select value={hour12} onValueChange={handleHourChange} disabled={disabled}>
-        <SelectTrigger className="flex-1 md:w-20 h-14 md:h-11 text-base md:text-sm font-medium border md:border border-white/10 md:border-input rounded-2xl md:rounded-lg">
+        <SelectTrigger className="flex-1 md:w-20 h-14 md:h-11 text-base md:text-sm font-medium border md:border border-stone-200 md:border-input rounded-2xl md:rounded-lg">
           <SelectValue placeholder="HH" />
         </SelectTrigger>
         <SelectContent>
@@ -53,10 +53,10 @@ export function TimeInput12h({ value, onChange, disabled, className, id }: TimeI
         </SelectContent>
       </Select>
 
-      <span className="text-white/30 md:text-gold-400 text-xl md:text-base font-bold">:</span>
+      <span className="text-stone-400 md:text-umma-600 text-xl md:text-base font-bold">:</span>
 
       <Select value={minute} onValueChange={handleMinuteChange} disabled={disabled}>
-        <SelectTrigger className="flex-1 md:w-20 h-14 md:h-11 text-base md:text-sm font-medium border md:border border-white/10 md:border-input rounded-2xl md:rounded-lg">
+        <SelectTrigger className="flex-1 md:w-20 h-14 md:h-11 text-base md:text-sm font-medium border md:border border-stone-200 md:border-input rounded-2xl md:rounded-lg">
           <SelectValue placeholder="MM" />
         </SelectTrigger>
         <SelectContent>
@@ -67,7 +67,7 @@ export function TimeInput12h({ value, onChange, disabled, className, id }: TimeI
       </Select>
 
       <Select value={ampm} onValueChange={(v) => handleAmPmChange(v as "AM" | "PM")} disabled={disabled}>
-        <SelectTrigger className="w-[72px] md:w-20 h-14 md:h-11 text-base md:text-sm font-semibold border md:border border-white/10 md:border-input rounded-2xl md:rounded-lg">
+        <SelectTrigger className="w-[72px] md:w-20 h-14 md:h-11 text-base md:text-sm font-semibold border md:border border-stone-200 md:border-input rounded-2xl md:rounded-lg">
           <SelectValue placeholder="AM" />
         </SelectTrigger>
         <SelectContent>

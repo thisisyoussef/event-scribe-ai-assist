@@ -214,7 +214,7 @@ export default function Templates() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
       
       <main className="container mx-auto px-4 py-6 md:py-8">
@@ -222,10 +222,10 @@ export default function Templates() {
         <div className="mb-8">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 tracking-tight">
                 Event Templates
               </h1>
-              <p className="text-white/50 text-lg leading-relaxed">
+              <p className="text-gray-600 text-lg leading-relaxed">
                 Create, manage, and use reusable event templates
               </p>
             </div>
@@ -282,7 +282,7 @@ export default function Templates() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleEditTemplate(template)}
-                        className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                         title="Edit template"
                       >
                         <Edit className="h-4 w-4" />
@@ -291,7 +291,7 @@ export default function Templates() {
                         variant="outline"
                         size="sm"
                         onClick={() => softDeleteTemplate(template.id)}
-                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
                         title="Move template to recently deleted"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -309,9 +309,9 @@ export default function Templates() {
         {!isLoading && templates.length === 0 && (
           <Card className="text-center py-12">
             <CardContent>
-              <FileText className="h-12 w-12 text-white/30 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">No templates yet</h3>
-              <p className="text-white/50 mb-4">
+              <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No templates yet</h3>
+              <p className="text-gray-600 mb-4">
                 Create your first event template to get started
               </p>
               <Button onClick={() => setIsCreateDialogOpen(true)}>

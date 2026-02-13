@@ -18,9 +18,9 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
             <div
                 ref={ref}
                 className={cn(
-                    "rounded-3xl bg-white/5/50 border border-white/10/50 shadow-sm",
+                    "rounded-3xl bg-stone-50/50 border border-stone-200/50 shadow-sm",
                     "p-3 md:p-6 transition-all duration-200",
-                    collapsible && !isExpanded && "py-3 md:py-4 hover:bg-white/5/80",
+                    collapsible && !isExpanded && "py-3 md:py-4 hover:bg-stone-50/80",
                     className
                 )}
                 {...props}
@@ -36,18 +36,18 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
                         onClick={collapsible ? () => setIsExpanded(!isExpanded) : undefined}
                     >
                         {icon && (
-                            <div className="text-gold-400">
+                            <div className="text-umma-500">
                                 {icon}
                             </div>
                         )}
                         <div className="flex-1 min-w-0">
                             {title && (
-                                <h3 className="text-sm md:text-xs font-semibold uppercase tracking-wider text-white/40">
+                                <h3 className="text-sm md:text-xs font-semibold uppercase tracking-wider text-stone-500">
                                     {title}
                                 </h3>
                             )}
                             {description && (
-                                <p className="text-sm text-white/40 mt-0.5">
+                                <p className="text-sm text-stone-500 mt-0.5">
                                     {description}
                                 </p>
                             )}
@@ -55,7 +55,7 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
                         {collapsible && (
                             <div className="flex items-center gap-1">
                                 {!isExpanded && (
-                                    <span className="text-xs text-gold-400 font-medium mr-1 hidden md:inline">
+                                    <span className="text-xs text-umma-600 font-medium mr-1 hidden md:inline">
                                         Expand
                                     </span>
                                 )}
@@ -63,8 +63,8 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
                                     className={cn(
                                         "w-8 h-8 md:w-7 md:h-7 rounded-full flex items-center justify-center transition-all",
                                         isExpanded
-                                            ? "bg-white/15/50 text-white/40"
-                                            : "bg-gold-400/10 text-gold-400"
+                                            ? "bg-stone-200/50 text-stone-500"
+                                            : "bg-umma-100 text-umma-600"
                                     )}
                                 >
                                     {isExpanded ? (

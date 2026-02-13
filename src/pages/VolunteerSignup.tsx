@@ -428,16 +428,16 @@ const VolunteerSignup = () => {
   return (
     <>
       <SignupPageMeta event={event} />
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gray-50">
         {/* Top Bar */}
-        <div className="bg-navy-800/60 backdrop-blur-xl border-b border-white/10 sticky top-0 z-40">
+        <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
           <div className="container mx-auto px-4 py-3">
             <div className="flex items-center justify-between">
               {/* <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => window.history.back()}
-                className="text-white/50 hover:text-gold-300 hover:bg-white/10"
+                className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Events
@@ -448,14 +448,14 @@ const VolunteerSignup = () => {
         </div>
 
         {/* Hero Section */}
-        <div className="bg-navy-800/60 backdrop-blur-xl border-b border-white/10">
+        <div className="bg-white border-b border-gray-200">
           <div className="container mx-auto px-4 py-4">
             {/* Mobile Layout */}
             <div className="md:hidden space-y-4">
               {/* Event Header */}
               <div className="flex items-start gap-3">
                 {/* Event Avatar */}
-                <div className="w-10 h-10 bg-gold-400 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                <div className="w-10 h-10 bg-[#5c5b2f] rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
                   <Calendar className="w-5 h-5 text-white" />
                 </div>
                 
@@ -463,18 +463,18 @@ const VolunteerSignup = () => {
                 <div className="flex-1 min-w-0">
                   {/* Event Title */}
                   <div className="flex items-center gap-2 mb-2">
-                    <h1 className="text-lg font-bold text-foreground leading-tight">
+                    <h1 className="text-lg font-bold text-gray-900 leading-tight">
                       {event.title}
                     </h1>
                     {event.is_public === false && (
-                      <Badge variant="outline" className="text-xs bg-amber-500/15 text-amber-300 border-amber-500/20">
+                      <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">
                         Private
                       </Badge>
                     )}
                   </div>
                   
                   {/* Event Meta */}
-                  <div className="space-y-1 text-white/50">
+                  <div className="space-y-1 text-gray-600">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-3 h-3 flex-shrink-0" />
                       <span className="text-sm font-medium">
@@ -493,40 +493,40 @@ const VolunteerSignup = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsMobileMenuExpanded(!isMobileMenuExpanded)}
-                  className="text-white/30 hover:text-white/50 p-2 h-8 w-8 flex-shrink-0"
+                  className="text-gray-400 hover:text-gray-600 p-2 h-8 w-8 flex-shrink-0"
                 >
                   {isMobileMenuExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                 </Button>
               </div>
 
               {/* Event Stats - Mobile */}
-              <div className="bg-background rounded-lg p-4">
+              <div className="bg-gray-50 rounded-lg p-4">
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gold-400">{totalRoles}</div>
-                    <div className="text-sm text-white/50 font-medium">Roles</div>
+                    <div className="text-2xl font-bold text-[#5c5b2f]">{totalRoles}</div>
+                    <div className="text-sm text-gray-600 font-medium">Roles</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gold-400">{totalVolunteers}</div>
-                    <div className="text-sm text-white/50 font-medium">Volunteers</div>
+                    <div className="text-2xl font-bold text-[#5c5b2f]">{totalVolunteers}</div>
+                    <div className="text-sm text-gray-600 font-medium">Volunteers</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gold-400">{totalSlots - totalVolunteers}</div>
-                    <div className="text-sm text-white/50 font-medium">Open Spots</div>
+                    <div className="text-2xl font-bold text-[#5c5b2f]">{totalSlots - totalVolunteers}</div>
+                    <div className="text-sm text-gray-600 font-medium">Open Spots</div>
                   </div>
                 </div>
               </div>
 
               {/* Collapsible Mobile Menu */}
               {isMobileMenuExpanded && (
-                <div className="space-y-4 bg-background rounded-lg p-4 animate-in slide-in-from-top-2 duration-200">
+                <div className="space-y-4 bg-gray-50 rounded-lg p-4 animate-in slide-in-from-top-2 duration-200">
                   {/* Action Buttons - Mobile */}
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={copySignupLink}
-                      className="flex-1 border-white/15 focus:border-gold-400 focus:ring-gold-400/20 text-white/50 hover:text-gold-300 hover:bg-white/5 h-10"
+                      className="flex-1 border-gray-300 focus:border-[#5c5b2f] focus:ring-[#5c5b2f]/20 text-gray-600 hover:text-gray-900 hover:bg-gray-50 h-10"
                     >
                       <Copy className="w-4 h-4 mr-2" />
                       Copy Link
@@ -535,22 +535,22 @@ const VolunteerSignup = () => {
                       variant="outline"
                       size="sm"
                       onClick={shareSignupLink}
-                      className="flex-1 border-white/15 focus:border-gold-400 focus:ring-gold-400/20 text-white/50 hover:text-gold-300 hover:bg-white/5 h-10"
+                      className="flex-1 border-gray-300 focus:border-[#5c5b2f] focus:ring-[#5c5b2f]/20 text-gray-600 hover:text-gray-900 hover:bg-gray-50 h-10"
                     >
                       <Share2 className="w-4 h-4 mr-2" />
                       Share
                     </Button>
-                    <AddToCalendar event={event} role={null} className="text-white/50 hover:text-gold-300 hover:bg-white/10 h-10 px-3" />
+                    <AddToCalendar event={event} role={null} className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 h-10 px-3" />
                   </div>
 
                   {/* Search */}
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/30" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
                       placeholder="Search roles..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 border-white/15 focus:border-gold-400 focus:ring-gold-400/20 h-11 text-left placeholder:text-gold-400/70"
+                      className="pl-10 border-gray-300 focus:border-[#5c5b2f] focus:ring-[#5c5b2f]/20 h-11 text-left placeholder:text-[#5c5b2f]/70"
                       autoComplete="off"
                     />
                   </div>
@@ -559,7 +559,7 @@ const VolunteerSignup = () => {
                   <div className="flex items-center gap-3">
                     {/* Sort Filter */}
                     <div className="flex items-center gap-2 flex-1">
-                      <Label className="text-sm font-medium text-white/70 whitespace-nowrap">Sort:</Label>
+                      <Label className="text-sm font-medium text-gray-700 whitespace-nowrap">Sort:</Label>
                       <div className="flex-1">
                         <CustomSelect
                           options={[
@@ -575,15 +575,15 @@ const VolunteerSignup = () => {
                     </div>
                     
                     {/* View Toggle */}
-                    <div className="flex items-center gap-1 bg-white/10 rounded-lg p-1" title="View preference is saved in your browser">
+                    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1" title="View preference is saved in your browser">
                       <Button
                         variant={viewMode === "list" ? "default" : "ghost"}
                         size="sm"
                         onClick={() => handleViewModeChange("list")}
                         className={`h-8 px-3 ${
                           viewMode === "list" 
-                            ? "bg-gold-400 text-white shadow-sm" 
-                            : "text-white/50 hover:text-gold-300 hover:bg-white/5"
+                            ? "bg-[#5c5b2f] text-white shadow-sm" 
+                            : "text-gray-600 hover:text-gray-900 hover:bg-white"
                         }`}
                       >
                         <List className="w-4 h-4" />
@@ -594,8 +594,8 @@ const VolunteerSignup = () => {
                         onClick={() => handleViewModeChange("cards")}
                         className={`h-8 px-3 ${
                           viewMode === "cards" 
-                            ? "bg-gold-400 text-white shadow-sm" 
-                            : "text-white/50 hover:text-gold-300 hover:bg-white/5"
+                            ? "bg-[#5c5b2f] text-white shadow-sm" 
+                            : "text-gray-600 hover:text-gray-900 hover:bg-white"
                         }`}
                       >
                         <Grid3X3 className="w-4 h-4" />
@@ -612,7 +612,7 @@ const VolunteerSignup = () => {
               <div className="max-w-2xl">
                 <div className="flex items-start gap-4">
                   {/* Event Avatar */}
-                  <div className="w-12 h-12 bg-gold-400 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
+                  <div className="w-12 h-12 bg-[#5c5b2f] rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
                     <Calendar className="w-6 h-6 text-white" />
                   </div>
                   
@@ -620,18 +620,18 @@ const VolunteerSignup = () => {
                   <div className="flex-1">
                     {/* Event Title */}
                     <div className="flex items-center gap-3 mb-2">
-                      <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
+                      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
                         {event.title}
                       </h1>
                       {event.is_public === false && (
-                        <Badge variant="outline" className="text-sm bg-amber-500/15 text-amber-300 border-amber-500/20">
+                        <Badge variant="outline" className="text-sm bg-amber-50 text-amber-700 border-amber-200">
                           Private
                         </Badge>
                       )}
                     </div>
                     
                     {/* Event Meta */}
-                    <div className="flex flex-col sm:flex-row items-start gap-2 mb-3 text-white/50">
+                    <div className="flex flex-col sm:flex-row items-start gap-2 mb-3 text-gray-600">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
                         <span className="text-sm md:text-base font-medium">
@@ -647,16 +647,16 @@ const VolunteerSignup = () => {
                     {/* Event Stats */}
                     <div className="grid grid-cols-3 gap-4 max-w-sm">
                       <div className="text-left">
-                        <div className="text-xl font-bold text-gold-400">{totalRoles}</div>
-                        <div className="text-xs text-white/50">Roles</div>
+                        <div className="text-xl font-bold text-[#5c5b2f]">{totalRoles}</div>
+                        <div className="text-xs text-gray-600">Roles</div>
                       </div>
                       <div className="text-left">
-                        <div className="text-xl font-bold text-gold-400">{totalVolunteers}</div>
-                        <div className="text-xs text-white/50">Volunteers</div>
+                        <div className="text-xl font-bold text-[#5c5b2f]">{totalVolunteers}</div>
+                        <div className="text-xs text-gray-600">Volunteers</div>
                       </div>
                       <div className="text-left">
-                        <div className="text-xl font-bold text-gold-400">{totalSlots - totalVolunteers}</div>
-                        <div className="text-xs text-white/50">Open Spots</div>
+                        <div className="text-xl font-bold text-[#5c5b2f]">{totalSlots - totalVolunteers}</div>
+                        <div className="text-xs text-gray-600">Open Spots</div>
                       </div>
                     </div>
                   </div>
@@ -670,7 +670,7 @@ const VolunteerSignup = () => {
                     variant="outline"
                     size="sm"
                     onClick={copySignupLink}
-                    className="border-white/15 focus:border-gold-400 focus:ring-gold-400/20 text-white/50 hover:text-gold-300 hover:bg-white/5"
+                    className="border-gray-300 focus:border-[#5c5b2f] focus:ring-[#5c5b2f]/20 text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                   >
                     <Copy className="w-4 h-4 mr-2" />
                     Copy Link
@@ -679,22 +679,22 @@ const VolunteerSignup = () => {
                     variant="outline"
                     size="sm"
                     onClick={shareSignupLink}
-                    className="border-white/15 focus:border-gold-400 focus:ring-gold-400/20 text-white/50 hover:text-gold-300 hover:bg-white/5"
+                    className="border-gray-300 focus:border-[#5c5b2f] focus:ring-[#5c5b2f]/20 text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                   >
                     <Share2 className="w-4 h-4 mr-2" />
                     Share
                   </Button>
-                  <AddToCalendar event={event} role={null} className="text-white/50 hover:text-gold-300 hover:bg-white/10" />
+                  <AddToCalendar event={event} role={null} className="text-gray-600 hover:text-gray-900 hover:bg-gray-100" />
                 </div>
                 
                 {/* Search */}
                 <div className="relative w-80">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/30" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
                     placeholder="Search roles..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 border-white/15 focus:border-gold-400 focus:ring-gold-400/20 h-10 text-left placeholder:text-gold-400/70"
+                    className="pl-10 border-gray-300 focus:border-[#5c5b2f] focus:ring-[#5c5b2f]/20 h-10 text-left placeholder:text-[#5c5b2f]/70"
                     autoComplete="off"
                   />
                 </div>
@@ -704,7 +704,7 @@ const VolunteerSignup = () => {
                   
                    {/* Sort Filter */}
                    <div className="flex items-center gap-2">
-                     <Label className="text-sm font-medium text-white/70 whitespace-nowrap">Sort:</Label>
+                     <Label className="text-sm font-medium text-gray-700 whitespace-nowrap">Sort:</Label>
                      <div className="w-44">
                        <CustomSelect
                          options={[
@@ -720,15 +720,15 @@ const VolunteerSignup = () => {
                    </div>
                   
                   {/* View Toggle */}
-                  <div className="flex items-center gap-1 bg-white/10 rounded-lg p-1" title="View preference is saved in your browser">
+                  <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1" title="View preference is saved in your browser">
                     <Button
                       variant={viewMode === "list" ? "default" : "ghost"}
                       size="sm"
                       onClick={() => handleViewModeChange("list")}
                       className={`h-8 px-3 ${
                         viewMode === "list" 
-                          ? "bg-gold-400 text-white shadow-sm" 
-                          : "text-white/50 hover:text-gold-300 hover:bg-white/5"
+                          ? "bg-[#5c5b2f] text-white shadow-sm" 
+                          : "text-gray-600 hover:text-gray-900 hover:bg-white"
                       }`}
                     >
                       <List className="w-4 h-4 mr-1" />
@@ -740,8 +740,8 @@ const VolunteerSignup = () => {
                       onClick={() => handleViewModeChange("cards")}
                       className={`h-8 px-3 ${
                         viewMode === "cards" 
-                          ? "bg-gold-400 text-white shadow-sm" 
-                          : "text-white/50 hover:text-gold-300 hover:bg-white/5"
+                          ? "bg-[#5c5b2f] text-white shadow-sm" 
+                          : "text-gray-600 hover:text-gray-900 hover:bg-white"
                       }`}
                     >
                       <Grid3X3 className="w-4 h-4 mr-1" />
@@ -760,9 +760,9 @@ const VolunteerSignup = () => {
           {/* Role List - Conditional Rendering */}
           {viewMode === "list" ? (
             /* Compact List View */
-            <div className="bg-white/5 rounded-xl shadow-sm border border-white/10 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             {/* Table Header */}
-            <div className="hidden md:grid md:grid-cols-12 gap-4 px-6 py-3 bg-background border-b border-white/10 text-xs font-medium text-white/40 uppercase tracking-wider">
+            <div className="hidden md:grid md:grid-cols-12 gap-4 px-6 py-3 bg-gray-50 border-b border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider">
               <div className="col-span-2">Time</div>
               <div className="col-span-3">Role</div>
               <div className="col-span-2">Point of Contact</div>
@@ -772,7 +772,7 @@ const VolunteerSignup = () => {
             </div>
 
             {/* Role Rows */}
-            <div className="divide-y divide-white/5">
+            <div className="divide-y divide-gray-100">
               {sortedAndFilteredRoles.map((role, index) => {
                 const volunteers = getVolunteersForRole(role.id);
                 const totalSlots = (role.slots_brother || 0) + (role.slots_sister || 0) + (role.slots_flexible || 0);
@@ -782,16 +782,16 @@ const VolunteerSignup = () => {
                 const sistersSignedUp = volunteers.filter(v => v.gender === 'sister').length;
 
                 return (
-                  <div key={role.id} className={`group hover:bg-white/5 transition-colors ${index % 2 === 0 ? 'bg-white/5' : 'bg-background/30'}`}>
+                  <div key={role.id} className={`group hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
                     {/* Main Row - Desktop */}
                     <div className="hidden md:grid md:grid-cols-12 gap-4 px-6 py-4 items-center">
                       {/* Time Column */}
                       <div className="col-span-2">
-                        <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                          <Clock className="w-4 h-4 text-white/30" />
+                        <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
+                          <Clock className="w-4 h-4 text-gray-400" />
                           <span>{formatTime24To12(role.shift_start)}</span>
                         </div>
-                        <div className="text-xs text-white/40 mt-1">
+                        <div className="text-xs text-gray-500 mt-1">
                           {formatTime24To12(role.shift_end)}
                         </div>
                       </div>
@@ -800,11 +800,11 @@ const VolunteerSignup = () => {
                       <div className="col-span-3">
                         <div className="flex items-center gap-3">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-foreground text-sm mb-1">
+                            <h3 className="font-semibold text-gray-900 text-sm mb-1">
                               {role.role_label}
                             </h3>
                             {role.notes && (
-                              <p className="text-xs text-white/40 line-clamp-1">
+                              <p className="text-xs text-gray-500 line-clamp-1">
                                 {role.notes}
                               </p>
                             )}
@@ -813,8 +813,8 @@ const VolunteerSignup = () => {
                             variant="ghost"
                             size="sm"
                             onClick={() => toggleRoleExpansion(role.id)}
-                            className="text-white/30 hover:text-white/50 p-1 h-6 w-6 rounded-full border"
-                            style={{ borderColor: 'var(--gold-400, #d4a843)' }}
+                            className="text-gray-400 hover:text-gray-600 p-1 h-6 w-6 rounded-full border"
+                            style={{ borderColor: 'rgb(89, 89, 46)' }}
                           >
                             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                           </Button>
@@ -829,7 +829,7 @@ const VolunteerSignup = () => {
                               <Badge 
                                 key={poc.id}
                                 variant="outline" 
-                                className="text-xs bg-purple-500/15 text-purple-300 border-purple-500/20 cursor-pointer hover:bg-purple-500/20 transition-colors px-2 py-1"
+                                className="text-xs bg-purple-50 text-purple-700 border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors px-2 py-1"
                                 onClick={() => {
                                   if (poc.phone) {
                                     navigator.clipboard.writeText(poc.phone);
@@ -847,18 +847,18 @@ const VolunteerSignup = () => {
                             ))}
                           </div>
                         ) : (
-                          <span className="text-xs text-white/30">No POC assigned</span>
+                          <span className="text-xs text-gray-400">No POC assigned</span>
                         )}
                       </div>
 
                       {/* Spots Column */}
                       <div className="col-span-2">
-                        <div className="text-sm font-medium text-foreground">
+                        <div className="text-sm font-medium text-gray-900">
                           {totalSlots - remainingSlots} / {totalSlots}
                         </div>
-                        <div className="w-full bg-white/15 rounded-full h-1.5 mt-1 overflow-hidden">
+                        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-1 overflow-hidden">
                           <div 
-                            className="bg-gradient-to-r from-gold-400 to-gold-300 h-1.5 rounded-full transition-all duration-500 ease-out"
+                            className="bg-gradient-to-r from-[#5c5b2f] to-[#6b6a3a] h-1.5 rounded-full transition-all duration-500 ease-out"
                             style={{ width: `${totalSlots > 0 ? ((totalSlots - remainingSlots) / totalSlots) * 100 : 0}%` }}
                           />
                         </div>
@@ -870,8 +870,8 @@ const VolunteerSignup = () => {
                           variant={remainingSlots > 0 ? "default" : "secondary"}
                           className={`text-xs font-semibold px-2.5 py-1 ${
                             remainingSlots > 0 
-                              ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/20 shadow-sm" 
-                              : "bg-white/10 text-foreground border-white/10"
+                              ? "bg-green-100 text-green-800 border-green-200 shadow-sm" 
+                              : "bg-gray-100 text-gray-800 border-gray-200"
                           }`}
                         >
                           {remainingSlots > 0 ? `${remainingSlots} spots left` : "Full"}
@@ -891,7 +891,7 @@ const VolunteerSignup = () => {
                                 {remainingBrothers > 0 && (
                                   <Badge 
                                     variant="outline" 
-                                    className="text-xs bg-blue-500/10 text-blue-300 border-blue-500/20 px-1.5 py-0.5 h-5"
+                                    className="text-xs bg-blue-50 text-blue-700 border-blue-200 px-1.5 py-0.5 h-5"
                                   >
                                     <span className="hidden xl:inline">{remainingBrothers} Brother{remainingBrothers !== 1 ? 's' : ''}</span>
                                     <span className="xl:hidden">{remainingBrothers}B</span>
@@ -900,7 +900,7 @@ const VolunteerSignup = () => {
                                 {remainingSisters > 0 && (
                                   <Badge 
                                     variant="outline" 
-                                    className="text-xs bg-pink-500/15 text-pink-300 border-pink-500/20 px-1.5 py-0.5 h-5"
+                                    className="text-xs bg-pink-50 text-pink-700 border-pink-200 px-1.5 py-0.5 h-5"
                                   >
                                     <span className="hidden xl:inline">{remainingSisters} Sister{remainingSisters !== 1 ? 's' : ''}</span>
                                     <span className="xl:hidden">{remainingSisters}S</span>
@@ -909,7 +909,7 @@ const VolunteerSignup = () => {
                                 {remainingFlexible > 0 && (
                                   <Badge 
                                     variant="outline" 
-                                    className="text-xs bg-teal-500/15 text-teal-300 border-teal-500/20 px-1.5 py-0.5 h-5"
+                                    className="text-xs bg-teal-50 text-teal-700 border-teal-200 px-1.5 py-0.5 h-5"
                                   >
                                     <span className="hidden xl:inline">{remainingFlexible} Flexible</span>
                                     <span className="xl:hidden">{remainingFlexible}F</span>
@@ -929,8 +929,8 @@ const VolunteerSignup = () => {
                           size="sm"
                           className={`w-full ${
                             remainingSlots > 0 
-                              ? "bg-gold-400 hover:bg-gold-300 text-white" 
-                              : "bg-white/10 text-white/30 cursor-not-allowed"
+                              ? "bg-[#5c5b2f] hover:bg-[#4a4a28] text-white" 
+                              : "bg-gray-100 text-gray-400 cursor-not-allowed"
                           }`}
                         >
                           {remainingSlots > 0 ? "Sign Up" : "Full"}
@@ -942,7 +942,7 @@ const VolunteerSignup = () => {
                     <div className="md:hidden p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
-                          <h3 className="font-semibold text-foreground text-base mb-2">
+                          <h3 className="font-semibold text-gray-900 text-base mb-2">
                             {role.role_label}
                           </h3>
                           {/* POC Badges */}
@@ -952,7 +952,7 @@ const VolunteerSignup = () => {
                                 <Badge 
                                   key={poc.id}
                                   variant="outline" 
-                                  className="text-[10px] bg-purple-500/15 text-purple-300 border-purple-500/20 cursor-pointer hover:bg-purple-500/20 transition-colors px-1.5 py-0.5"
+                                  className="text-[10px] bg-purple-50 text-purple-700 border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors px-1.5 py-0.5"
                                   onClick={() => {
                                     if (poc.phone) {
                                       navigator.clipboard.writeText(poc.phone);
@@ -970,7 +970,7 @@ const VolunteerSignup = () => {
                               ))}
                             </div>
                           )}
-                          <div className="flex items-center gap-2 text-sm text-white/50">
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
                             <Clock className="w-4 h-4" />
                             <span className="font-medium">
                               {formatTime24To12(role.shift_start)} - {formatTime24To12(role.shift_end)}
@@ -981,8 +981,8 @@ const VolunteerSignup = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => toggleRoleExpansion(role.id)}
-                          className="text-white/30 hover:text-white/50 p-2 h-8 w-8 rounded-full border"
-                          style={{ borderColor: 'var(--gold-400, #d4a843)' }}
+                          className="text-gray-400 hover:text-gray-600 p-2 h-8 w-8 rounded-full border"
+                          style={{ borderColor: 'rgb(89, 89, 46)' }}
                         >
                           {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                         </Button>
@@ -994,13 +994,13 @@ const VolunteerSignup = () => {
                             variant={remainingSlots > 0 ? "default" : "secondary"}
                             className={`text-sm font-semibold px-3 py-1 ${
                               remainingSlots > 0 
-                                ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/20" 
-                                : "bg-white/10 text-foreground border-white/10"
+                                ? "bg-green-100 text-green-800 border-green-200" 
+                                : "bg-gray-100 text-gray-800 border-gray-200"
                             }`}
                           >
                             {remainingSlots > 0 ? `${remainingSlots} spots left` : "Full"}
                           </Badge>
-                          <span className="text-sm text-white/40">
+                          <span className="text-sm text-gray-500">
                             {totalSlots - remainingSlots} / {totalSlots} filled
                           </span>
                         </div>
@@ -1010,8 +1010,8 @@ const VolunteerSignup = () => {
                           size="sm"
                           className={`h-10 px-4 ${
                             remainingSlots > 0 
-                              ? "bg-gold-400 hover:bg-gold-300 text-white" 
-                              : "bg-white/10 text-white/30 cursor-not-allowed"
+                              ? "bg-[#5c5b2f] hover:bg-[#4a4a28] text-white" 
+                              : "bg-gray-100 text-gray-400 cursor-not-allowed"
                           }`}
                         >
                           {remainingSlots > 0 ? "Sign Up" : "Full"}
@@ -1033,7 +1033,7 @@ const VolunteerSignup = () => {
                               {remainingBrothers > 0 && (
                                 <Badge 
                                   variant="outline" 
-                                  className="text-xs bg-blue-500/10 text-blue-300 border-blue-500/20 px-1.5 py-0.5"
+                                  className="text-xs bg-blue-50 text-blue-700 border-blue-200 px-1.5 py-0.5"
                                 >
                                   {remainingBrothers} Brother{remainingBrothers !== 1 ? 's' : ''}
                                 </Badge>
@@ -1041,7 +1041,7 @@ const VolunteerSignup = () => {
                               {remainingSisters > 0 && (
                                 <Badge 
                                   variant="outline" 
-                                  className="text-xs bg-pink-500/15 text-pink-300 border-pink-500/20 px-1.5 py-0.5"
+                                  className="text-xs bg-pink-50 text-pink-700 border-pink-200 px-1.5 py-0.5"
                                 >
                                   {remainingSisters} Sister{remainingSisters !== 1 ? 's' : ''}
                                 </Badge>
@@ -1049,7 +1049,7 @@ const VolunteerSignup = () => {
                               {remainingFlexible > 0 && (
                                 <Badge 
                                   variant="outline" 
-                                  className="text-xs bg-teal-500/15 text-teal-300 border-teal-500/20 px-1.5 py-0.5"
+                                  className="text-xs bg-teal-50 text-teal-700 border-teal-200 px-1.5 py-0.5"
                                 >
                                   {remainingFlexible} Flexible
                                 </Badge>
@@ -1062,13 +1062,13 @@ const VolunteerSignup = () => {
 
                     {/* Expanded Content */}
                     {isExpanded && (
-                      <div className="px-6 py-4 bg-background border-t border-white/5 animate-in slide-in-from-top-2 duration-200">
+                      <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 animate-in slide-in-from-top-2 duration-200">
                         <div className="space-y-4">
                           {/* Description */}
                           {role.notes && (
                             <div>
-                              <h4 className="font-medium text-foreground text-sm mb-2">Description</h4>
-                              <p className="text-white/50 text-sm">{role.notes}</p>
+                              <h4 className="font-medium text-gray-900 text-sm mb-2">Description</h4>
+                              <p className="text-gray-600 text-sm">{role.notes}</p>
                             </div>
                           )}
 
@@ -1076,12 +1076,12 @@ const VolunteerSignup = () => {
                           {/* Current Volunteers */}
                           {volunteers.length > 0 && (
                             <div>
-                              <h4 className="font-medium text-foreground text-sm mb-2">Current Volunteers</h4>
+                              <h4 className="font-medium text-gray-900 text-sm mb-2">Current Volunteers</h4>
                               <div className="space-y-2">
                                 {volunteers.map((volunteer, index) => (
                                   <div
                                     key={volunteer.id}
-                                    className="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg p-3 cursor-pointer hover:bg-white/5 transition-colors"
+                                    className="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-3 cursor-pointer hover:bg-gray-50 transition-colors"
                                     onClick={() => {
                                       navigator.clipboard.writeText(volunteer.phone);
                                       toast({
@@ -1092,15 +1092,15 @@ const VolunteerSignup = () => {
                                     title={`Click to copy ${volunteer.name}'s phone number`}
                                   >
                                     <div className="flex items-center gap-3">
-                                      <div className="w-8 h-8 bg-gold-400 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                      <div className="w-8 h-8 bg-[#5c5b2f] rounded-full flex items-center justify-center text-white text-sm font-medium">
                                         {volunteer.name.charAt(0)}
                                       </div>
                                       <div>
-                                        <div className="font-medium text-foreground text-sm">
+                                        <div className="font-medium text-gray-900 text-sm">
                                           {volunteer.name}
-                                          <span className="text-xs text-white/40 ml-2">• {volunteer.phone}</span>
+                                          <span className="text-xs text-gray-500 ml-2">• {volunteer.phone}</span>
                                         </div>
-                                        <div className="text-xs text-white/50 capitalize">{volunteer.gender}</div>
+                                        <div className="text-xs text-gray-600 capitalize">{volunteer.gender}</div>
                                       </div>
                                     </div>
                                     <Button
@@ -1110,7 +1110,7 @@ const VolunteerSignup = () => {
                                         e.stopPropagation();
                                         handleDeleteVolunteer(volunteer.id, volunteer.name, role.role_label);
                                       }}
-                                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10 h-8 px-2"
+                                      className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 px-2"
                                       title="Remove volunteer from this role"
                                     >
                                       <Minus className="w-4 h-4" />
@@ -1145,10 +1145,10 @@ const VolunteerSignup = () => {
                         {/* Role Header */}
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <CardTitle className="text-lg font-semibold text-foreground mb-1">
+                            <CardTitle className="text-lg font-semibold text-gray-900 mb-1">
                               {role.role_label}
                             </CardTitle>
-                            <div className="flex items-center gap-2 text-sm text-white/50">
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
                               <Clock className="w-4 h-4" />
                               <span>
                                 {formatTime24To12(role.shift_start)} - {formatTime24To12(role.shift_end)}
@@ -1159,8 +1159,8 @@ const VolunteerSignup = () => {
                             variant="ghost"
                             size="sm"
                             onClick={() => toggleRoleExpansion(role.id)}
-                            className="text-white/30 hover:text-white/50 rounded-full border h-8 w-8 p-0 flex items-center justify-center"
-                            style={{ borderColor: 'var(--gold-400, #d4a843)' }}
+                            className="text-gray-400 hover:text-gray-600 rounded-full border h-8 w-8 p-0 flex items-center justify-center"
+                            style={{ borderColor: 'rgb(89, 89, 46)' }}
                           >
                             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                           </Button>
@@ -1169,29 +1169,29 @@ const VolunteerSignup = () => {
                         {/* Progress Bar */}
                         <div className="space-y-2">
                           <div className="flex items-center justify-between text-sm">
-                            <span className="text-white/50">
+                            <span className="text-gray-600">
                               {totalSlots - remainingSlots} / {totalSlots} filled
                             </span>
                             <Badge 
                               variant={remainingSlots > 0 ? "default" : "secondary"}
                               className={`text-xs ${
                                 remainingSlots > 0 
-                                  ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/20" 
-                                  : "bg-white/10 text-foreground border-white/10"
+                                  ? "bg-green-100 text-green-800 border-green-200" 
+                                  : "bg-gray-100 text-gray-800 border-gray-200"
                               }`}
                             >
                               {remainingSlots > 0 ? `${remainingSlots} spots left` : "Full"}
                             </Badge>
                           </div>
-                          <div className="w-full bg-white/15 rounded-full h-2">
+                          <div className="w-full bg-gray-200 rounded-full h-2">
                             <div 
-                              className="bg-gold-400 h-2 rounded-full transition-all duration-300"
+                              className="bg-[#5c5b2f] h-2 rounded-full transition-all duration-300"
                               style={{ width: `${progressPercentage}%` }}
                             />
                           </div>
                           
                           {/* Slots Breakdown */}
-                          <div className="flex flex-wrap gap-2 text-xs text-white/50">
+                          <div className="flex flex-wrap gap-2 text-xs text-gray-600">
                             {(() => {
                               const brothersSignedUp = volunteers.filter(v => v.gender === 'brother').length;
                               const sistersSignedUp = volunteers.filter(v => v.gender === 'sister').length;
@@ -1210,17 +1210,17 @@ const VolunteerSignup = () => {
                               return (
                                 <>
                                   {remainingBrothers > 0 && (
-                                    <Badge variant="outline" className="bg-blue-500/10 text-blue-300 border-blue-500/20">
+                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
                                       {remainingBrothers} Brother{remainingBrothers !== 1 ? 's' : ''}
                                     </Badge>
                                   )}
                                   {remainingSisters > 0 && (
-                                    <Badge variant="outline" className="bg-pink-500/15 text-pink-300 border-pink-500/20">
+                                    <Badge variant="outline" className="bg-pink-50 text-pink-700 border-pink-200">
                                       {remainingSisters} Sister{remainingSisters !== 1 ? 's' : ''}
                                     </Badge>
                                   )}
                                   {remainingFlexible > 0 && (
-                                    <Badge variant="outline" className="bg-teal-500/15 text-teal-300 border-teal-500/20">
+                                    <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200">
                                       {remainingFlexible} Brother or Sister
                                     </Badge>
                                   )}
@@ -1233,8 +1233,8 @@ const VolunteerSignup = () => {
                         {/* Description - Always visible */}
                         {role.notes && (
                           <div className="mt-3">
-                            <h4 className="font-medium text-foreground text-sm mb-2">Description</h4>
-                            <p className="text-white/50 text-sm">{role.notes}</p>
+                            <h4 className="font-medium text-gray-900 text-sm mb-2">Description</h4>
+                            <p className="text-gray-600 text-sm">{role.notes}</p>
                           </div>
                         )}
 
@@ -1246,7 +1246,7 @@ const VolunteerSignup = () => {
                                 <Badge 
                                   key={poc.id}
                                   variant="outline" 
-                                  className="text-[10px] bg-purple-500/15 text-purple-300 border-purple-500/20 cursor-pointer hover:bg-purple-500/20 transition-colors px-1.5 py-0.5"
+                                  className="text-[10px] bg-purple-50 text-purple-700 border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors px-1.5 py-0.5"
                                   onClick={() => {
                                     if (poc.phone) {
                                       navigator.clipboard.writeText(poc.phone);
@@ -1270,18 +1270,18 @@ const VolunteerSignup = () => {
 
                     {/* Expanded Content */}
                     {isExpanded && (
-                      <CardContent className="pt-0 border-t border-white/5">
+                      <CardContent className="pt-0 border-t border-gray-100">
                         <div className="space-y-4">
 
                           {/* Current Volunteers */}
                           {volunteers.length > 0 && (
                             <div>
-                              <h4 className="font-medium text-foreground text-sm mb-2">Current Volunteers</h4>
+                              <h4 className="font-medium text-gray-900 text-sm mb-2">Current Volunteers</h4>
                               <div className="space-y-2">
                                 {volunteers.map((volunteer, index) => (
                                   <div
                                     key={volunteer.id}
-                                    className="flex items-center justify-between bg-white/10 rounded-lg p-3 cursor-pointer hover:bg-white/15 transition-colors"
+                                    className="flex items-center justify-between bg-gray-100 rounded-lg p-3 cursor-pointer hover:bg-gray-200 transition-colors"
                                     onClick={() => {
                                       navigator.clipboard.writeText(volunteer.phone);
                                       toast({
@@ -1292,15 +1292,15 @@ const VolunteerSignup = () => {
                                     title={`Click to copy ${volunteer.name}'s phone number`}
                                   >
                                     <div className="flex items-center gap-3">
-                                      <div className="w-8 h-8 bg-gold-400 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                      <div className="w-8 h-8 bg-[#5c5b2f] rounded-full flex items-center justify-center text-white text-sm font-medium">
                                         {volunteer.name.charAt(0)}
                                       </div>
                                       <div>
-                                        <div className="font-medium text-foreground text-sm">
+                                        <div className="font-medium text-gray-900 text-sm">
                                           {volunteer.name}
-                                          <span className="text-xs text-white/40 ml-2">• {volunteer.phone}</span>
+                                          <span className="text-xs text-gray-500 ml-2">• {volunteer.phone}</span>
                                         </div>
-                                        <div className="text-xs text-white/50 capitalize">{volunteer.gender}</div>
+                                        <div className="text-xs text-gray-600 capitalize">{volunteer.gender}</div>
                                       </div>
                                     </div>
                                     <Button
@@ -1310,7 +1310,7 @@ const VolunteerSignup = () => {
                                         e.stopPropagation();
                                         handleDeleteVolunteer(volunteer.id, volunteer.name, role.role_label);
                                       }}
-                                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10 h-8 px-2"
+                                      className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 px-2"
                                       title="Remove volunteer from this role"
                                     >
                                       <Minus className="w-4 h-4" />
@@ -1328,8 +1328,8 @@ const VolunteerSignup = () => {
                               disabled={remainingSlots <= 0}
                               className={`w-full ${
                                 remainingSlots > 0 
-                                  ? "bg-gold-400 hover:bg-gold-300 text-white" 
-                                  : "bg-white/10 text-white/30 cursor-not-allowed"
+                                  ? "bg-[#5c5b2f] hover:bg-[#4a4a28] text-white" 
+                                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
                               }`}
                             >
                               {remainingSlots > 0 ? (
@@ -1354,16 +1354,16 @@ const VolunteerSignup = () => {
                       <CardContent className="pt-0">
                         {/* Quick Volunteer Overview */}
                         {volunteers.length > 0 && (
-                          <div className="mb-3 p-3 bg-background rounded-lg">
+                          <div className="mb-3 p-3 bg-gray-50 rounded-lg">
                             <div className="flex items-center justify-between text-sm">
-                              <span className="text-white/50">
+                              <span className="text-gray-600">
                                 {volunteers.length} volunteer{volunteers.length !== 1 ? 's' : ''} signed up
                               </span>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => toggleRoleExpansion(role.id)}
-                                className="text-white/40 hover:text-white/70 text-xs"
+                                className="text-gray-500 hover:text-gray-700 text-xs"
                               >
                                 View Details
                               </Button>
@@ -1376,8 +1376,8 @@ const VolunteerSignup = () => {
                           disabled={remainingSlots <= 0}
                           className={`w-full ${
                             remainingSlots > 0 
-                              ? "bg-gold-400 hover:bg-gold-300 text-white" 
-                              : "bg-white/10 text-white/30 cursor-not-allowed"
+                              ? "bg-[#5c5b2f] hover:bg-[#4a4a28] text-white" 
+                              : "bg-gray-100 text-gray-400 cursor-not-allowed"
                           }`}
                         >
                           {remainingSlots > 0 ? (
@@ -1403,16 +1403,16 @@ const VolunteerSignup = () => {
           {/* Empty State */}
           {sortedAndFilteredRoles.length === 0 && (
             <div className="text-center py-16">
-              <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Users className="w-10 h-10 text-white/30" />
+              <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Users className="w-10 h-10 text-gray-400" />
               </div>
-              <h3 className="text-xl font-semibold text-white/70 mb-3">
+              <h3 className="text-xl font-semibold text-gray-700 mb-3">
                 {searchQuery 
                   ? "No roles match your filters" 
                   : "No volunteer roles available"
                 }
               </h3>
-              <p className="text-white/40 mb-6 max-w-lg mx-auto">
+              <p className="text-gray-500 mb-6 max-w-lg mx-auto">
                 {searchQuery
                   ? "Try adjusting your search or filters to find volunteer opportunities."
                   : "This event doesn't have any volunteer roles set up yet. Contact the event point of contact for more information."
@@ -1442,9 +1442,9 @@ const VolunteerSignup = () => {
         {/* Delete Confirmation Dialog */}
         {deleteDialog.isOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white/5 p-6 rounded-lg shadow-xl max-w-md w-full">
-              <h3 className="text-lg font-semibold text-foreground mb-2">Confirm Deletion</h3>
-              <p className="text-white/50 mb-4">
+            <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Confirm Deletion</h3>
+              <p className="text-gray-600 mb-4">
                 Are you sure you want to remove {deleteDialog.volunteerName} from the {deleteDialog.roleName} role?
               </p>
               <div className="flex justify-end gap-2">
@@ -1462,17 +1462,17 @@ const VolunteerSignup = () => {
         {/* Password Dialog */}
         {passwordDialog.isOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white/5 p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
-              <h3 className="text-lg font-semibold text-foreground mb-2">Verify Phone Number</h3>
-              <div className="bg-background border border-white/10 rounded-lg p-3 mb-4">
-                <p className="text-sm text-white/50 mb-2">
+            <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Verify Phone Number</h3>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-gray-600 mb-2">
                   <strong>Removing:</strong> {passwordDialog.volunteerName}
                 </p>
-                <p className="text-sm text-white/50">
+                <p className="text-sm text-gray-600">
                   <strong>Role:</strong> {passwordDialog.roleName}
                 </p>
               </div>
-              <p className="text-white/50 mb-4">
+              <p className="text-gray-600 mb-4">
                 Please enter the phone number used during signup to confirm deletion.
               </p>
               <form onSubmit={(e) => { e.preventDefault(); handlePasswordSubmit(); }} className="space-y-4">
@@ -1481,7 +1481,7 @@ const VolunteerSignup = () => {
                   value={phoneVerification}
                   onChange={(val) => setPhoneVerification(val)}
                   placeholder="Phone number"
-                  className="border-white/15 focus:border-gold-400 focus:ring-gold-400/20"
+                  className="border-gray-300 focus:border-[#5c5b2f] focus:ring-[#5c5b2f]/20"
                 />
                 
                 <div className="flex gap-3">
@@ -1500,7 +1500,7 @@ const VolunteerSignup = () => {
                   </Button>
                   <Button 
                     type="submit" 
-                    className="flex-1 bg-gold-400 hover:bg-gold-300 text-white"
+                    className="flex-1 bg-[#5c5b2f] hover:bg-[#4a4a28] text-white"
                   >
                     Verify Phone
                   </Button>
@@ -1508,21 +1508,21 @@ const VolunteerSignup = () => {
               </form>
 
               {/* Admin Fallback Option */}
-              <div className="mt-4 pt-4 border-t border-white/10">
+              <div className="mt-4 pt-4 border-t border-gray-200">
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowAdminOption(!showAdminOption)}
-                  className="text-white/40 hover:text-white/70 text-sm"
+                  className="text-gray-500 hover:text-gray-700 text-sm"
                 >
                   {showAdminOption ? "Hide" : "Forgot phone number? Contact POC"} 
                   <ChevronDown className={`w-4 h-4 ml-1 transition-transform ${showAdminOption ? 'rotate-180' : ''}`} />
                 </Button>
                 
                 {showAdminOption && (
-                  <div className="mt-3 p-3 bg-red-500/10 border border-red-500/15 rounded-lg">
-                    <p className="text-xs text-red-300 mb-3">
+                  <div className="mt-3 p-3 bg-red-25 border border-red-100 rounded-lg">
+                    <p className="text-xs text-red-700 mb-3">
                       Admin access: Use this option only if you cannot verify phone number.
                     </p>
                     <form onSubmit={(e) => { e.preventDefault(); handleAdminPasswordSubmit(); }} className="space-y-3">
@@ -1531,7 +1531,7 @@ const VolunteerSignup = () => {
                         placeholder="Admin Password"
                         value={adminPassword}
                         onChange={(e) => setAdminPassword(e.target.value)}
-                        className="border-red-500/20 focus:border-red-400 focus:ring-red-400/20"
+                        className="border-red-200 focus:border-red-400 focus:ring-red-400/20"
                         autoComplete="off"
                         autoCorrect="off"
                         autoCapitalize="off"
