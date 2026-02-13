@@ -56,29 +56,29 @@ const AddToCalendar = ({ event, role, className, showText = false }: AddToCalend
         <Button
           variant="outline"
           size="sm"
-          className={`border-gold-400 text-gold-300 hover:bg-gold-400/10 ${className}`}
+          className={`border-umma-500 text-umma-700 hover:bg-umma-50 ${className}`}
         >
           <Calendar className="w-4 h-4" />
           {showText && <span className="mx-2">Add to Calendar</span>}
           <ChevronDown className="w-4 h-4 ml-2" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-white/5 border-white/10 shadow-lg">
+      <DropdownMenuContent className="bg-white border-umma-200 shadow-lg">
         <DropdownMenuItem 
           onClick={() => handleAddToCalendar('google')}
-          className="hover:bg-gold-400/10 cursor-pointer"
+          className="hover:bg-umma-50 cursor-pointer"
         >
           Google Calendar
         </DropdownMenuItem>
         <DropdownMenuItem 
           onClick={() => handleAddToCalendar('outlook')}
-          className="hover:bg-gold-400/10 cursor-pointer"
+          className="hover:bg-umma-50 cursor-pointer"
         >
           Outlook Calendar
         </DropdownMenuItem>
         <DropdownMenuItem 
           onClick={() => handleAddToCalendar('ics')}
-          className="hover:bg-gold-400/10 cursor-pointer"
+          className="hover:bg-umma-50 cursor-pointer"
         >
           Apple Calendar
         </DropdownMenuItem>

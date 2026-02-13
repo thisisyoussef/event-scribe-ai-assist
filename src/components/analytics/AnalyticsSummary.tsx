@@ -35,7 +35,7 @@ const AnalyticsSummary: React.FC<AnalyticsSummaryProps> = ({
       case 'total_clicks':
         return <MousePointer className="w-4 h-4 text-blue-600" />;
       case 'qr_scans':
-        return <QrCode className="w-4 h-4 text-emerald-400" />;
+        return <QrCode className="w-4 h-4 text-green-600" />;
       case 'human_clicks':
         return <Users className="w-4 h-4 text-purple-600" />;
       case 'unique_clicks':
@@ -43,9 +43,9 @@ const AnalyticsSummary: React.FC<AnalyticsSummaryProps> = ({
       case 'visitors':
         return <Eye className="w-4 h-4 text-indigo-600" />;
       case 'page_views':
-        return <BarChart3 className="w-4 h-4 text-red-400" />;
+        return <BarChart3 className="w-4 h-4 text-red-600" />;
       default:
-        return <BarChart3 className="w-4 h-4 text-white/50" />;
+        return <BarChart3 className="w-4 h-4 text-gray-600" />;
     }
   };
 
@@ -72,7 +72,7 @@ const AnalyticsSummary: React.FC<AnalyticsSummaryProps> = ({
     return (
       <Card className={cn(compact && "p-3")}>
         <CardContent className={cn(compact ? "p-0" : "p-4")}>
-          <div className="text-center text-red-400">
+          <div className="text-center text-red-600">
             <p className="text-sm">Error loading analytics</p>
             {showRefresh && (
               <Button 
@@ -96,8 +96,8 @@ const AnalyticsSummary: React.FC<AnalyticsSummaryProps> = ({
       <Card className={cn(compact && "p-3")}>
         <CardContent className={cn(compact ? "p-0" : "p-4")}>
           <div className="text-center">
-            <RefreshCw className="w-4 h-4 mx-auto mb-2 animate-spin text-white/30" />
-            <p className="text-sm text-white/50">Loading analytics...</p>
+            <RefreshCw className="w-4 h-4 mx-auto mb-2 animate-spin text-gray-400" />
+            <p className="text-sm text-gray-600">Loading analytics...</p>
           </div>
         </CardContent>
       </Card>
@@ -122,7 +122,7 @@ const AnalyticsSummary: React.FC<AnalyticsSummaryProps> = ({
       <Card className="p-3">
         <CardContent className="p-0">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-medium text-foreground">Analytics</h3>
+            <h3 className="text-sm font-medium text-gray-900">Analytics</h3>
             <div className="flex items-center gap-2">
               {showRefresh && (
                 <Button 
@@ -149,13 +149,13 @@ const AnalyticsSummary: React.FC<AnalyticsSummaryProps> = ({
           
           <div className="grid grid-cols-2 gap-2">
             {metrics.map(({ key, value }) => (
-              <div key={key} className="flex items-center gap-2 p-2 bg-background rounded">
+              <div key={key} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
                 <div className="flex-shrink-0">
                   {getMetricIcon(key)}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-medium text-foreground">{value}</p>
-                  <p className="text-xs text-white/40 truncate">
+                  <p className="text-xs font-medium text-gray-900">{value}</p>
+                  <p className="text-xs text-gray-500 truncate">
                     {getMetricLabel(key)}
                   </p>
                 </div>
@@ -171,7 +171,7 @@ const AnalyticsSummary: React.FC<AnalyticsSummaryProps> = ({
     <Card>
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground">Analytics Overview</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Analytics Overview</h3>
           <div className="flex items-center gap-2">
             {showRefresh && (
               <Button 
@@ -200,13 +200,13 @@ const AnalyticsSummary: React.FC<AnalyticsSummaryProps> = ({
         
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           {metrics.map(({ key, value }) => (
-            <div key={key} className="flex items-center gap-3 p-3 bg-background rounded-lg">
+            <div key={key} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
               <div className="flex-shrink-0">
                 {getMetricIcon(key)}
               </div>
               <div>
-                <p className="text-lg font-bold text-foreground">{value}</p>
-                <p className="text-sm text-white/50">{getMetricLabel(key)}</p>
+                <p className="text-lg font-bold text-gray-900">{value}</p>
+                <p className="text-sm text-gray-600">{getMetricLabel(key)}</p>
               </div>
             </div>
           ))}

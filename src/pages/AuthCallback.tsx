@@ -134,11 +134,11 @@ const AuthCallback = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-6">
       <div className="text-center">
-        <div className="w-6 h-6 mx-auto mb-3 border-2 border-white/20 border-t-gold-400 rounded-full animate-spin" />
-        <div className="text-white/70 mb-2">{message}</div>
-        <div className="text-sm text-white/50">
+        <div className="w-6 h-6 mx-auto mb-3 border-2 border-gray-300 border-t-[#5c5b2f] rounded-full animate-spin" />
+        <div className="text-gray-700 mb-2">{message}</div>
+        <div className="text-sm text-gray-500">
           If this takes more than a few seconds,
-          <button className="ml-1 text-gold-400 underline" onClick={() => navigate("/login", { replace: true })}>continue to login</button>.
+          <button className="ml-1 text-[#5c5b2f] underline" onClick={() => navigate("/login", { replace: true })}>continue to login</button>.
         </div>
       </div>
     </div>

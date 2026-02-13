@@ -381,12 +381,12 @@ const EventRoster = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gray-50">
         <Navigation />
         <main className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center">
             <div className="text-center">
-              <div className="animate-spin w-8 h-8 border-2 border-gold-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+              <div className="animate-spin w-8 h-8 border-2 border-umma-700 border-t-transparent rounded-full mx-auto mb-4"></div>
               <p>Loading event details...</p>
             </div>
           </div>
@@ -397,13 +397,13 @@ const EventRoster = () => {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gray-50">
         <Navigation />
         <main className="container mx-auto px-4 py-8">
           <Card className="w-full max-w-md mx-auto">
             <CardContent className="p-8 text-center">
               <h2 className="text-xl font-semibold mb-2">Event Not Found</h2>
-              <div className="text-white/50 mb-4">
+              <div className="text-gray-600 mb-4">
                 The event you're looking for doesn't exist or has been removed.
               </div>
               <Button onClick={() => navigate("/dashboard")}>
@@ -424,26 +424,26 @@ const EventRoster = () => {
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 md:py-6 max-w-7xl">
         {/* Breadcrumb Navigation */}
         <div className="mb-3 sm:mb-4">
-          <div className="flex items-center gap-2 text-sm text-white/50">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/dashboard")}
-              className="h-8 px-2 sm:px-3 text-white/50 hover:text-gold-300 hover:bg-white/10 rounded-full"
+              className="h-8 px-2 sm:px-3 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full"
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
               Dashboard
             </Button>
-            <span className="text-white/30">/</span>
-            <span className="text-foreground font-medium">Check In</span>
+            <span className="text-gray-400">/</span>
+            <span className="text-gray-900 font-medium">Check In</span>
           </div>
         </div>
 
         {/* Header */}
         <div className="frosted-panel p-4 sm:p-5 mb-4 sm:mb-5">
           <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl md:text-2xl font-semibold tracking-tight text-foreground break-words">{event.title}</h1>
-            <p className="mt-1.5 sm:mt-2 text-sm text-white/50">
+            <h1 className="text-xl sm:text-2xl md:text-2xl font-semibold tracking-tight text-stone-800 break-words">{event.title}</h1>
+            <p className="mt-1.5 sm:mt-2 text-sm text-gray-600">
               Manage volunteer attendance and track who has arrived, marked themselves as running late, or needs special attention
             </p>
           </div>

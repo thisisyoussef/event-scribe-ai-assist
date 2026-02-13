@@ -57,12 +57,12 @@ const PasswordProtectedDeleteDialog = ({
             Remove Volunteer?
           </AlertDialogTitle>
           <AlertDialogDescription className="text-left space-y-3">
-            <p className="text-white/50">
+            <p className="text-gray-600">
               Are you sure you want to remove <strong>{volunteer.name}</strong> from this volunteer role?
             </p>
             
-            <div className="bg-red-500/10 p-3 rounded-lg border border-white/10">
-              <p className="text-red-400 text-sm">
+            <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+              <p className="text-red-700 text-sm">
                 This action cannot be undone. The volunteer will need to sign up again if they want to participate.
               </p>
             </div>
@@ -88,22 +88,22 @@ const PasswordProtectedDeleteDialog = ({
                   <Button
                     variant="link"
                     onClick={() => setShowContactInfo(true)}
-                    className="text-sm text-gold-400 hover:text-gold-300 p-0"
+                    className="text-sm text-blue-600 hover:text-blue-800 p-0"
                   >
                     Don't have the password? Contact an admin
                   </Button>
                 </div>
               </div>
             ) : (
-              <div className="bg-gold-400/10 p-4 rounded-lg border border-gold-400/20">
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                 <div className="flex items-start space-x-3">
-                  <Mail className="w-5 h-5 text-gold-400 mt-0.5" />
+                  <Mail className="w-5 h-5 text-blue-600 mt-0.5" />
                   <div>
-                    <h4 className="font-medium text-gold-300 mb-2">Contact Event Organizers</h4>
-                    <p className="text-white/70 text-sm mb-3">
+                    <h4 className="font-medium text-blue-800 mb-2">Contact Event Organizers</h4>
+                    <p className="text-blue-700 text-sm mb-3">
                       Please reach out to the event organizers or administrators to remove this volunteer from the list.
                     </p>
-                    <p className="text-white/60 text-sm">
+                    <p className="text-blue-600 text-sm">
                       Include the volunteer's name (<strong>{volunteer.name}</strong>) and phone number in your request.
                     </p>
                   </div>
@@ -112,7 +112,7 @@ const PasswordProtectedDeleteDialog = ({
                   <Button
                     variant="link"
                     onClick={() => setShowContactInfo(false)}
-                    className="text-sm text-gold-400 hover:text-gold-300 p-0"
+                    className="text-sm text-blue-600 hover:text-blue-800 p-0"
                   >
                     ← Back to password entry
                   </Button>

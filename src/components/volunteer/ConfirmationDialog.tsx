@@ -44,7 +44,7 @@ const ConfirmationDialog = ({
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-foreground">
+          <AlertDialogTitle className="text-umma-800">
             Confirm Your Volunteer Registration
           </AlertDialogTitle>
           <AlertDialogDescription>
@@ -53,20 +53,20 @@ const ConfirmationDialog = ({
         </AlertDialogHeader>
         
         <div className="space-y-4">
-          <div className="bg-gold-400/10 p-4 rounded-lg space-y-2 text-sm">
-            <div className="font-semibold text-foreground">{role.role_label}</div>
+          <div className="bg-umma-50 p-4 rounded-lg space-y-2 text-sm">
+            <div className="font-semibold text-umma-800">{role.role_label}</div>
             
-            <div className="flex items-center gap-2 text-gold-300">
+            <div className="flex items-center gap-2 text-umma-700">
               <Calendar className="w-4 h-4" />
               <span>{eventDate.toLocaleDateString()}</span>
             </div>
             
-            <div className="flex items-center gap-2 text-gold-300">
+            <div className="flex items-center gap-2 text-umma-700">
               <Clock className="w-4 h-4" />
               <span>{formatTime24To12(role.shift_start)} - {formatTime24To12(role.shift_end)}</span>
             </div>
             
-            <div className="flex items-center gap-2 text-gold-300">
+            <div className="flex items-center gap-2 text-umma-700">
               <MapPin className="w-4 h-4" />
               <span>{event.location}</span>
             </div>
@@ -81,7 +81,7 @@ const ConfirmationDialog = ({
             )}
           </div>
           
-          <div className="text-gold-400 text-sm">
+          <div className="text-umma-600 text-sm">
             You will receive a confirmation SMS with event details.
           </div>
         </div>
@@ -90,7 +90,7 @@ const ConfirmationDialog = ({
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction 
             onClick={onConfirm}
-            className="bg-gold-400 hover:bg-gold-300"
+            className="bg-umma-500 hover:bg-umma-600"
           >
             Confirm Registration
           </AlertDialogAction>

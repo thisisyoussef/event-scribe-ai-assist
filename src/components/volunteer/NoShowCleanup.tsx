@@ -108,9 +108,9 @@ const NoShowCleanup: React.FC<NoShowCleanupProps> = ({
       <Card>
         <CardContent className="p-6">
           <div className="text-center">
-            <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-foreground mb-2">All Volunteers Checked In</h3>
-            <p className="text-white/50">
+            <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">All Volunteers Checked In</h3>
+            <p className="text-gray-600">
               Great! All volunteers who signed up for this event have checked in.
             </p>
           </div>
@@ -137,24 +137,24 @@ const NoShowCleanup: React.FC<NoShowCleanupProps> = ({
           {/* Mobile Card View */}
           <div className="md:hidden space-y-3">
             {noShowVolunteers.map((volunteer) => (
-              <div key={volunteer.volunteer_id} className="rounded-xl bg-red-500/10 backdrop-blur-sm ring-1 ring-red-100 p-4 space-y-2">
+              <div key={volunteer.volunteer_id} className="rounded-xl bg-red-50/50 backdrop-blur-sm ring-1 ring-red-100 p-4 space-y-2">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <h5 className="font-semibold text-foreground text-sm mb-1">{volunteer.volunteer_name}</h5>
+                    <h5 className="font-semibold text-stone-900 text-sm mb-1">{volunteer.volunteer_name}</h5>
                     <Badge variant="destructive" className="text-xs mt-1">No Show</Badge>
                   </div>
                 </div>
-                <div className="space-y-1.5 text-xs text-white/50">
+                <div className="space-y-1.5 text-xs text-stone-600">
                   <div className="flex items-center gap-2">
-                    <span className="text-white/30 shrink-0">Phone:</span>
-                    <a href={`tel:${volunteer.volunteer_phone}`} className="text-gold-400 hover:text-gold-300 hover:underline">{volunteer.volunteer_phone}</a>
+                    <span className="text-stone-400 shrink-0">Phone:</span>
+                    <a href={`tel:${volunteer.volunteer_phone}`} className="text-umma-700 hover:text-umma-800 hover:underline">{volunteer.volunteer_phone}</a>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-white/30 shrink-0">Role:</span>
-                    <span className="text-white/70">{volunteer.role_label}</span>
+                    <span className="text-stone-400 shrink-0">Role:</span>
+                    <span className="text-stone-700">{volunteer.role_label}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-white/30 shrink-0">Signed up:</span>
+                    <span className="text-stone-400 shrink-0">Signed up:</span>
                     <span>{new Date(volunteer.signup_date).toLocaleDateString()}</span>
                   </div>
                 </div>
@@ -215,16 +215,16 @@ const NoShowCleanup: React.FC<NoShowCleanupProps> = ({
                 </DialogHeader>
                 
                 <div className="space-y-4">
-                  <div className="bg-red-500/10 border border-white/10 rounded-lg p-4">
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                     <h4 className="font-medium text-red-900 mb-2">This will remove:</h4>
-                    <ul className="text-sm text-red-400 space-y-1">
+                    <ul className="text-sm text-red-700 space-y-1">
                       {noShowVolunteers.slice(0, 5).map((volunteer) => (
                         <li key={volunteer.volunteer_id}>
                           • {volunteer.volunteer_name} ({volunteer.volunteer_phone})
                         </li>
                       ))}
                       {noShowVolunteers.length > 5 && (
-                        <li className="text-red-400">
+                        <li className="text-red-600">
                           ... and {noShowVolunteers.length - 5} more
                         </li>
                       )}
@@ -266,15 +266,15 @@ const NoShowCleanup: React.FC<NoShowCleanupProps> = ({
 
       {/* Cleanup Results */}
       {cleanupResults && (
-        <Card className="border-emerald-500/20 bg-emerald-500/10">
+        <Card className="border-green-200 bg-green-50">
           <CardHeader>
-            <CardTitle className="text-emerald-300 flex items-center space-x-2">
+            <CardTitle className="text-green-900 flex items-center space-x-2">
               <CheckCircle className="w-5 h-5" />
               <span>Cleanup Complete</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2 text-emerald-300/80">
+            <div className="space-y-2 text-green-800">
               <p><strong>Event:</strong> {cleanupResults.eventTitle}</p>
               <p><strong>No-Show Volunteers Processed:</strong> {cleanupResults.noShowCount}</p>
               <p><strong>Contacts Removed:</strong> {cleanupResults.removedContacts.length}</p>

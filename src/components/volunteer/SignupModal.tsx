@@ -156,18 +156,18 @@ const SignupModal = ({
     return (
       <Dialog open={showCalendarSuccess} onOpenChange={handleSuccessClose}>
         <DialogContent className={`
-          border-2 border-emerald-500/30 bg-navy-800/95 backdrop-blur-lg shadow-2xl
+          border-2 border-green-300 bg-white/95 backdrop-blur-lg shadow-2xl
           ${isMobile 
             ? 'w-[92vw] max-w-[92vw] max-h-[88vh] mx-auto p-5 rounded-3xl' 
             : 'max-w-lg w-full max-h-[90vh] rounded-2xl p-6'
           }
         `}>
           <DialogHeader className="text-center">
-            <DialogTitle className="text-emerald-300 text-xl flex items-center justify-center gap-2">
+            <DialogTitle className="text-green-800 text-xl flex items-center justify-center gap-2">
               <CheckCircle2 className="w-6 h-6" />
               Registration Successful!
             </DialogTitle>
-            <DialogDescription className="text-emerald-300 mt-4">
+            <DialogDescription className="text-green-700 mt-4">
               You've been successfully registered for {selectedRole.role_label}. 
               A confirmation SMS has been sent to your phone.
             </DialogDescription>
@@ -183,7 +183,7 @@ const SignupModal = ({
             
             <Button 
               onClick={handleSuccessClose}
-              className="bg-gold-400 hover:bg-gold-300 text-white w-full"
+              className="bg-umma-500 hover:bg-umma-600 text-white w-full"
             >
               Close
             </Button>
@@ -197,7 +197,7 @@ const SignupModal = ({
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className={`
-          border-2 border-gold-400/30 bg-navy-800/95 backdrop-blur-lg shadow-2xl
+          border-2 border-umma-500 bg-white/95 backdrop-blur-lg shadow-2xl
           ${isMobile 
             ? 'w-[92vw] max-w-[92vw] max-h-[88vh] mx-auto p-5 rounded-3xl' 
             : 'max-w-lg w-full max-h-[90vh] rounded-2xl p-6'
@@ -205,10 +205,10 @@ const SignupModal = ({
           overflow-hidden flex flex-col
         `}>
           <DialogHeader className="text-left pb-2 flex-shrink-0">
-            <DialogTitle className="text-foreground text-lg sm:text-xl">
+            <DialogTitle className="text-umma-800 text-lg sm:text-xl">
               Sign Up for {selectedRole?.role_label}
             </DialogTitle>
-            <DialogDescription className="text-gold-300 text-sm">
+            <DialogDescription className="text-umma-700 text-sm">
               Fill in your information to register for this volunteer role.
             </DialogDescription>
           </DialogHeader>
@@ -218,7 +218,7 @@ const SignupModal = ({
               <div className="space-y-2">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label htmlFor="first-name" className="text-foreground text-sm font-medium">First Name *</Label>
+                    <Label htmlFor="first-name" className="text-umma-800 text-sm font-medium">First Name *</Label>
                     <Input
                       id="first-name"
                       type="text"
@@ -226,11 +226,11 @@ const SignupModal = ({
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       required
-                      className="border-white/10 focus:border-gold-400/50 text-base rounded-xl"
+                      className="border-umma-200 focus:border-umma-400 text-base rounded-xl"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="last-name" className="text-foreground text-sm font-medium">Last Name *</Label>
+                    <Label htmlFor="last-name" className="text-umma-800 text-sm font-medium">Last Name *</Label>
                     <Input
                       id="last-name"
                       type="text"
@@ -238,14 +238,14 @@ const SignupModal = ({
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       required
-                      className="border-white/10 focus:border-gold-400/50 text-base rounded-xl"
+                      className="border-umma-200 focus:border-umma-400 text-base rounded-xl"
                     />
                   </div>
                 </div>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-foreground text-sm font-medium">Phone Number *</Label>
+                <Label htmlFor="phone" className="text-umma-800 text-sm font-medium">Phone Number *</Label>
                 <PhoneInput
                   id="phone"
                   value={volunteerData.phone}
@@ -254,42 +254,42 @@ const SignupModal = ({
                     setTimeout(() => checkExistingSignups(newPhone), 500);
                   }}
                   placeholder="Phone number"
-                  className="border-white/10 focus:border-gold-400/50 text-base rounded-xl"
+                  className="border-umma-200 focus:border-umma-400 text-base rounded-xl"
                 />
-                <div className="text-xs text-gold-400">
+                <div className="text-xs text-umma-600">
                   Used for event reminders and communication
                 </div>
                 
                 {/* Existing Signups Display */}
                 {checkingExistingSignups && (
-                  <div className="text-xs text-gold-400 bg-gold-400/10 p-2 rounded-lg">
+                  <div className="text-xs text-umma-600 bg-umma-50 p-2 rounded-lg">
                     Checking for existing signups...
                   </div>
                 )}
                 
                 {existingSignups.length > 0 && !checkingExistingSignups && (
-                  <div className="bg-gold-400/10 border border-gold-400/20 rounded-lg p-3">
-                    <div className="text-sm font-medium text-gold-300 mb-2">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="text-sm font-medium text-blue-800 mb-2">
                       You're already signed up for:
                     </div>
                     <div className="space-y-2">
                       {existingSignups.map((signup, index) => (
-                        <div key={index} className="flex items-center justify-between bg-white/5 rounded-lg p-2 border border-white/10">
+                        <div key={index} className="flex items-center justify-between bg-white rounded-lg p-2 border border-blue-100">
                           <div>
-                            <div className="text-sm font-medium text-gold-300">
+                            <div className="text-sm font-medium text-blue-900">
                               {signup.role.role_label}
                             </div>
-                            <div className="text-xs text-white/60">
+                            <div className="text-xs text-blue-700">
                               {formatTime24To12(signup.role.shift_start)} - {formatTime24To12(signup.role.shift_end)}
                             </div>
                           </div>
-                          <div className="text-xs text-gold-400 capitalize">
+                          <div className="text-xs text-blue-600 capitalize">
                             {signup.volunteer.gender}
                           </div>
                         </div>
                       ))}
                     </div>
-                    <div className="text-xs text-white/60 mt-2">
+                    <div className="text-xs text-blue-700 mt-2">
                       You can sign up for additional roles as long as the times don't overlap.
                     </div>
                   </div>
@@ -297,12 +297,12 @@ const SignupModal = ({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="gender" className="text-foreground text-sm font-medium">Gender *</Label>
+                <Label htmlFor="gender" className="text-umma-800 text-sm font-medium">Gender *</Label>
                 <Select 
                   value={volunteerData.gender || undefined} 
                   onValueChange={(value: "brother" | "sister") => setVolunteerData(prev => ({ ...prev, gender: value }))}
                 >
-                  <SelectTrigger className="border-white/10 text-base rounded-xl">
+                  <SelectTrigger className="border-umma-200 text-base rounded-xl">
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
                   <SelectContent>
@@ -315,7 +315,7 @@ const SignupModal = ({
                   </SelectContent>
                 </Select>
                 {selectedRole && (
-                  <div className="text-xs text-gold-400 bg-gold-400/10 p-3 rounded-xl border border-white/10">
+                  <div className="text-xs text-umma-600 bg-umma-50 p-3 rounded-xl border border-umma-200">
                     <div className="flex flex-col sm:flex-row sm:gap-4 gap-1">
                       <span>Brothers: {getRemainingSlots(selectedRole, 'brother')}/{selectedRole.slots_brother + (selectedRole.slots_flexible || 0)}</span>
                       <span>Sisters: {getRemainingSlots(selectedRole, 'sister')}/{selectedRole.slots_sister + (selectedRole.slots_flexible || 0)}</span>
@@ -328,21 +328,21 @@ const SignupModal = ({
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="notes" className="text-foreground text-sm font-medium">Additional Notes (Optional)</Label>
+                <Label htmlFor="notes" className="text-umma-800 text-sm font-medium">Additional Notes (Optional)</Label>
                 <Textarea
                   id="notes"
                   placeholder="Any special requirements, questions, or information..."
                   value={volunteerData.notes}
                   onChange={(e) => setVolunteerData(prev => ({ ...prev, notes: e.target.value }))}
                   rows={3}
-                  className="border-white/10 focus:border-gold-400/50 text-base resize-none rounded-xl"
+                  className="border-umma-200 focus:border-umma-400 text-base resize-none rounded-xl"
                 />
               </div>
 
               {selectedRole && (
-                <div className="bg-gold-400/10 p-4 rounded-xl border border-white/10">
-                  <h4 className="font-medium mb-2 text-foreground text-sm">Role Details:</h4>
-                  <div className="text-xs text-gold-300 space-y-1">
+                <div className="bg-umma-50 p-4 rounded-xl border border-umma-200">
+                  <h4 className="font-medium mb-2 text-umma-800 text-sm">Role Details:</h4>
+                  <div className="text-xs text-umma-700 space-y-1">
                     <div className="flex flex-col sm:flex-row sm:gap-4">
                       <div><strong>Time:</strong> {formatTime24To12(selectedRole.shift_start)} - {formatTime24To12(selectedRole.shift_end)}</div>
                       <div><strong>Date:</strong> {new Date(event?.start_datetime || '').toLocaleDateString()}</div>
@@ -352,20 +352,20 @@ const SignupModal = ({
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-white/10 flex-shrink-0">
+              <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-umma-200 flex-shrink-0">
                 <Button 
                   type="button" 
                   variant="outline"
                   onClick={handleClose}
                   disabled={isSubmitting}
-                  className="border-gold-400 text-gold-300 hover:bg-gold-400/10 order-2 sm:order-1 rounded-xl"
+                  className="border-umma-500 text-umma-700 hover:bg-umma-50 order-2 sm:order-1 rounded-xl"
                 >
                   Cancel
                 </Button>
                 <Button 
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-gold-400 hover:bg-gold-300 text-white order-1 sm:order-2 rounded-xl shadow-lg"
+                  className="bg-umma-500 hover:bg-umma-600 text-white order-1 sm:order-2 rounded-xl shadow-lg"
                 >
                   <CheckCircle2 className="w-4 h-4 mr-2" />
                   Sign Me Up!
@@ -377,7 +377,7 @@ const SignupModal = ({
           {/* Scroll indicator for mobile */}
           {isMobile && (
             <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 animate-bounce">
-              <ChevronDown className="w-5 h-5 text-white/30" />
+              <ChevronDown className="w-5 h-5 text-umma-400" />
             </div>
           )}
         </DialogContent>
