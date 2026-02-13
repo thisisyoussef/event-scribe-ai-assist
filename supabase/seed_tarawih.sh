@@ -1,16 +1,16 @@
 #!/bin/bash
-# Seed script: Youth Qiyam - February 20, 2026
-# Creates event + 9 volunteer roles
+# Seed script: Tarawih - February 20, 2026
+# Creates event + 6 volunteer roles
 # Status: PUBLISHED (live)
 
 SUPABASE_URL="https://hnfmormzizymhkqrihhm.supabase.co"
 SERVICE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuZm1vcm16aXp5bWhrcXJpaGhtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzU4NTMxNCwiZXhwIjoyMDc5MTYxMzE0fQ.wgV8h5MqkBTOKtOrsenbZi_4P7cMTdG-VfR8bOngzE0"
 CREATED_BY="265071b5-1324-4128-8d16-d6d1aba069ff"
 
+# Feb 20, 2026 7:30 PM EST = Feb 21, 2026 00:30 UTC
 # Feb 20, 2026 9:00 PM EST = Feb 21, 2026 02:00 UTC
-# Feb 21, 2026 12:30 AM EST = Feb 21, 2026 05:30 UTC
 
-echo "=== Creating Youth Qiyam event ==="
+echo "=== Creating Tarawih event ==="
 
 EVENT_RESPONSE=$(curl -s -w "\n%{http_code}" \
   "${SUPABASE_URL}/rest/v1/events" \
@@ -19,11 +19,11 @@ EVENT_RESPONSE=$(curl -s -w "\n%{http_code}" \
   -H "Content-Type: application/json" \
   -H "Prefer: return=representation" \
   -d '{
-    "title": "Youth Qiyam",
-    "description": "Youth Qiyam - February 20, 2026",
+    "title": "Tarawih",
+    "description": "Tarawih - February 20, 2026",
     "location": "269899 Northwestern Highway (New UMMA)",
-    "start_datetime": "2026-02-21T02:00:00+00:00",
-    "end_datetime": "2026-02-21T05:30:00+00:00",
+    "start_datetime": "2026-02-21T00:30:00+00:00",
+    "end_datetime": "2026-02-21T02:00:00+00:00",
     "sms_enabled": true,
     "day_before_time": "09:00",
     "day_of_time": "15:00",
@@ -52,8 +52,9 @@ create_role() {
   local label="$1"
   local brothers="$2"
   local sisters="$3"
-  local shift_start="$4"
-  local shift_end="$5"
+  local flexible="$4"
+  local shift_start="$5"
+  local shift_end="$6"
 
   ROLE_RESPONSE=$(curl -s -w "\n%{http_code}" \
     "${SUPABASE_URL}/rest/v1/volunteer_roles" \
@@ -66,7 +67,7 @@ create_role() {
       "role_label": "'"${label}"'",
       "slots_brother": '"${brothers}"',
       "slots_sister": '"${sisters}"',
-      "slots_flexible": 0,
+      "slots_flexible": '"${flexible}"',
       "shift_start": "'"${shift_start}"'",
       "shift_end": "'"${shift_end}"'",
       "shift_end_time": "'"${shift_end}"'"
@@ -77,46 +78,32 @@ create_role() {
 
   if [ "$HTTP_CODE" = "201" ]; then
     ROLE_ID=$(echo "$ROLE_BODY" | python3 -c "import sys,json; print(json.loads(sys.stdin.read())[0]['id'])")
-    echo "  [OK] ${label} (${brothers}B/${sisters}S, ${shift_start}-${shift_end}) -> ${ROLE_ID}"
+    echo "  [OK] ${label} (${brothers}B/${sisters}S/${flexible}F, ${shift_start}-${shift_end}) -> ${ROLE_ID}"
   else
     echo "  [FAIL] ${label} (HTTP ${HTTP_CODE}): ${ROLE_BODY}"
   fi
 }
 
-# Entrance roles (9:00 PM - 10:30 PM)
-create_role "Sisters' Entrance"   0 4 "21:00" "22:30"
-create_role "Family Entrance"     2 2 "21:00" "22:30"
-create_role "Brothers' Entrance"  4 0 "21:00" "22:30"
-
-# Usher roles (9:00 PM - 12:00 AM)
-create_role "Stair Ushers"        8 4 "21:00" "00:00"
-create_role "Masala Ushers"       4 4 "21:00" "00:00"
-create_role "Hallway Ushers"      1 2 "21:00" "00:00"
-
-# Other roles (9:00 PM - 12:00 AM)
-create_role "Floaters"            2 3 "21:00" "00:00"
-create_role "Refreshments"        4 0 "21:00" "00:00"
-
-# Cleaning (11:00 PM - 12:30 AM)
-create_role "Cleaning"            4 4 "23:00" "00:30"
+# All roles run 7:30 PM - 9:00 PM
+create_role "Welcomers"        4 2 0 "19:30" "21:00"
+create_role "Water Stocking"   2 2 0 "19:30" "21:00"
+create_role "Bathroom Checks"  2 2 0 "19:30" "21:00"
+create_role "Noise Control"    2 2 0 "19:30" "21:00"
+create_role "Clean Up"         2 2 0 "19:30" "21:00"
+create_role "Venue Readiness"  0 0 2 "19:30" "21:00"
 
 echo ""
 echo "=== Done! ==="
 echo "Event ID: ${EVENT_ID}"
 echo "Status: PUBLISHED (live)"
-echo "Total roles created: 9"
+echo "Total roles created: 6"
 echo ""
-echo "Summary:"
-echo "  Entrances (9:00 PM - 10:30 PM):"
-echo "    - Sisters' Entrance:  4 sisters"
-echo "    - Family Entrance:    2 brothers, 2 sisters"
-echo "    - Brothers' Entrance: 4 brothers"
-echo "  Ushers (9:00 PM - 12:00 AM):"
-echo "    - Stair Ushers:    8 brothers, 4 sisters"
-echo "    - Masala Ushers:   4 brothers, 4 sisters"
-echo "    - Hallway Ushers:  1 brother, 2 sisters"
-echo "  Other (9:00 PM - 12:00 AM):"
-echo "    - Floaters:      2 brothers, 3 sisters"
-echo "    - Refreshments:  4 brothers"
-echo "  Cleaning (11:00 PM - 12:30 AM):"
-echo "    - Cleaning:      4 brothers, 4 sisters"
+echo "Summary (7:30 PM - 9:00 PM):"
+echo "  - Welcomers:        4 brothers, 2 sisters"
+echo "  - Water Stocking:   2 brothers, 2 sisters"
+echo "  - Bathroom Checks:  2 brothers, 2 sisters"
+echo "  - Noise Control:    2 brothers, 2 sisters"
+echo "  - Clean Up:         2 brothers, 2 sisters"
+echo "  - Venue Readiness:  2 flexible"
+echo ""
+echo "Total: 12 brothers, 10 sisters, 2 flexible = 24 volunteers"
