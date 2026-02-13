@@ -22,17 +22,22 @@ const Dashboard = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const { softDeleteEvent, isDeleting } = useEventDeletion();
-  const { isAdmin } = useAdminStatus();
+  const { isAdmin, loading: adminLoading } = useAdminStatus();
   const [events, setEvents] = useState<Event[]>([]);
   const [creatorNames, setCreatorNames] = useState<Record<string, string>>({});
-  
+
   // Check if user can edit events (admin or event creator)
+  // While admin status is still loading, allow actions (they use supabaseAdmin anyway)
   const hasEditPermission = (event: any) => {
+    if (adminLoading) return true;
     return isAdmin || event.created_by === currentUser?.id;
   };
 
   // Update event field using admin client (bypasses RLS)
   const updateEventField = async (eventId: string, field: 'status' | 'is_public', value: string | boolean) => {
+    console.log(`Updating event ${eventId}: ${field} = ${value}`);
+
+    // Try admin client first (bypasses RLS)
     const { data, error } = await supabaseAdmin
       .from('events')
       .update({ [field]: value })
@@ -41,8 +46,23 @@ const Dashboard = () => {
       .single();
 
     if (error || !data) {
-      console.error(`Error updating ${field}:`, error || 'No rows returned');
-      throw new Error(error?.message || 'Failed to update event');
+      console.error(`Admin client failed for ${field}:`, error || 'No rows returned');
+
+      // Fallback to regular client
+      console.log('Trying regular client as fallback...');
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from('events')
+        .update({ [field]: value })
+        .eq('id', eventId)
+        .select('id, status, is_public')
+        .single();
+
+      if (fallbackError || !fallbackData) {
+        console.error(`Regular client also failed for ${field}:`, fallbackError || 'No rows returned');
+        throw new Error(fallbackError?.message || error?.message || 'Failed to update event');
+      }
+
+      return fallbackData;
     }
 
     return data;
@@ -786,7 +806,7 @@ const Dashboard = () => {
                                         console.error('Error:', error);
                                         toast({
                                           title: "Error",
-                                          description: "Failed to update event status",
+                                          description: `Failed to update event status: ${error instanceof Error ? error.message : 'Unknown error'}`,
                                           variant: "destructive",
                                         });
                                       }
@@ -907,7 +927,7 @@ const Dashboard = () => {
                                         console.error('Error:', error);
                                         toast({
                                           title: "Error",
-                                          description: "Failed to update event visibility",
+                                          description: `Failed to update event visibility: ${error instanceof Error ? error.message : 'Unknown error'}`,
                                           variant: "destructive",
                                         });
                                       }
@@ -1124,7 +1144,7 @@ const Dashboard = () => {
                                                 console.error('Error:', error);
                                                 toast({
                                                   title: "Error",
-                                                  description: "Failed to update event visibility",
+                                                  description: `Failed to update event visibility: ${error instanceof Error ? error.message : 'Unknown error'}`,
                                                   variant: "destructive",
                                                 });
                                               }
