@@ -841,11 +841,20 @@ const EventCreation = () => {
       let savedEventId = eventId;
 
       if (eventId) {
-        // Update existing event
-        const { error } = await supabase
-          .from('events')
-          .update(baseEventPayload)
-          .eq('id', eventId);
+        // Update existing event using SECURITY DEFINER RPC (bypasses RLS)
+        const { data: updateResult, error } = await supabase.rpc('admin_update_event_details', {
+          p_event_id: eventId,
+          p_title: baseEventPayload.title,
+          p_description: baseEventPayload.description || '',
+          p_location: baseEventPayload.location,
+          p_start_datetime: baseEventPayload.start_datetime,
+          p_end_datetime: baseEventPayload.end_datetime,
+          p_status: baseEventPayload.status,
+          p_is_public: baseEventPayload.is_public,
+          p_sms_enabled: baseEventPayload.sms_enabled,
+          p_day_before_time: baseEventPayload.day_before_time,
+          p_day_of_time: baseEventPayload.day_of_time,
+        });
 
         if (error) throw error;
       } else {
@@ -923,36 +932,20 @@ const EventCreation = () => {
           console.log(`📝 Saving itinerary item ${index + 1}:`, item.time, item.title);
 
           let itineraryIdToUse = item.id;
-          if (existingItinIds.has(item.id)) {
-            const { error: upErr } = await supabase
-              .from('itineraries')
-              .update({
-                time_slot: item.time,
-                activity: item.title,
-                description: item.description,
-                duration_minutes: 60
-              })
-              .eq('id', item.id);
-            if (upErr) { console.error('❌ Error updating itinerary item:', upErr); throw upErr; }
-          } else {
-            const { data: inserted, error: insErr } = await supabase
-              .from('itineraries')
-              .insert({
-                event_id: savedEventId,
-                time_slot: item.time,
-                activity: item.title,
-                description: item.description,
-                duration_minutes: 60
-              })
-              .select()
-              .single();
-            if (insErr) { console.error('❌ Error inserting itinerary item:', insErr); throw insErr; }
-            if (!inserted || !inserted.id) {
-              console.error('❌ No data returned from itinerary insert');
-              throw new Error('Failed to create itinerary item');
-            }
-            itineraryIdToUse = inserted.id;
-            tempToNewItinId.set(item.id, inserted.id);
+          const isItinUpdate = existingItinIds.has(item.id);
+          const { data: upsertedItinId, error: itinErr } = await supabase.rpc('admin_upsert_itinerary', {
+            p_id: item.id,
+            p_event_id: savedEventId,
+            p_time_slot: item.time,
+            p_activity: item.title,
+            p_description: item.description || '',
+            p_duration_minutes: 60,
+            p_is_update: isItinUpdate,
+          });
+          if (itinErr) { console.error('❌ Error upserting itinerary item:', itinErr); throw itinErr; }
+          if (!isItinUpdate && upsertedItinId) {
+            itineraryIdToUse = upsertedItinId;
+            tempToNewItinId.set(item.id, upsertedItinId);
           }
 
           // 3) Upsert roles for this itinerary
@@ -1006,47 +999,30 @@ const EventCreation = () => {
 
               // Resolve itinerary id if this item was newly inserted
               const resolvedItinId = tempToNewItinId.get(item.id) || itineraryIdToUse;
-              if (existingRoleIds.has(role.id)) {
-                const { error: updRoleErr } = await supabase
-                  .from('volunteer_roles')
-                  .update({
-                    role_label: role.roleLabel,
-                    slots_brother: role.slotsBrother,
-                    slots_sister: role.slotsSister,
-                    slots_flexible: role.slotsFlexible,
-                    notes: role.notes,
-                    suggested_poc: role.suggestedPOC,
-                    // Ensure role start aligns with its itinerary item's time
-                    shift_start: item.time,
-                    shift_end_time: role.shiftEndTime,
-                    shift_end: role.shiftEndTime,
-                    itinerary_id: resolvedItinId
-                  })
-                  .eq('id', role.id);
-                if (updRoleErr) { console.error('❌ Error updating role:', updRoleErr); throw updRoleErr; }
-                seenRoleIds.add(role.id);
-              } else {
-                const { data: insRole, error: insRoleErr } = await supabase
-                  .from('volunteer_roles')
-                  .insert({
-                    event_id: savedEventId,
-                    role_label: role.roleLabel,
-                    slots_brother: role.slotsBrother,
-                    slots_sister: role.slotsSister,
-                    slots_flexible: role.slotsFlexible,
-                    notes: role.notes,
-                    suggested_poc: role.suggestedPOC,
-                    // Ensure role start aligns with its itinerary item's time
-                    shift_start: item.time,
-                    shift_end_time: role.shiftEndTime,
-                    shift_end: role.shiftEndTime,
-                    itinerary_id: resolvedItinId
-                  })
-                  .select()
-                  .single();
-                if (insRoleErr) { console.error('❌ Error inserting role:', insRoleErr); throw insRoleErr; }
-                if (insRole?.id) seenRoleIds.add(insRole.id);
-              }
+              const isRoleUpdate = existingRoleIds.has(role.id);
+              const pocJsonb = Array.isArray(role.suggestedPOC)
+                ? JSON.stringify(role.suggestedPOC)
+                : role.suggestedPOC
+                  ? JSON.stringify([role.suggestedPOC])
+                  : '[]';
+
+              const { data: upsertedRoleId, error: roleErr } = await supabase.rpc('admin_upsert_volunteer_role', {
+                p_id: role.id,
+                p_event_id: savedEventId,
+                p_role_label: role.roleLabel,
+                p_slots_brother: role.slotsBrother || 0,
+                p_slots_sister: role.slotsSister || 0,
+                p_slots_flexible: role.slotsFlexible || 0,
+                p_notes: role.notes || '',
+                p_suggested_poc: pocJsonb,
+                p_shift_start: item.time,
+                p_shift_end_time: role.shiftEndTime,
+                p_shift_end: role.shiftEndTime,
+                p_itinerary_id: resolvedItinId,
+                p_is_update: isRoleUpdate,
+              });
+              if (roleErr) { console.error('❌ Error upserting role:', roleErr); throw roleErr; }
+              seenRoleIds.add(isRoleUpdate ? role.id : (upsertedRoleId || role.id));
             }
           }
         }
@@ -1063,10 +1039,9 @@ const EventCreation = () => {
           const rolesWithVols = new Set((volsUsingRoles || []).map(v => v.role_id as string));
           const deletable = staleRoleIds.filter(id => !rolesWithVols.has(id));
           if (deletable.length > 0) {
-            const { error: delErr } = await supabase
-              .from('volunteer_roles')
-              .delete()
-              .in('id', deletable);
+            const { error: delErr } = await supabase.rpc('admin_delete_roles_by_ids', {
+              p_role_ids: deletable,
+            });
             if (delErr) { console.error('❌ Error deleting stale roles:', delErr); }
           }
         }
