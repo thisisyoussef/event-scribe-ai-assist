@@ -757,13 +757,15 @@ const Dashboard = () => {
                                     onCheckedChange={async (checked) => {
                                       const newStatus = checked ? 'published' : 'draft';
                                       try {
-                                        const { error } = await supabase
+                                        const { data, error } = await supabase
                                           .from('events')
                                           .update({ status: newStatus })
-                                          .eq('id', event.id);
+                                          .eq('id', event.id)
+                                          .select('id, status')
+                                          .single();
 
-                                        if (error) {
-                                          console.error('Error updating status:', error);
+                                        if (error || !data) {
+                                          console.error('Error updating status:', error || 'No rows updated');
                                           toast({
                                             title: "Error",
                                             description: "Failed to update event status",
@@ -773,7 +775,7 @@ const Dashboard = () => {
                                         }
 
                                         setEvents(prev => prev.map(e =>
-                                          e.id === event.id ? { ...e, status: newStatus } : e
+                                          e.id === event.id ? { ...e, status: data.status as 'draft' | 'published' } : e
                                         ));
 
                                         toast({
@@ -893,13 +895,15 @@ const Dashboard = () => {
                                     checked={event.is_public ?? true}
                                     onCheckedChange={async (checked) => {
                                       try {
-                                        const { error } = await supabase
+                                        const { data, error } = await supabase
                                           .from('events')
                                           .update({ is_public: checked })
-                                          .eq('id', event.id);
-                                        
-                                        if (error) {
-                                          console.error('Error updating visibility:', error);
+                                          .eq('id', event.id)
+                                          .select('id, is_public')
+                                          .single();
+
+                                        if (error || !data) {
+                                          console.error('Error updating visibility:', error || 'No rows updated');
                                           toast({
                                             title: "Error",
                                             description: "Failed to update event visibility",
@@ -907,15 +911,15 @@ const Dashboard = () => {
                                           });
                                           return;
                                         }
-                                        
-                                        // Update local state
-                                        setEvents(prev => prev.map(e => 
-                                          e.id === event.id ? { ...e, is_public: checked } : e
+
+                                        // Update local state with confirmed DB value
+                                        setEvents(prev => prev.map(e =>
+                                          e.id === event.id ? { ...e, is_public: data.is_public } : e
                                         ));
-                                        
+
                                         toast({
                                           title: "Visibility Updated",
-                                          description: `Event is now ${checked ? 'public' : 'private'}`,
+                                          description: `Event is now ${data.is_public ? 'public' : 'private'}`,
                                         });
                                       } catch (error) {
                                         console.error('Error:', error);
@@ -1022,13 +1026,15 @@ const Dashboard = () => {
                                       onCheckedChange={async (checked) => {
                                         const newStatus = checked ? 'published' : 'draft';
                                         try {
-                                          const { error } = await supabase
+                                          const { data, error } = await supabase
                                             .from('events')
                                             .update({ status: newStatus })
-                                            .eq('id', event.id);
+                                            .eq('id', event.id)
+                                            .select('id, status')
+                                            .single();
 
-                                          if (error) {
-                                            console.error('Error updating status:', error);
+                                          if (error || !data) {
+                                            console.error('Error updating status:', error || 'No rows updated');
                                             toast({
                                               title: "Error",
                                               description: "Failed to update event status",
@@ -1038,7 +1044,7 @@ const Dashboard = () => {
                                           }
 
                                           setEvents(prev => prev.map(e =>
-                                            e.id === event.id ? { ...e, status: newStatus } : e
+                                            e.id === event.id ? { ...e, status: data.status as 'draft' | 'published' } : e
                                           ));
 
                                           toast({
@@ -1141,13 +1147,15 @@ const Dashboard = () => {
                                             checked={event.is_public !== false}
                                             onCheckedChange={async (checked) => {
                                               try {
-                                                const { error } = await supabase
+                                                const { data, error } = await supabase
                                                   .from('events')
                                                   .update({ is_public: checked })
-                                                  .eq('id', event.id);
-                                                
-                                                if (error) {
-                                                  console.error('Error updating visibility:', error);
+                                                  .eq('id', event.id)
+                                                  .select('id, is_public')
+                                                  .single();
+
+                                                if (error || !data) {
+                                                  console.error('Error updating visibility:', error || 'No rows updated');
                                                   toast({
                                                     title: "Error",
                                                     description: "Failed to update event visibility",
@@ -1155,15 +1163,15 @@ const Dashboard = () => {
                                                   });
                                                   return;
                                                 }
-                                                
-                                                // Update local state
-                                                setEvents(prev => prev.map(e => 
-                                                  e.id === event.id ? { ...e, is_public: checked } : e
+
+                                                // Update local state with confirmed DB value
+                                                setEvents(prev => prev.map(e =>
+                                                  e.id === event.id ? { ...e, is_public: data.is_public } : e
                                                 ));
-                                                
+
                                                 toast({
                                                   title: "Visibility Updated",
-                                                  description: `Event is now ${checked ? 'public' : 'private'}`,
+                                                  description: `Event is now ${data.is_public ? 'public' : 'private'}`,
                                                 });
                                               } catch (error) {
                                                 console.error('Error:', error);
