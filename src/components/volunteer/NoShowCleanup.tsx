@@ -147,7 +147,7 @@ const NoShowCleanup: React.FC<NoShowCleanupProps> = ({
                 <div className="space-y-1.5 text-xs text-white/50">
                   <div className="flex items-center gap-2">
                     <span className="text-white/30 shrink-0">Phone:</span>
-                    <a href={`tel:${volunteer.volunteer_phone}`} className="text-umma-700 hover:text-umma-800 hover:underline">{volunteer.volunteer_phone}</a>
+                    <a href={`tel:${volunteer.volunteer_phone}`} className="text-gold-400 hover:text-gold-300 hover:underline">{volunteer.volunteer_phone}</a>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-white/30 shrink-0">Role:</span>
@@ -266,15 +266,15 @@ const NoShowCleanup: React.FC<NoShowCleanupProps> = ({
 
       {/* Cleanup Results */}
       {cleanupResults && (
-        <Card className="border-green-200 bg-green-50">
+        <Card className="border-emerald-500/20 bg-emerald-500/10">
           <CardHeader>
-            <CardTitle className="text-green-900 flex items-center space-x-2">
+            <CardTitle className="text-emerald-300 flex items-center space-x-2">
               <CheckCircle className="w-5 h-5" />
               <span>Cleanup Complete</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2 text-green-800">
+            <div className="space-y-2 text-emerald-300/80">
               <p><strong>Event:</strong> {cleanupResults.eventTitle}</p>
               <p><strong>No-Show Volunteers Processed:</strong> {cleanupResults.noShowCount}</p>
               <p><strong>Contacts Removed:</strong> {cleanupResults.removedContacts.length}</p>

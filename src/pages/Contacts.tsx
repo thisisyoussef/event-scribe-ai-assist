@@ -1363,7 +1363,7 @@ const Contacts = () => {
                             <div className="flex items-center gap-2 mt-1">
                               {/* Show role based on the actual role field */}
                               {contact.role === 'poc' && (
-                                <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                                <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-300 border-purple-500/20">
                                   POC
                                 </Badge>
                               )}
@@ -1382,7 +1382,7 @@ const Contacts = () => {
                                 <>
                                   {/* Show POC badge if they're a POC contact (legacy logic) */}
                                   {contact.source === 'manual' && (
-                                    <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                                    <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-300 border-purple-500/20">
                                       POC
                                     </Badge>
                                   )}
@@ -1437,7 +1437,7 @@ const Contacts = () => {
                                     variant="outline" 
                                     className={`text-xs font-medium ${
                                       contact.total_poc_assignments && contact.total_poc_assignments > 0
-                                        ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                        ? 'bg-purple-500/10 text-purple-300 border-purple-500/20'
                                         : 'bg-background text-white/40 border-white/10'
                                     }`}
                                   >
@@ -1535,7 +1535,7 @@ const Contacts = () => {
                               <div className="flex items-center space-x-2 gap-2">
                                 {/* Show role based on the actual role field */}
                                 {contact.role === 'poc' && (
-                                  <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                                  <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-300 border-purple-500/20">
                                     POC
                                   </Badge>
                                 )}
@@ -1554,7 +1554,7 @@ const Contacts = () => {
                                   <>
                                     {/* Show POC badge if they're a POC contact (legacy logic) */}
                                     {contact.source === 'manual' && (
-                                      <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                                      <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-300 border-purple-500/20">
                                         POC
                                       </Badge>
                                     )}
@@ -1598,7 +1598,7 @@ const Contacts = () => {
                                       variant="outline" 
                                       className={`text-xs font-medium ${
                                         contact.total_poc_assignments && contact.total_poc_assignments > 0
-                                          ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                          ? 'bg-purple-500/10 text-purple-300 border-purple-500/20'
                                           : 'bg-background text-white/40 border-white/10'
                                       }`}
                                     >

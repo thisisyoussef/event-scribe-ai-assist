@@ -460,7 +460,7 @@ const Settings = () => {
                       placeholder="sk-..."
                     />
                     <p className="text-sm text-white/40">
-                      Get your API key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">OpenAI Platform</a>
+                      Get your API key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-gold-400 hover:underline">OpenAI Platform</a>
                     </p>
                   </div>
                 </CardContent>
@@ -513,7 +513,7 @@ const Settings = () => {
                   </div>
                   
                   <p className="text-sm text-white/40">
-                    Get your Twilio credentials from <a href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Twilio Console</a>
+                    Get your Twilio credentials from <a href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer" className="text-gold-400 hover:underline">Twilio Console</a>
                   </p>
                 </CardContent>
               </Card>
