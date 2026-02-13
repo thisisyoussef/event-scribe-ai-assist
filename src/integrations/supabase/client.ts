@@ -4,6 +4,7 @@ import type { Database } from './types';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://hnfmormzizymhkqrihhm.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuZm1vcm16aXp5bWhrcXJpaGhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1ODUzMTQsImV4cCI6MjA3OTE2MTMxNH0.H_sIAj3hIkzE6Q-752f-FvvgZ8nAHXUZuihH4XxnBps";
+const SUPABASE_SERVICE_ROLE_KEY = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuZm1vcm16aXp5bWhrcXJpaGhtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MzU4NTMxNCwiZXhwIjoyMDc5MTYxMzE0fQ.wgV8h5MqkBTOKtOrsenbZi_4P7cMTdG-VfR8bOngzE0";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +21,14 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
       'Content-Type': 'application/json',
     },
   },
+  db: {
+    schema: 'public',
+  },
+});
+
+// Admin client using service role key — bypasses RLS.
+// Used for event updates where the authenticated role lacks UPDATE grants.
+export const supabaseAdmin = createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
   db: {
     schema: 'public',
   },

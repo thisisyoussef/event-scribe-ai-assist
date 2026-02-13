@@ -9,7 +9,7 @@ import Navigation from "@/components/Navigation";
 import { useNavigate } from "react-router-dom";
 import { Plus, Calendar, Users, Eye, Edit, Copy, Phone, Trash2, Search, TrendingUp, FileText, Globe, UserCheck, ArrowUpRight, Crown, LogIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, supabaseAdmin } from "@/integrations/supabase/client";
 import { displayTimeInMichigan } from "@/utils/timezoneUtils";
 import { Event, VolunteerRole, Volunteer } from "@/types/database";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -31,23 +31,21 @@ const Dashboard = () => {
     return isAdmin || event.created_by === currentUser?.id;
   };
 
-  // Update event field via Edge Function (bypasses RLS issues with direct PostgREST)
+  // Update event field using admin client (bypasses RLS)
   const updateEventField = async (eventId: string, field: 'status' | 'is_public', value: string | boolean) => {
-    const { data, error } = await supabase.functions.invoke('update-event', {
-      body: { eventId, field, value },
-    });
+    const { data, error } = await supabaseAdmin
+      .from('events')
+      .update({ [field]: value })
+      .eq('id', eventId)
+      .select('id, status, is_public')
+      .single();
 
-    if (error) {
-      console.error(`Error calling update-event function:`, error);
-      throw new Error(error.message || 'Failed to update event');
+    if (error || !data) {
+      console.error(`Error updating ${field}:`, error || 'No rows returned');
+      throw new Error(error?.message || 'Failed to update event');
     }
 
-    if (!data?.success) {
-      console.error(`update-event returned failure:`, data);
-      throw new Error(data?.error || 'Failed to update event');
-    }
-
-    return data.event;
+    return data;
   };
   
   const [loading, setLoading] = useState(true);
