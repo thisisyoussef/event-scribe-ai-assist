@@ -761,11 +761,10 @@ const Dashboard = () => {
                                           .from('events')
                                           .update({ status: newStatus })
                                           .eq('id', event.id)
-                                          .select('id, status')
-                                          .single();
+                                          .select('id, status');
 
-                                        if (error || !data) {
-                                          console.error('Error updating status:', error || 'No rows updated');
+                                        if (error) {
+                                          console.error('Error updating status:', error);
                                           toast({
                                             title: "Error",
                                             description: "Failed to update event status",
@@ -774,8 +773,18 @@ const Dashboard = () => {
                                           return;
                                         }
 
+                                        if (!data || data.length === 0) {
+                                          console.error('Status update returned 0 rows - possible RLS issue');
+                                          toast({
+                                            title: "Error",
+                                            description: "Failed to save status change. Please try again.",
+                                            variant: "destructive",
+                                          });
+                                          return;
+                                        }
+
                                         setEvents(prev => prev.map(e =>
-                                          e.id === event.id ? { ...e, status: data.status as 'draft' | 'published' } : e
+                                          e.id === event.id ? { ...e, status: data[0].status as 'draft' | 'published' } : e
                                         ));
 
                                         toast({
@@ -899,11 +908,10 @@ const Dashboard = () => {
                                           .from('events')
                                           .update({ is_public: checked })
                                           .eq('id', event.id)
-                                          .select('id, is_public')
-                                          .single();
+                                          .select('id, is_public');
 
-                                        if (error || !data) {
-                                          console.error('Error updating visibility:', error || 'No rows updated');
+                                        if (error) {
+                                          console.error('Error updating visibility:', error);
                                           toast({
                                             title: "Error",
                                             description: "Failed to update event visibility",
@@ -912,14 +920,24 @@ const Dashboard = () => {
                                           return;
                                         }
 
+                                        if (!data || data.length === 0) {
+                                          console.error('Visibility update returned 0 rows - possible RLS issue');
+                                          toast({
+                                            title: "Error",
+                                            description: "Failed to save visibility change. Please try again.",
+                                            variant: "destructive",
+                                          });
+                                          return;
+                                        }
+
                                         // Update local state with confirmed DB value
                                         setEvents(prev => prev.map(e =>
-                                          e.id === event.id ? { ...e, is_public: data.is_public } : e
+                                          e.id === event.id ? { ...e, is_public: data[0].is_public } : e
                                         ));
 
                                         toast({
                                           title: "Visibility Updated",
-                                          description: `Event is now ${data.is_public ? 'public' : 'private'}`,
+                                          description: `Event is now ${data[0].is_public ? 'public' : 'private'}`,
                                         });
                                       } catch (error) {
                                         console.error('Error:', error);
@@ -1030,11 +1048,10 @@ const Dashboard = () => {
                                             .from('events')
                                             .update({ status: newStatus })
                                             .eq('id', event.id)
-                                            .select('id, status')
-                                            .single();
+                                            .select('id, status');
 
-                                          if (error || !data) {
-                                            console.error('Error updating status:', error || 'No rows updated');
+                                          if (error) {
+                                            console.error('Error updating status:', error);
                                             toast({
                                               title: "Error",
                                               description: "Failed to update event status",
@@ -1043,8 +1060,18 @@ const Dashboard = () => {
                                             return;
                                           }
 
+                                          if (!data || data.length === 0) {
+                                            console.error('Status update returned 0 rows - possible RLS issue');
+                                            toast({
+                                              title: "Error",
+                                              description: "Failed to save status change. Please try again.",
+                                              variant: "destructive",
+                                            });
+                                            return;
+                                          }
+
                                           setEvents(prev => prev.map(e =>
-                                            e.id === event.id ? { ...e, status: data.status as 'draft' | 'published' } : e
+                                            e.id === event.id ? { ...e, status: data[0].status as 'draft' | 'published' } : e
                                           ));
 
                                           toast({
@@ -1151,11 +1178,10 @@ const Dashboard = () => {
                                                   .from('events')
                                                   .update({ is_public: checked })
                                                   .eq('id', event.id)
-                                                  .select('id, is_public')
-                                                  .single();
+                                                  .select('id, is_public');
 
-                                                if (error || !data) {
-                                                  console.error('Error updating visibility:', error || 'No rows updated');
+                                                if (error) {
+                                                  console.error('Error updating visibility:', error);
                                                   toast({
                                                     title: "Error",
                                                     description: "Failed to update event visibility",
@@ -1164,14 +1190,24 @@ const Dashboard = () => {
                                                   return;
                                                 }
 
+                                                if (!data || data.length === 0) {
+                                                  console.error('Visibility update returned 0 rows - possible RLS issue');
+                                                  toast({
+                                                    title: "Error",
+                                                    description: "Failed to save visibility change. Please try again.",
+                                                    variant: "destructive",
+                                                  });
+                                                  return;
+                                                }
+
                                                 // Update local state with confirmed DB value
                                                 setEvents(prev => prev.map(e =>
-                                                  e.id === event.id ? { ...e, is_public: data.is_public } : e
+                                                  e.id === event.id ? { ...e, is_public: data[0].is_public } : e
                                                 ));
 
                                                 toast({
                                                   title: "Visibility Updated",
-                                                  description: `Event is now ${data.is_public ? 'public' : 'private'}`,
+                                                  description: `Event is now ${data[0].is_public ? 'public' : 'private'}`,
                                                 });
                                               } catch (error) {
                                                 console.error('Error:', error);
