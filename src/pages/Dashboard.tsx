@@ -30,6 +30,25 @@ const Dashboard = () => {
   const hasEditPermission = (event: any) => {
     return isAdmin || event.created_by === currentUser?.id;
   };
+
+  // Update event field via Edge Function (bypasses RLS issues with direct PostgREST)
+  const updateEventField = async (eventId: string, field: 'status' | 'is_public', value: string | boolean) => {
+    const { data, error } = await supabase.functions.invoke('update-event', {
+      body: { eventId, field, value },
+    });
+
+    if (error) {
+      console.error(`Error calling update-event function:`, error);
+      throw new Error(error.message || 'Failed to update event');
+    }
+
+    if (!data?.success) {
+      console.error(`update-event returned failure:`, data);
+      throw new Error(data?.error || 'Failed to update event');
+    }
+
+    return data.event;
+  };
   
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -757,36 +776,10 @@ const Dashboard = () => {
                                     onCheckedChange={async (checked) => {
                                       const newStatus = checked ? 'published' : 'draft';
                                       try {
-                                        const { data, error } = await supabase
-                                          .from('events')
-                                          .update({ status: newStatus })
-                                          .eq('id', event.id)
-                                          .select('id, status');
-
-                                        if (error) {
-                                          console.error('Error updating status:', error);
-                                          toast({
-                                            title: "Error",
-                                            description: "Failed to update event status",
-                                            variant: "destructive",
-                                          });
-                                          return;
-                                        }
-
-                                        if (!data || data.length === 0) {
-                                          console.error('Status update returned 0 rows - possible RLS issue');
-                                          toast({
-                                            title: "Error",
-                                            description: "Failed to save status change. Please try again.",
-                                            variant: "destructive",
-                                          });
-                                          return;
-                                        }
-
+                                        const updated = await updateEventField(event.id, 'status', newStatus);
                                         setEvents(prev => prev.map(e =>
-                                          e.id === event.id ? { ...e, status: data[0].status as 'draft' | 'published' } : e
+                                          e.id === event.id ? { ...e, status: updated.status } : e
                                         ));
-
                                         toast({
                                           title: "Status Updated",
                                           description: `Event is now ${checked ? 'live' : 'a draft'}`,
@@ -904,40 +897,13 @@ const Dashboard = () => {
                                     checked={event.is_public ?? true}
                                     onCheckedChange={async (checked) => {
                                       try {
-                                        const { data, error } = await supabase
-                                          .from('events')
-                                          .update({ is_public: checked })
-                                          .eq('id', event.id)
-                                          .select('id, is_public');
-
-                                        if (error) {
-                                          console.error('Error updating visibility:', error);
-                                          toast({
-                                            title: "Error",
-                                            description: "Failed to update event visibility",
-                                            variant: "destructive",
-                                          });
-                                          return;
-                                        }
-
-                                        if (!data || data.length === 0) {
-                                          console.error('Visibility update returned 0 rows - possible RLS issue');
-                                          toast({
-                                            title: "Error",
-                                            description: "Failed to save visibility change. Please try again.",
-                                            variant: "destructive",
-                                          });
-                                          return;
-                                        }
-
-                                        // Update local state with confirmed DB value
+                                        const updated = await updateEventField(event.id, 'is_public', checked);
                                         setEvents(prev => prev.map(e =>
-                                          e.id === event.id ? { ...e, is_public: data[0].is_public } : e
+                                          e.id === event.id ? { ...e, is_public: updated.is_public } : e
                                         ));
-
                                         toast({
                                           title: "Visibility Updated",
-                                          description: `Event is now ${data[0].is_public ? 'public' : 'private'}`,
+                                          description: `Event is now ${updated.is_public ? 'public' : 'private'}`,
                                         });
                                       } catch (error) {
                                         console.error('Error:', error);
@@ -1044,36 +1010,10 @@ const Dashboard = () => {
                                       onCheckedChange={async (checked) => {
                                         const newStatus = checked ? 'published' : 'draft';
                                         try {
-                                          const { data, error } = await supabase
-                                            .from('events')
-                                            .update({ status: newStatus })
-                                            .eq('id', event.id)
-                                            .select('id, status');
-
-                                          if (error) {
-                                            console.error('Error updating status:', error);
-                                            toast({
-                                              title: "Error",
-                                              description: "Failed to update event status",
-                                              variant: "destructive",
-                                            });
-                                            return;
-                                          }
-
-                                          if (!data || data.length === 0) {
-                                            console.error('Status update returned 0 rows - possible RLS issue');
-                                            toast({
-                                              title: "Error",
-                                              description: "Failed to save status change. Please try again.",
-                                              variant: "destructive",
-                                            });
-                                            return;
-                                          }
-
+                                          const updated = await updateEventField(event.id, 'status', newStatus);
                                           setEvents(prev => prev.map(e =>
-                                            e.id === event.id ? { ...e, status: data[0].status as 'draft' | 'published' } : e
+                                            e.id === event.id ? { ...e, status: updated.status } : e
                                           ));
-
                                           toast({
                                             title: "Status Updated",
                                             description: `Event is now ${checked ? 'live' : 'a draft'}`,
@@ -1174,40 +1114,13 @@ const Dashboard = () => {
                                             checked={event.is_public !== false}
                                             onCheckedChange={async (checked) => {
                                               try {
-                                                const { data, error } = await supabase
-                                                  .from('events')
-                                                  .update({ is_public: checked })
-                                                  .eq('id', event.id)
-                                                  .select('id, is_public');
-
-                                                if (error) {
-                                                  console.error('Error updating visibility:', error);
-                                                  toast({
-                                                    title: "Error",
-                                                    description: "Failed to update event visibility",
-                                                    variant: "destructive",
-                                                  });
-                                                  return;
-                                                }
-
-                                                if (!data || data.length === 0) {
-                                                  console.error('Visibility update returned 0 rows - possible RLS issue');
-                                                  toast({
-                                                    title: "Error",
-                                                    description: "Failed to save visibility change. Please try again.",
-                                                    variant: "destructive",
-                                                  });
-                                                  return;
-                                                }
-
-                                                // Update local state with confirmed DB value
+                                                const updated = await updateEventField(event.id, 'is_public', checked);
                                                 setEvents(prev => prev.map(e =>
-                                                  e.id === event.id ? { ...e, is_public: data[0].is_public } : e
+                                                  e.id === event.id ? { ...e, is_public: updated.is_public } : e
                                                 ));
-
                                                 toast({
                                                   title: "Visibility Updated",
-                                                  description: `Event is now ${data[0].is_public ? 'public' : 'private'}`,
+                                                  description: `Event is now ${updated.is_public ? 'public' : 'private'}`,
                                                 });
                                               } catch (error) {
                                                 console.error('Error:', error);
