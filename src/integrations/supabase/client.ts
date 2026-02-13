@@ -27,8 +27,13 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
 });
 
 // Admin client using service role key — bypasses RLS.
-// Used for event updates where the authenticated role lacks UPDATE grants.
+// IMPORTANT: auth must be disabled so the client doesn't pick up the
+// user's session from localStorage and override the service role key.
 export const supabaseAdmin = createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
   db: {
     schema: 'public',
   },
