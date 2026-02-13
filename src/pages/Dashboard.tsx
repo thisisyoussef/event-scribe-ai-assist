@@ -750,18 +750,59 @@ const Dashboard = () => {
                               </p>
                             </div>
                             <div className="flex flex-col gap-1">
-                              <Badge 
-                                variant="secondary"
-                                className={`text-[10px] px-1.5 py-0.5 ${
-                                  getEventStatus(event) === "published" 
-                                    ? "bg-green-100 text-green-700 border-green-200" 
-                                    : getEventStatus(event) === "draft"
-                                    ? "bg-yellow-100 text-yellow-700 border-yellow-200"
-                                    : "bg-gray-200 text-gray-800 border-gray-300"
-                                }`}
-                              >
-                                {getEventStatus(event) === "published" ? "Live" : getEventStatus(event) === "draft" ? "Draft" : "Past"}
-                              </Badge>
+                              {!isPastEvent(event) ? (
+                                <div className="flex items-center space-x-1.5">
+                                  <Switch
+                                    checked={event.status === 'published'}
+                                    onCheckedChange={async (checked) => {
+                                      const newStatus = checked ? 'published' : 'draft';
+                                      try {
+                                        const { error } = await supabase
+                                          .from('events')
+                                          .update({ status: newStatus })
+                                          .eq('id', event.id);
+
+                                        if (error) {
+                                          console.error('Error updating status:', error);
+                                          toast({
+                                            title: "Error",
+                                            description: "Failed to update event status",
+                                            variant: "destructive",
+                                          });
+                                          return;
+                                        }
+
+                                        setEvents(prev => prev.map(e =>
+                                          e.id === event.id ? { ...e, status: newStatus } : e
+                                        ));
+
+                                        toast({
+                                          title: "Status Updated",
+                                          description: `Event is now ${checked ? 'live' : 'a draft'}`,
+                                        });
+                                      } catch (error) {
+                                        console.error('Error:', error);
+                                        toast({
+                                          title: "Error",
+                                          description: "Failed to update event status",
+                                          variant: "destructive",
+                                        });
+                                      }
+                                    }}
+                                    disabled={!hasEditPermission(event)}
+                                  />
+                                  <span className={`text-[10px] font-medium ${event.status === 'published' ? 'text-green-700' : 'text-yellow-700'}`}>
+                                    {event.status === 'published' ? 'Live' : 'Draft'}
+                                  </span>
+                                </div>
+                              ) : (
+                                <Badge
+                                  variant="secondary"
+                                  className="text-[10px] px-1.5 py-0.5 bg-gray-200 text-gray-800 border-gray-300"
+                                >
+                                  Past
+                                </Badge>
+                              )}
                             </div>
                           </div>
                           
@@ -885,7 +926,7 @@ const Dashboard = () => {
                                         });
                                       }
                                     }}
-                                    disabled={!hasEditPermission}
+                                    disabled={!hasEditPermission(event)}
                                   />
                                   <span className="text-xs text-gray-600">
                                     {event.is_public ? 'Public' : 'Private'}
@@ -974,18 +1015,59 @@ const Dashboard = () => {
                                 </div>
                               </td>
                               <td className="py-4 px-6">
-                                <Badge 
-                                  variant="secondary"
-                                  className={`text-[10px] px-1.5 py-0.5 ${
-                                    getEventStatus(event) === "published" 
-                                      ? "bg-green-100 text-green-700 border-green-200" 
-                                      : getEventStatus(event) === "draft"
-                                      ? "bg-yellow-100 text-yellow-700 border-yellow-200"
-                                      : "bg-gray-200 text-gray-800 border-gray-300"
-                                  }`}
-                                >
-                                  {getEventStatus(event) === "published" ? "Live" : getEventStatus(event) === "draft" ? "Draft" : "Past"}
-                                </Badge>
+                                {!isPastEvent(event) ? (
+                                  <div className="flex items-center space-x-2">
+                                    <Switch
+                                      checked={event.status === 'published'}
+                                      onCheckedChange={async (checked) => {
+                                        const newStatus = checked ? 'published' : 'draft';
+                                        try {
+                                          const { error } = await supabase
+                                            .from('events')
+                                            .update({ status: newStatus })
+                                            .eq('id', event.id);
+
+                                          if (error) {
+                                            console.error('Error updating status:', error);
+                                            toast({
+                                              title: "Error",
+                                              description: "Failed to update event status",
+                                              variant: "destructive",
+                                            });
+                                            return;
+                                          }
+
+                                          setEvents(prev => prev.map(e =>
+                                            e.id === event.id ? { ...e, status: newStatus } : e
+                                          ));
+
+                                          toast({
+                                            title: "Status Updated",
+                                            description: `Event is now ${checked ? 'live' : 'a draft'}`,
+                                          });
+                                        } catch (error) {
+                                          console.error('Error:', error);
+                                          toast({
+                                            title: "Error",
+                                            description: "Failed to update event status",
+                                            variant: "destructive",
+                                          });
+                                        }
+                                      }}
+                                      disabled={!hasEditPermission(event)}
+                                    />
+                                    <span className={`text-xs whitespace-nowrap ${event.status === 'published' ? 'text-green-700' : 'text-yellow-700'}`}>
+                                      {event.status === 'published' ? 'Live' : 'Draft'}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-[10px] px-1.5 py-0.5 bg-gray-200 text-gray-800 border-gray-300"
+                                  >
+                                    Past
+                                  </Badge>
+                                )}
                               </td>
                               <td className="py-4 px-6">
                                 <div className="flex items-center space-x-2">
