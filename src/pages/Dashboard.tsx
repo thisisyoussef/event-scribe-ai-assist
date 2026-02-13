@@ -9,7 +9,7 @@ import Navigation from "@/components/Navigation";
 import { useNavigate } from "react-router-dom";
 import { Plus, Calendar, Users, Eye, Edit, Copy, Phone, Trash2, Search, TrendingUp, FileText, Globe, UserCheck, ArrowUpRight, Crown, LogIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase, supabaseAdmin } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { displayTimeInMichigan } from "@/utils/timezoneUtils";
 import { Event, VolunteerRole, Volunteer } from "@/types/database";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -27,45 +27,37 @@ const Dashboard = () => {
   const [creatorNames, setCreatorNames] = useState<Record<string, string>>({});
 
   // Check if user can edit events (admin or event creator)
-  // While admin status is still loading, allow actions (they use supabaseAdmin anyway)
+  // While admin status is still loading, allow actions (they use SECURITY DEFINER RPCs anyway)
   const hasEditPermission = (event: any) => {
     if (adminLoading) return true;
     return isAdmin || event.created_by === currentUser?.id;
   };
 
-  // Update event field using admin client (bypasses RLS)
+  // Update event field using SECURITY DEFINER RPC (bypasses RLS server-side)
   const updateEventField = async (eventId: string, field: 'status' | 'is_public', value: string | boolean) => {
     console.log(`Updating event ${eventId}: ${field} = ${value}`);
 
-    // Try admin client first (bypasses RLS)
-    const { data, error } = await supabaseAdmin
-      .from('events')
-      .update({ [field]: value })
-      .eq('id', eventId)
-      .select('id, status, is_public')
-      .single();
-
-    if (error || !data) {
-      console.error(`Admin client failed for ${field}:`, error || 'No rows returned');
-
-      // Fallback to regular client
-      console.log('Trying regular client as fallback...');
-      const { data: fallbackData, error: fallbackError } = await supabase
-        .from('events')
-        .update({ [field]: value })
-        .eq('id', eventId)
-        .select('id, status, is_public')
-        .single();
-
-      if (fallbackError || !fallbackData) {
-        console.error(`Regular client also failed for ${field}:`, fallbackError || 'No rows returned');
-        throw new Error(fallbackError?.message || error?.message || 'Failed to update event');
+    if (field === 'status') {
+      const { data, error } = await supabase.rpc('admin_update_event_status', {
+        p_event_id: eventId,
+        p_status: value as string,
+      });
+      if (error) {
+        console.error('RPC admin_update_event_status failed:', error);
+        throw new Error(error.message);
       }
-
-      return fallbackData;
+      return data as { id: string; status: string; is_public: boolean };
+    } else {
+      const { data, error } = await supabase.rpc('admin_update_event_visibility', {
+        p_event_id: eventId,
+        p_is_public: value as boolean,
+      });
+      if (error) {
+        console.error('RPC admin_update_event_visibility failed:', error);
+        throw new Error(error.message);
+      }
+      return data as { id: string; status: string; is_public: boolean };
     }
-
-    return data;
   };
   
   const [loading, setLoading] = useState(true);

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAdminStatus } from "@/hooks/useAdminStatus";
-import { supabase, supabaseAdmin } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { Event } from "@/types/database";
 
 export const useEventDeletion = () => {
@@ -13,7 +13,7 @@ export const useEventDeletion = () => {
 
   console.log('useEventDeletion: isAdmin status:', isAdmin);
 
-  // Soft delete an event
+  // Soft delete an event using SECURITY DEFINER RPC
   const softDeleteEvent = async (eventId: string, eventTitle: string): Promise<boolean> => {
     setIsDeleting(true);
     try {
@@ -29,19 +29,16 @@ export const useEventDeletion = () => {
 
       console.log('Soft delete attempt:', { eventId, userId: user.id, isAdmin });
 
-      // Use admin client to bypass RLS issues
-      const { data, error } = await supabaseAdmin
-        .from('events')
-        .update({ deleted_at: new Date().toISOString(), deleted_by: user.id })
-        .eq('id', eventId)
-        .select('id')
-        .single();
+      const { data, error } = await supabase.rpc('soft_delete_event', {
+        event_id: eventId,
+        user_id: user.id
+      });
 
       if (error) {
         console.error('Error soft deleting event:', error);
         toast({
           title: "Error",
-          description: "Failed to delete event. Please try again.",
+          description: `Failed to delete event: ${error.message}`,
           variant: "destructive",
         });
         return false;
@@ -50,7 +47,7 @@ export const useEventDeletion = () => {
       if (!data) {
         toast({
           title: "Error",
-          description: "Event not found.",
+          description: "Event not found or already deleted.",
           variant: "destructive",
         });
         return false;
@@ -75,7 +72,7 @@ export const useEventDeletion = () => {
     }
   };
 
-  // Restore a soft deleted event
+  // Restore a soft deleted event using SECURITY DEFINER RPC
   const restoreEvent = async (eventId: string, eventTitle: string): Promise<boolean> => {
     setIsRestoring(true);
     try {
@@ -89,19 +86,25 @@ export const useEventDeletion = () => {
         return false;
       }
 
-      // Use admin client to bypass RLS issues
-      const { data, error } = await supabaseAdmin
-        .from('events')
-        .update({ deleted_at: null, deleted_by: null })
-        .eq('id', eventId)
-        .select('id')
-        .single();
+      const { data, error } = await supabase.rpc('restore_event', {
+        event_id: eventId,
+        user_id: user.id
+      });
 
-      if (error || !data) {
+      if (error) {
         console.error('Error restoring event:', error);
         toast({
           title: "Error",
-          description: "Failed to restore event. Please try again.",
+          description: `Failed to restore event: ${error.message}`,
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      if (!data) {
+        toast({
+          title: "Error",
+          description: "Event not found or not deleted.",
           variant: "destructive",
         });
         return false;
@@ -126,7 +129,7 @@ export const useEventDeletion = () => {
     }
   };
 
-  // Permanently delete an event (for events older than 30 days)
+  // Permanently delete an event
   const permanentlyDeleteEvent = async (eventId: string, eventTitle: string): Promise<boolean> => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -139,8 +142,7 @@ export const useEventDeletion = () => {
         return false;
       }
 
-      // Permanently delete the event using admin client
-      const { error: deleteError } = await supabaseAdmin
+      const { error: deleteError } = await supabase
         .from('events')
         .delete()
         .eq('id', eventId);
@@ -149,7 +151,7 @@ export const useEventDeletion = () => {
         console.error('Error permanently deleting event:', deleteError);
         toast({
           title: "Error",
-          description: "Failed to permanently delete event. Please try again.",
+          description: `Failed to permanently delete event: ${deleteError.message}`,
           variant: "destructive",
         });
         return false;
@@ -186,16 +188,16 @@ export const useEventDeletion = () => {
         return false;
       }
 
-      // Get all soft-deleted events (all events if admin, only user's events if not admin)
-      const eventsQuery = supabaseAdmin
+      // Get all soft-deleted events
+      const eventsQuery = supabase
         .from('events')
         .select('id, title')
         .not('deleted_at', 'is', null);
-      
+
       if (!isAdmin) {
         eventsQuery.eq('created_by', user.id);
       }
-      
+
       const { data: softDeletedEvents, error: fetchEventsError } = await eventsQuery;
 
       if (fetchEventsError) {
@@ -208,16 +210,16 @@ export const useEventDeletion = () => {
         return false;
       }
 
-      // Get all soft-deleted templates (all templates if admin, only user's templates if not admin)
-      const templatesQuery = supabaseAdmin
+      // Get all soft-deleted templates
+      const templatesQuery = supabase
         .from('event_templates')
         .select('id, name')
         .not('deleted_at', 'is', null);
-      
+
       if (!isAdmin) {
         templatesQuery.eq('user_id', user.id);
       }
-      
+
       const { data: softDeletedTemplates, error: fetchTemplatesError } = await templatesQuery;
 
       if (fetchTemplatesError) {
@@ -243,15 +245,15 @@ export const useEventDeletion = () => {
 
       // Permanently delete all soft-deleted events
       if (totalEvents > 0) {
-        const deleteEventsQuery = supabaseAdmin
+        const deleteEventsQuery = supabase
           .from('events')
           .delete()
           .not('deleted_at', 'is', null);
-        
+
         if (!isAdmin) {
           deleteEventsQuery.eq('created_by', user.id);
         }
-        
+
         const { error: deleteEventsError } = await deleteEventsQuery;
 
         if (deleteEventsError) {
@@ -267,15 +269,15 @@ export const useEventDeletion = () => {
 
       // Permanently delete all soft-deleted templates
       if (totalTemplates > 0) {
-        const deleteTemplatesQuery = supabaseAdmin
+        const deleteTemplatesQuery = supabase
           .from('event_templates')
           .delete()
           .not('deleted_at', 'is', null);
-        
+
         if (!isAdmin) {
           deleteTemplatesQuery.eq('user_id', user.id);
         }
-        
+
         const { error: deleteTemplatesError } = await deleteTemplatesQuery;
 
         if (deleteTemplatesError) {
@@ -323,8 +325,8 @@ export const useEventDeletion = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];
 
-      // If admin, get all deleted events; otherwise, only user's events
-      const query = supabaseAdmin
+      // Use regular client - RLS should allow reading deleted events
+      const query = supabase
         .from('events')
         .select(`
           *,
