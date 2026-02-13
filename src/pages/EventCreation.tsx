@@ -16,6 +16,8 @@ import { Switch } from "@/components/ui/switch";
 import { Toggle } from "@/components/ui/toggle";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import ItineraryEditor from "@/components/event-creation/ItineraryEditor";
+import AITextToEventInput from "@/components/event-creation/AITextToEventInput";
+import type { ParsedEventData } from "@/utils/openaiClient";
 import AdditionalDetailsWizard, { AdditionalDetails } from "@/components/event-creation/AdditionalDetailsWizard";
 import PreEventTasksManager from "@/components/event-creation/PreEventTasksManager";
 import TemplateSelector from "@/components/event-creation/TemplateSelector";
@@ -599,97 +601,110 @@ const EventCreation = () => {
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     const eventDescription = eventData.description.toLowerCase();
-    const startTime = eventData.startTime;
-    const endTime = eventData.endTime;
+    const evtStartTime = eventData.startTime;
+    const evtEndTime = eventData.endTime;
 
     // Parse start and end times
-    const [startHour, startMin] = startTime.split(':').map(Number);
-    const [endHour, endMin] = endTime.split(':').map(Number);
+    const [startHour, startMin] = evtStartTime.split(':').map(Number);
+    const [endHour, endMin] = evtEndTime.split(':').map(Number);
     const durationHours = endHour - startHour + (endMin - startMin) / 60;
-
-    const generatedItinerary: ItineraryItem[] = [];
-
-    // Setup time (1 hour before)
-    const setupTime = addTimeMinutes(startTime, -60);
-    generatedItinerary.push({
-      id: crypto.randomUUID(),
-      time: setupTime,
-      title: "Setup & Preparation",
-      description: "Arrange venue, setup equipment, and prepare materials",
-      volunteerRoles: []
-    });
 
     // Check if it's a food event
     const hasFood = eventDescription.includes('food') || eventDescription.includes('meal') ||
       eventDescription.includes('dinner') || eventDescription.includes('lunch') ||
       eventDescription.includes('iftar') || eventDescription.includes('breakfast');
 
-    // Registration/Welcome
-    generatedItinerary.push({
+    // Generate roles directly instead of empty timeline items
+    const roles: VolunteerRole[] = [];
+
+    const makeRole = (label: string, start: string, end: string, flexible: number) => ({
       id: crypto.randomUUID(),
-      time: addTimeMinutes(startTime, -15),
-      title: "Registration & Welcome",
-      description: "Guest check-in and welcome",
-      volunteerRoles: []
+      roleLabel: label,
+      slotsBrother: 0,
+      slotsSister: 0,
+      slotsFlexible: flexible,
+      shiftStartTime: start,
+      shiftEndTime: end,
+      notes: "",
+      suggestedPOC: [] as string[]
     });
 
-    // Event start
-    generatedItinerary.push({
-      id: crypto.randomUUID(),
-      time: startTime,
-      title: eventData.title + " Begins",
-      description: "Main event activities commence",
-      volunteerRoles: []
-    });
+    // Setup crew
+    const setupTime = addTimeMinutes(evtStartTime, -60);
+    roles.push(makeRole("Setup Crew", setupTime, evtStartTime, 3));
 
-    // If it's a long event (>2 hours), add mid-event activities
-    if (durationHours > 2) {
-      const midTime = addTimeMinutes(startTime, Math.floor(durationHours * 30));
+    // Greeters/Registration
+    roles.push(makeRole("Greeter / Registration", addTimeMinutes(evtStartTime, -15), addTimeMinutes(evtStartTime, 30), 2));
 
-      if (hasFood) {
-        generatedItinerary.push({
-          id: crypto.randomUUID(),
-          time: midTime,
-          title: "Meal Service",
-          description: "Serve refreshments or meals to attendees",
-          volunteerRoles: []
-        });
-      } else {
-        generatedItinerary.push({
-          id: crypto.randomUUID(),
-          time: midTime,
-          title: "Break & Networking",
-          description: "Short break for attendees to network and refresh",
-          volunteerRoles: []
-        });
-      }
+    // Food-specific roles
+    if (hasFood) {
+      const midTime = addTimeMinutes(evtStartTime, Math.floor(durationHours * 30));
+      roles.push(makeRole("Food Server", midTime, addTimeMinutes(midTime, 60), 3));
     }
 
-    // Event conclusion
-    generatedItinerary.push({
-      id: crypto.randomUUID(),
-      time: addTimeMinutes(endTime, -15),
-      title: "Closing Remarks",
-      description: "Final announcements and thank you",
-      volunteerRoles: []
-    });
+    // If long event, add ushers
+    if (durationHours > 2) {
+      roles.push(makeRole("Usher / Coordinator", evtStartTime, evtEndTime, 2));
+    }
 
-    // Cleanup
-    generatedItinerary.push({
+    // Cleanup crew
+    roles.push(makeRole("Cleanup Crew", evtEndTime, addTimeMinutes(evtEndTime, 60), 3));
+
+    // Wrap roles into a single itinerary item (backward compat)
+    const generatedItinerary: ItineraryItem[] = [{
       id: crypto.randomUUID(),
-      time: addTimeMinutes(endTime, 15),
-      title: "Cleanup & Breakdown",
-      description: "Clean venue and pack up equipment",
-      volunteerRoles: []
-    });
+      time: evtStartTime,
+      title: "",
+      description: "",
+      volunteerRoles: roles
+    }];
 
     setItinerary(generatedItinerary);
     setIsLoading(false);
 
     toast({
-      title: "Itinerary Generated!",
-      description: "Generated a custom itinerary based on your event details.",
+      title: "Roles Generated!",
+      description: `Generated ${roles.length} volunteer roles based on your event details.`,
     });
+  };
+
+  const handleAIEventParsed = (data: ParsedEventData) => {
+    // Fill in event data from AI parsed result
+    setEventData(prev => ({
+      ...prev,
+      ...(data.title && { title: data.title }),
+      ...(data.description && { description: data.description }),
+      ...(data.date && { date: data.date }),
+      ...(data.startTime && { startTime: data.startTime }),
+      ...(data.endTime && { endTime: data.endTime }),
+      ...(data.location && { location: data.location }),
+    }));
+
+    // Convert parsed roles into the itinerary format
+    if (data.roles && data.roles.length > 0) {
+      const roles: VolunteerRole[] = data.roles.map(role => ({
+        id: generateId(),
+        roleLabel: role.roleLabel,
+        slotsBrother: role.slotsBrother,
+        slotsSister: role.slotsSister,
+        slotsFlexible: role.slotsFlexible,
+        shiftStartTime: role.shiftStartTime || data.startTime || "00:00",
+        shiftEndTime: role.shiftEndTime || data.endTime || "01:00",
+        notes: role.notes || "",
+        suggestedPOC: [],
+      }));
+
+      // Wrap in a single itinerary item container
+      setItinerary([{
+        id: generateId(),
+        time: data.startTime || "00:00",
+        title: "",
+        description: "",
+        volunteerRoles: roles,
+      }]);
+    }
+
+    setHasUnsavedChanges(true);
   };
 
   const handleTemplateSelect = (template: any) => {
@@ -1040,8 +1055,7 @@ const EventCreation = () => {
                     slots_flexible: role.slotsFlexible,
                     notes: role.notes,
                     suggested_poc: role.suggestedPOC,
-                    // Ensure role start aligns with its itinerary item's time
-                    shift_start: item.time,
+                    shift_start: role.shiftStartTime,
                     shift_end_time: role.shiftEndTime,
                     shift_end: role.shiftEndTime,
                     itinerary_id: resolvedItinId
@@ -1060,8 +1074,7 @@ const EventCreation = () => {
                     slots_flexible: role.slotsFlexible,
                     notes: role.notes,
                     suggested_poc: role.suggestedPOC,
-                    // Ensure role start aligns with its itinerary item's time
-                    shift_start: item.time,
+                    shift_start: role.shiftStartTime,
                     shift_end_time: role.shiftEndTime,
                     shift_end: role.shiftEndTime,
                     itinerary_id: resolvedItinId
@@ -1833,14 +1846,14 @@ const EventCreation = () => {
               </p>
               {/* Template Indicator */}
               {location.state?.templateId && location.state?.templateName && (
-                <div className="mt-2 flex items-center gap-2 text-sm text-blue-600 bg-blue-500/10 px-3 py-2 rounded-lg border border-blue-200">
+                <div className="mt-2 flex items-center gap-2 text-sm text-gold-400 bg-gold-400/10 px-3 py-2 rounded-lg border border-gold-400/20">
                   <FileText className="w-4 h-4" />
                   <span>Working from template: <strong>{location.state.templateName}</strong></span>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => navigate(location.pathname, { state: {} })}
-                    className="h-6 px-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100"
+                    className="h-6 px-2 text-gold-400 hover:text-gold-300 hover:bg-gold-400/15"
                   >
                     Clear
                   </Button>
@@ -1941,6 +1954,14 @@ const EventCreation = () => {
                 {/* Step 1: Basic Info */}
                 {logicalCurrentStep === 1 && (
                   <div className="space-y-5 md:space-y-6">
+                    {/* AI Text-to-Event */}
+                    {!eventId && (
+                      <AITextToEventInput
+                        onEventParsed={handleAIEventParsed}
+                        disabled={eventId && !hasEditPermission}
+                      />
+                    )}
+
                     {/* Event Name Section */}
                     <SectionCard title="Event Name" className="md:bg-transparent md:border-0 md:p-0 md:shadow-none">
                       <div className="space-y-2">
@@ -1952,7 +1973,7 @@ const EventCreation = () => {
                           value={eventData.title}
                           onChange={(e) => setEventData({ ...eventData, title: e.target.value })}
                           placeholder="e.g., Community Iftar 2024"
-                          className="h-12 md:h-11 rounded-xl border-2 border-white/10 focus-visible:ring-umma-500 text-lg md:text-sm font-medium placeholder:text-white/30 placeholder:font-normal"
+                          className="h-12 md:h-11 rounded-xl border-2 border-white/10 focus-visible:ring-gold-400 text-lg md:text-sm font-medium placeholder:text-white/30 placeholder:font-normal"
                           disabled={eventId && !hasEditPermission}
                         />
                       </div>
@@ -1973,7 +1994,7 @@ const EventCreation = () => {
                             id="date-mobile"
                             value={eventData.date || ""}
                             onChange={(e) => setEventData({ ...eventData, date: e.target.value })}
-                            className="md:hidden h-12 w-full block bg-white/5 text-foreground rounded-xl border-2 border-white/10 focus-visible:ring-umma-500 text-base font-medium appearance-none"
+                            className="md:hidden h-12 w-full block bg-white/5 text-foreground rounded-xl border-2 border-white/10 focus-visible:ring-gold-400 text-base font-medium appearance-none"
                             style={{ minHeight: '3rem' }}
                             disabled={eventId && !hasEditPermission}
                           />
@@ -1984,7 +2005,7 @@ const EventCreation = () => {
                               <PopoverTrigger asChild>
                                 <Button
                                   variant="outline"
-                                  className="w-full justify-start text-left font-normal h-11 rounded-xl border-2 border-umma-200 hover:border-umma-500 text-sm bg-white/5"
+                                  className="w-full justify-start text-left font-normal h-11 rounded-xl border-2 border-white/10 hover:border-white/20 text-sm bg-white/5"
                                   disabled={eventId && !hasEditPermission}
                                 >
                                   <Calendar className="mr-2 h-4 w-4" />
@@ -2025,7 +2046,7 @@ const EventCreation = () => {
                                 }
                                 setEventData({ ...eventData, startTime: newStart, endTime: newEnd });
                               }}
-                              className="md:hidden h-12 w-full block bg-white/5 text-foreground rounded-xl border-2 border-white/10 focus-visible:ring-umma-500 text-base font-medium appearance-none"
+                              className="md:hidden h-12 w-full block bg-white/5 text-foreground rounded-xl border-2 border-white/10 focus-visible:ring-gold-400 text-base font-medium appearance-none"
                               style={{ minHeight: '3rem' }}
                               disabled={eventId && !hasEditPermission}
                             />
@@ -2043,7 +2064,7 @@ const EventCreation = () => {
                                   }
                                   setEventData({ ...eventData, startTime: newStart, endTime: newEnd });
                                 }}
-                                className="h-11 border-2 border-white/10 focus-visible:ring-umma-500 text-sm"
+                                className="h-11 border-2 border-white/10 focus-visible:ring-gold-400 text-sm"
                                 disabled={eventId && !hasEditPermission}
                               />
                             </div>
@@ -2062,7 +2083,7 @@ const EventCreation = () => {
                               onChange={(e) => {
                                 setEventData({ ...eventData, endTime: e.target.value });
                               }}
-                              className="md:hidden h-12 w-full block bg-white/5 text-foreground rounded-xl border-2 border-white/10 focus-visible:ring-umma-500 text-base font-medium appearance-none"
+                              className="md:hidden h-12 w-full block bg-white/5 text-foreground rounded-xl border-2 border-white/10 focus-visible:ring-gold-400 text-base font-medium appearance-none"
                               style={{ minHeight: '3rem' }}
                               disabled={eventId && !hasEditPermission}
                             />
@@ -2075,7 +2096,7 @@ const EventCreation = () => {
                                 onChange={(newEnd) => {
                                   setEventData({ ...eventData, endTime: newEnd });
                                 }}
-                                className="h-11 border-2 border-white/10 focus-visible:ring-umma-500 text-sm"
+                                className="h-11 border-2 border-white/10 focus-visible:ring-gold-400 text-sm"
                                 disabled={eventId && !hasEditPermission}
                               />
                             </div>
@@ -2084,7 +2105,7 @@ const EventCreation = () => {
 
                         {/* Overnight event indicator */}
                         {eventData.startTime && eventData.endTime && isOvernightEvent(eventData.startTime, eventData.endTime) && (
-                          <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-500/10 p-3 rounded-xl">
+                          <div className="flex items-center gap-2 text-sm text-gold-400 bg-gold-400/10 p-3 rounded-xl">
                             <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -2127,7 +2148,7 @@ const EventCreation = () => {
                           onChange={(e) => setEventData({ ...eventData, description: e.target.value })}
                           placeholder="Describe your event..."
                           rows={4}
-                          className="border-2 border-white/10 focus-visible:ring-umma-500 rounded-xl resize-none text-base md:text-sm min-h-[120px] md:min-h-[100px]"
+                          className="border-2 border-white/10 focus-visible:ring-gold-400 rounded-xl resize-none text-base md:text-sm min-h-[120px] md:min-h-[100px]"
                           disabled={eventId && !hasEditPermission}
                         />
                       </div>
@@ -2197,7 +2218,7 @@ const EventCreation = () => {
                   <div className="space-y-5 md:space-y-6">
                     {/* Mobile: Beautiful Event Preview Card */}
                     <div className="md:hidden">
-                      <div className="bg-gradient-to-br from-umma-50 via-white to-white/5 rounded-3xl border border-white/10 shadow-lg overflow-hidden">
+                      <div className="bg-gradient-to-br from-navy-800 via-navy-800/90 to-navy-800/80 rounded-3xl border border-white/10 shadow-lg overflow-hidden">
                         {/* Event Header */}
                         <div className="p-5 pb-4">
                           <h2 className="text-2xl font-bold text-foreground leading-tight">
@@ -2207,14 +2228,14 @@ const EventCreation = () => {
                           {/* Date & Time Badge */}
                           <div className="flex flex-wrap items-center gap-2 mt-3">
                             <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-xl border border-white/10 text-sm font-medium text-white/70">
-                              <Calendar className="w-4 h-4 text-umma-500" />
+                              <Calendar className="w-4 h-4 text-gold-400" />
                               {eventData.date ? dateFromYMDLocal(eventData.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : "No date"}
                             </div>
                             <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-xl border border-white/10 text-sm font-medium text-white/70">
-                              <Clock className="w-4 h-4 text-umma-500" />
+                              <Clock className="w-4 h-4 text-gold-400" />
                               {formatTime24To12(eventData.startTime) || "--:--"} - {formatTime24To12(eventData.endTime) || "--:--"}
                               {eventData.startTime && eventData.endTime && isOvernightEvent(eventData.startTime, eventData.endTime) && (
-                                <span className="text-xs text-blue-600">(+1)</span>
+                                <span className="text-xs text-gold-400/70">(+1)</span>
                               )}
                             </div>
                           </div>
@@ -2231,7 +2252,7 @@ const EventCreation = () => {
                           <div className="px-5 pb-5">
                             <div className="bg-white/5 rounded-2xl border border-white/10 p-4">
                               <div className="flex items-center gap-2 mb-3">
-                                <Users className="w-5 h-5 text-umma-500" />
+                                <Users className="w-5 h-5 text-gold-400" />
                                 <span className="text-sm font-semibold text-white/70">Volunteer Roles</span>
                               </div>
                               <div className="space-y-2">
@@ -2249,7 +2270,7 @@ const EventCreation = () => {
                               {/* Total */}
                               <div className="flex items-center justify-between pt-3 mt-2 border-t border-white/10">
                                 <span className="text-sm font-semibold text-white/50">Total volunteers</span>
-                                <span className="text-lg font-bold text-umma-600">
+                                <span className="text-lg font-bold text-gold-400">
                                   {itinerary.reduce((total, item) =>
                                     total + item.volunteerRoles.reduce((roleTotal, role) =>
                                       roleTotal + role.slotsBrother + role.slotsSister + (role.slotsFlexible || 0), 0
@@ -2298,7 +2319,7 @@ const EventCreation = () => {
                                 <span>
                                   {formatTime24To12(eventData.startTime)} - {formatTime24To12(eventData.endTime)}
                                   {eventData.startTime && eventData.endTime && isOvernightEvent(eventData.startTime, eventData.endTime) && (
-                                    <span className="ml-2 text-blue-600 text-xs">(overnight)</span>
+                                    <span className="ml-2 text-gold-400/70 text-xs">(overnight)</span>
                                   )}
                                 </span>
                               </div>
@@ -2358,7 +2379,7 @@ const EventCreation = () => {
                                 type="time"
                                 value={eventData.dayBeforeTime}
                                 onChange={(e) => setEventData(prev => ({ ...prev, dayBeforeTime: e.target.value }))}
-                                className="h-12 md:h-10 border-white/10 md:border-white/10 focus-visible:ring-umma-500 md:focus-visible:ring-gold-400 rounded-xl md:rounded-lg"
+                                className="h-12 md:h-10 border-white/10 md:border-white/10 focus-visible:ring-gold-400 md:focus-visible:ring-gold-400 rounded-xl md:rounded-lg"
                                 disabled={eventId && !hasEditPermission}
                               />
                             </div>
@@ -2369,7 +2390,7 @@ const EventCreation = () => {
                                 type="time"
                                 value={eventData.dayOfTime}
                                 onChange={(e) => setEventData(prev => ({ ...prev, dayOfTime: e.target.value }))}
-                                className="h-12 md:h-10 border-white/10 md:border-white/10 focus-visible:ring-umma-500 md:focus-visible:ring-gold-400 rounded-xl md:rounded-lg"
+                                className="h-12 md:h-10 border-white/10 md:border-white/10 focus-visible:ring-gold-400 md:focus-visible:ring-gold-400 rounded-xl md:rounded-lg"
                                 disabled={eventId && !hasEditPermission}
                               />
                             </div>
@@ -2458,7 +2479,7 @@ const EventCreation = () => {
                                   <span>
                                     {formatTime24To12(eventData.startTime) || '--:--'} - {formatTime24To12(eventData.endTime) || '--:--'}
                                     {eventData.startTime && eventData.endTime && isOvernightEvent(eventData.startTime, eventData.endTime) && (
-                                      <span className="ml-2 text-blue-600 text-xs">(overnight)</span>
+                                      <span className="ml-2 text-gold-400/70 text-xs">(overnight)</span>
                                     )}
                                   </span>
                                 </div>

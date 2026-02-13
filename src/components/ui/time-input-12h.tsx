@@ -53,7 +53,7 @@ export function TimeInput12h({ value, onChange, disabled, className, id }: TimeI
         </SelectContent>
       </Select>
 
-      <span className="text-white/30 md:text-umma-600 text-xl md:text-base font-bold">:</span>
+      <span className="text-white/30 md:text-gold-400 text-xl md:text-base font-bold">:</span>
 
       <Select value={minute} onValueChange={handleMinuteChange} disabled={disabled}>
         <SelectTrigger className="flex-1 md:w-20 h-14 md:h-11 text-base md:text-sm font-medium border md:border border-white/10 md:border-input rounded-2xl md:rounded-lg">

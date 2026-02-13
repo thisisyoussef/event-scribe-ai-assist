@@ -61,8 +61,8 @@ const VolunteerRolesList = ({
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-umma-800 mb-2">Volunteer Opportunities</h2>
-          <p className="text-umma-600">Choose a role and sign up to help make this event successful!</p>
+          <h2 className="text-2xl font-bold text-gold-300 mb-2">Volunteer Opportunities</h2>
+          <p className="text-white/60">Choose a role and sign up to help make this event successful!</p>
         </div>
         
         <div className="flex gap-2">
@@ -70,7 +70,7 @@ const VolunteerRolesList = ({
             onClick={copySignupLink}
             variant="outline"
             size={isMobile ? "sm" : "default"}
-            className="border-umma-500 text-umma-700 hover:bg-umma-50"
+            className="border-gold-400/20 text-gold-400 hover:bg-gold-400/10"
           >
             <Copy className="w-4 h-4 mr-2" />
             Copy Link
@@ -79,7 +79,7 @@ const VolunteerRolesList = ({
             onClick={shareSignupLink}
             variant="outline"
             size={isMobile ? "sm" : "default"}
-            className="border-umma-500 text-umma-700 hover:bg-umma-50"
+            className="border-gold-400/20 text-gold-400 hover:bg-gold-400/10"
           >
             <Share2 className="w-4 h-4 mr-2" />
             Share
@@ -94,12 +94,12 @@ const VolunteerRolesList = ({
           const remainingSlots = getRemainingSlots(role);
 
           return (
-            <Card key={role.id} className="border-umma-200 shadow-sm hover:shadow-md transition-shadow">
+            <Card key={role.id} className="border-white/10 shadow-sm hover:shadow-md transition-shadow">
               <CardHeader className="pb-4">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div className="flex-1">
-                    <CardTitle className="text-umma-800 text-xl mb-2">{role.role_label}</CardTitle>
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-umma-600">
+                    <CardTitle className="text-gold-300 text-xl mb-2">{role.role_label}</CardTitle>
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-white/60">
                       <div className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
                         <span>{formatTime24To12(role.shift_start)} - {formatTime24To12(role.shift_end)}</span>
@@ -120,7 +120,7 @@ const VolunteerRolesList = ({
                     <Button
                       onClick={() => onSignUp(role)}
                       disabled={remainingSlots <= 0}
-                      className="bg-umma-500 hover:bg-umma-600 text-white disabled:bg-white/20"
+                      className="bg-gold-400 hover:bg-gold-300 text-navy-800 disabled:bg-white/20"
                       size={isMobile ? "sm" : "default"}
                     >
                       Sign Up

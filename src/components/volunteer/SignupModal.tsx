@@ -156,14 +156,14 @@ const SignupModal = ({
     return (
       <Dialog open={showCalendarSuccess} onOpenChange={handleSuccessClose}>
         <DialogContent className={`
-          border-2 border-green-300 bg-white/95 backdrop-blur-lg shadow-2xl
+          border-2 border-emerald-500/30 bg-navy-800/95 backdrop-blur-lg shadow-2xl
           ${isMobile 
             ? 'w-[92vw] max-w-[92vw] max-h-[88vh] mx-auto p-5 rounded-3xl' 
             : 'max-w-lg w-full max-h-[90vh] rounded-2xl p-6'
           }
         `}>
           <DialogHeader className="text-center">
-            <DialogTitle className="text-green-800 text-xl flex items-center justify-center gap-2">
+            <DialogTitle className="text-emerald-300 text-xl flex items-center justify-center gap-2">
               <CheckCircle2 className="w-6 h-6" />
               Registration Successful!
             </DialogTitle>
@@ -197,7 +197,7 @@ const SignupModal = ({
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className={`
-          border-2 border-gold-400 bg-white/95 backdrop-blur-lg shadow-2xl
+          border-2 border-gold-400/30 bg-navy-800/95 backdrop-blur-lg shadow-2xl
           ${isMobile 
             ? 'w-[92vw] max-w-[92vw] max-h-[88vh] mx-auto p-5 rounded-3xl' 
             : 'max-w-lg w-full max-h-[90vh] rounded-2xl p-6'
@@ -268,28 +268,28 @@ const SignupModal = ({
                 )}
                 
                 {existingSignups.length > 0 && !checkingExistingSignups && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <div className="text-sm font-medium text-blue-800 mb-2">
+                  <div className="bg-gold-400/10 border border-gold-400/20 rounded-lg p-3">
+                    <div className="text-sm font-medium text-gold-300 mb-2">
                       You're already signed up for:
                     </div>
                     <div className="space-y-2">
                       {existingSignups.map((signup, index) => (
-                        <div key={index} className="flex items-center justify-between bg-white/5 rounded-lg p-2 border border-blue-100">
+                        <div key={index} className="flex items-center justify-between bg-white/5 rounded-lg p-2 border border-white/10">
                           <div>
-                            <div className="text-sm font-medium text-blue-900">
+                            <div className="text-sm font-medium text-gold-300">
                               {signup.role.role_label}
                             </div>
-                            <div className="text-xs text-blue-700">
+                            <div className="text-xs text-white/60">
                               {formatTime24To12(signup.role.shift_start)} - {formatTime24To12(signup.role.shift_end)}
                             </div>
                           </div>
-                          <div className="text-xs text-blue-600 capitalize">
+                          <div className="text-xs text-gold-400 capitalize">
                             {signup.volunteer.gender}
                           </div>
                         </div>
                       ))}
                     </div>
-                    <div className="text-xs text-blue-700 mt-2">
+                    <div className="text-xs text-white/60 mt-2">
                       You can sign up for additional roles as long as the times don't overlap.
                     </div>
                   </div>

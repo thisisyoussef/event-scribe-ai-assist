@@ -47,12 +47,12 @@ const StepProgressBar = React.forwardRef<HTMLDivElement, StepProgressBarProps>(
                                     className={cn(
                                         "w-10 h-10 md:w-8 md:h-8 rounded-full flex items-center justify-center",
                                         "text-sm md:text-sm font-bold md:font-semibold transition-all duration-200",
-                                        "focus:outline-none focus:ring-2 focus:ring-umma-400 focus:ring-offset-2",
+                                        "focus:outline-none focus:ring-2 focus:ring-gold-400 focus:ring-offset-2",
                                         "touch-manipulation",
                                         currentStep === step.number
-                                            ? "bg-umma-600 text-white shadow-lg ring-4 ring-umma-100"
+                                            ? "bg-gold-400 text-navy-800 shadow-lg ring-4 ring-gold-400/20"
                                             : currentStep > step.number
-                                            ? "bg-umma-500 text-white shadow-md"
+                                            ? "bg-gold-400 text-navy-800 shadow-md"
                                             : "bg-white/15 text-white/40",
                                         onStepClick && "cursor-pointer active:scale-95"
                                     )}
@@ -68,7 +68,7 @@ const StepProgressBar = React.forwardRef<HTMLDivElement, StepProgressBarProps>(
                                     <div
                                         className={cn(
                                             "flex-1 max-w-[40px] md:max-w-[48px] lg:max-w-[60px] h-1 md:h-0.5 rounded-full transition-colors duration-200",
-                                            currentStep > step.number ? "bg-umma-500" : "bg-white/15"
+                                            currentStep > step.number ? "bg-gold-400" : "bg-white/15"
                                         )}
                                     />
                                 )}
@@ -92,7 +92,7 @@ const StepProgressBar = React.forwardRef<HTMLDivElement, StepProgressBarProps>(
                 {/* Mobile Step Label - Centered below */}
                 {showStepLabel && currentStepData && (
                     <div className="md:hidden text-center pt-1">
-                        <span className="text-xs font-semibold text-umma-600 uppercase tracking-wide">
+                        <span className="text-xs font-semibold text-gold-400 uppercase tracking-wide">
                             Step {currentStep}
                         </span>
                         <span className="text-xs text-white/30 mx-1.5">•</span>
