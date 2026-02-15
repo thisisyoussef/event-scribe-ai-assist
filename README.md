@@ -1,92 +1,118 @@
-# Welcome to your Lovable project
+# UMMA Stewards — Community Event Management Platform
 
-## Project info
+A full-stack event management platform built for community organizations to create, manage, and staff events with volunteer coordination, analytics, and AI-assisted workflows. **Currently in production use.**
 
-**URL**: https://lovable.dev/projects/0db57a54-1c86-49b5-b7c7-9df9deccec16
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React_18-61DAFB?logo=react&logoColor=black)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
 
-## Authentication Features
+## The Problem
 
-This project includes a complete authentication system with the following features:
+Community organizations juggle dozens of recurring events — each with different volunteer needs, time slots, and logistics. Coordinators were managing everything through spreadsheets and group chats, leading to no-shows, over/under-staffing, and zero visibility into what was working.
 
-- **User Registration**: Create new accounts with email, password, full name, and phone number
-- **User Login**: Sign in with existing credentials
-- **Forgot Password**: Reset passwords via email with secure token-based flow
-- **Password Reset**: Secure password update through email verification
-- **Session Management**: Automatic session handling and redirects
+## What It Does
 
-### Forgot Password Flow
+- **AI-Assisted Event Creation** — Describe an event in plain text and the system parses it into a structured event with time slots, roles, and volunteer allocations using OpenAI's API
+- **Volunteer Management** — Role-based sign-ups with gendered slot allocation (brother/sister/flexible), attendance tracking, and automatic headcount management
+- **Event Templates** — Save and reuse configurations for recurring community events
+- **Analytics Dashboard** — Attendance trends, volunteer engagement metrics, and event performance data (Recharts)
+- **Email Notifications** — Automated confirmations and reminders with Outlook-optimized HTML templates
+- **Admin Mode** — Full CRUD with visibility controls, event sharing, and deletion recovery
+- **Auth System** — Email-based authentication with verification, forgot password flow, and session management
 
-1. Users click "Forgot your password?" on the login page
-2. Enter their email address
-3. Receive a password reset link via email
-4. Click the link to access the password reset page
-5. Enter and confirm a new password
-6. Successfully update their password and return to login
+## Architecture
 
-## How can I edit this code?
+```mermaid
+graph TB
+    subgraph Frontend ["Frontend (React + TypeScript)"]
+        UI[shadcn/ui Components]
+        RQ[React Query - Server State]
+        RHF[React Hook Form + Zod]
+        Router[React Router]
+    end
 
-There are several ways of editing your application.
+    subgraph AI ["AI Layer"]
+        NLP[OpenAI API]
+        Parse[Text → Structured Event]
+        Roles[Auto-Generate Volunteer Roles]
+    end
 
-**Use Lovable**
+    subgraph Backend ["Backend (Supabase)"]
+        Auth[Auth + Email Verification]
+        DB[(PostgreSQL + RLS)]
+        RT[Real-time Subscriptions]
+        Edge[Edge Functions]
+    end
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/0db57a54-1c86-49b5-b7c7-9df9deccec16) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+    UI --> RQ --> DB
+    UI --> RHF --> Parse
+    Parse --> NLP
+    NLP --> Roles
+    Auth --> DB
+    RT --> UI
 ```
 
-**Edit a file directly in GitHub**
+## Technical Highlights
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- **NLP Event Parsing** — The AI component (`AITextToEventInput.tsx`) takes free-form text like "Friday prayer cleanup, need 5 brothers and 3 sisters, 2pm-4pm at the main hall" and extracts: title, date/time, location, description, and generates volunteer role objects with slot counts and gender allocation. Includes real-time preview before applying to the form.
+- **Production Deployment** — Deployed on Netlify with Supabase backend. Serving real community events with actual volunteer sign-ups and attendance tracking.
+- **Multi-Role Volunteer System** — Volunteers sign up for specific roles within events. The system tracks attendance, manages capacity per role, and handles the gendered slot allocation common in community organizations.
+- **Optimistic Updates** — React Query handles server state with optimistic UI updates for a responsive feel even on slower connections.
+- **Row Level Security** — All Supabase queries go through PostgreSQL RLS policies, ensuring users only see/modify their own data.
 
-**Use GitHub Codespaces**
+## Tech Stack
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 18, TypeScript, Vite |
+| UI | shadcn/ui, Radix UI primitives, Tailwind CSS, Lucide icons |
+| State | TanStack React Query |
+| Forms | React Hook Form + Zod validation |
+| AI | OpenAI API (GPT) |
+| Backend | Supabase (PostgreSQL + Auth + Edge Functions + Real-time) |
+| Charts | Recharts |
+| Email | Custom HTML templates (Outlook-compatible) |
+| Deploy | Netlify |
 
-## What technologies are used for this project?
+## Running Locally
 
-This project is built with:
+```bash
+git clone https://github.com/thisisyoussef/event-scribe-ai-assist.git
+cd event-scribe-ai-assist
+npm install
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Create a `.env` file:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_anon_key
+VITE_OPENAI_API_KEY=your_openai_key
+```
 
-## How can I deploy this project?
+```bash
+npm run dev        # Dev server at localhost:5173
+npm run build      # Production build
+```
 
-Simply open [Lovable](https://lovable.dev/projects/0db57a54-1c86-49b5-b7c7-9df9deccec16) and click on Share -> Publish.
+## Project Structure
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+```
+src/
+├── components/
+│   ├── analytics/              # Dashboard, summary views (Recharts)
+│   ├── event-creation/         # AI text input, templates, itinerary editor
+│   │   ├── AITextToEventInput.tsx   # NLP free-text → structured event
+│   │   ├── EventSharingDialog.tsx
+│   │   ├── ItineraryEditor.tsx
+│   │   └── PreEventTasksManager.tsx
+│   ├── ui/                     # shadcn/ui primitives
+│   ├── Navigation.tsx
+│   ├── TodayEvents.tsx
+│   └── UpcomingEvents.tsx
+├── hooks/                      # Custom React hooks
+├── integrations/               # Supabase client config & generated types
+├── pages/                      # Route-level components
+└── utils/                      # Helpers, formatters
+```
